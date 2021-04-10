@@ -1,8 +1,11 @@
 package io.shelang.aghab.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Links {
@@ -14,6 +17,10 @@ public class Links {
   private String alias;
   private String url;
   private Integer status;
+
+  @OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "link_id", referencedColumnName = "id")
+  private LinkMeta linkMeta;
 
   public Long getId() {
     return id;
@@ -57,6 +64,15 @@ public class Links {
 
   public Links setStatus(Integer status) {
     this.status = status;
+    return this;
+  }
+
+  public LinkMeta getLinkMeta() {
+    return linkMeta;
+  }
+
+  public Links setLinkMeta(LinkMeta linkMeta) {
+    this.linkMeta = linkMeta;
     return this;
   }
 }
