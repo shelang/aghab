@@ -4,6 +4,7 @@ import java.time.Instant;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
 public class LinkMeta {
@@ -16,6 +17,9 @@ public class LinkMeta {
   private String description;
   private Instant createdAt;
   private Instant updatedAt;
+
+  @OneToOne(mappedBy = "linkMeta")
+  private Links links;
 
   public Long getId() {
     return id;
@@ -68,6 +72,15 @@ public class LinkMeta {
 
   public LinkMeta setUpdatedAt(Instant updatedAt) {
     this.updatedAt = updatedAt;
+    return this;
+  }
+
+  public Links getLinks() {
+    return links;
+  }
+
+  public LinkMeta setLinks(Links links) {
+    this.links = links;
     return this;
   }
 }
