@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  yugabyte:
+    image: yugabytedb/yugabyte:2.5.3.1-b10
+    command: [ "bin/yugabyted", "start", "--daemon=false" ]
+    ports:
+      - 7000:7000
+      - 9700:9000
+      - 5443:5433
+      - 9742:9042
+    volumes:
+      - yugabyte-data:/home/yugabyte/var
+
+volumes:
+  yugabyte-data: {}
