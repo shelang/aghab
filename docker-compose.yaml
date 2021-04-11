@@ -6,9 +6,9 @@ services:
     command: [ "bin/yugabyted", "start", "--daemon=false" ]
     ports:
       - 7000:7000
-      - 9700:9000
-      - 5443:5433
-      - 9742:9042
+      - 9000:9000
+      - 5433:5433
+      - 9042:9042
     volumes:
       - yugabyte-data:/home/yugabyte/var
 
