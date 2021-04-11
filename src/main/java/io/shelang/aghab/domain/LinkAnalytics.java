@@ -2,15 +2,12 @@ package io.shelang.aghab.domain;
 
 import java.time.Instant;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class LinkAnalytics {
 
   @Id
-  @GeneratedValue
-  private Long id;
   private Long linkId;
   private String platform;
   private String device;
@@ -18,15 +15,6 @@ public class LinkAnalytics {
   private String location;
   private String ip;
   private Instant createdAt;
-
-  public Long getId() {
-    return id;
-  }
-
-  public LinkAnalytics setId(Long id) {
-    this.id = id;
-    return this;
-  }
 
   public Long getLinkId() {
     return linkId;
