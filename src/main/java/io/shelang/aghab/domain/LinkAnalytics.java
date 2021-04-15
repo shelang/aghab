@@ -1,20 +1,30 @@
 package io.shelang.aghab.domain;
 
-import java.time.Instant;
+import org.hibernate.annotations.CreationTimestamp;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import java.time.Instant;
 
 @Entity
+@Table(name = "link_analytics")
 public class LinkAnalytics {
 
   @Id
+  @Column(name = "link_id")
   private Long linkId;
+
   private String platform;
   private String device;
   private String browser;
   private String location;
   private String ip;
-  private Instant createdAt;
+
+  @CreationTimestamp
+  @Column(name = "create_at")
+  private Instant createAt;
 
   public Long getLinkId() {
     return linkId;
@@ -71,11 +81,11 @@ public class LinkAnalytics {
   }
 
   public Instant getCreatedAt() {
-    return createdAt;
+    return createAt;
   }
 
-  public LinkAnalytics setCreatedAt(Instant createdAt) {
-    this.createdAt = createdAt;
+  public LinkAnalytics setCreatedAt(Instant createAt) {
+    this.createAt = createAt;
     return this;
   }
 }
