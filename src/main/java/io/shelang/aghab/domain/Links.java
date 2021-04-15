@@ -1,26 +1,21 @@
 package io.shelang.aghab.domain;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
 public class Links {
 
-  @Id
-  @GeneratedValue
-  private Long id;
+  @Id @GeneratedValue private Long id;
   private String hash;
   private String alias;
   private String url;
   private Integer status;
 
-  @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "link_id", referencedColumnName = "id")
+  @OneToOne(mappedBy = "links", cascade = CascadeType.ALL, optional = false)
+  @JoinColumn(name = "id", referencedColumnName = "link_id")
   private LinkMeta linkMeta;
+
+  public Links() {}
 
   public Long getId() {
     return id;

@@ -1,25 +1,32 @@
 package io.shelang.aghab.domain;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.*;
 import java.time.Instant;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 @Entity
+@Table(name = "link_meta")
 public class LinkMeta {
 
-  @Id
-  @GeneratedValue
-  private Long id;
-  private Long linkId;
+  @Id @GeneratedValue private Long id;
   private String title;
   private String description;
-  private Instant createdAt;
-  private Instant updatedAt;
 
-  @OneToOne(mappedBy = "linkMeta")
+  @CreationTimestamp
+  @Column(name = "create_at")
+  private Instant createAt;
+
+  @UpdateTimestamp
+  @Column(name = "update_at")
+  private Instant updateAt;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "link_id")
   private Links links;
+
+  public LinkMeta() {}
 
   public Long getId() {
     return id;
@@ -27,15 +34,6 @@ public class LinkMeta {
 
   public LinkMeta setId(Long id) {
     this.id = id;
-    return this;
-  }
-
-  public Long getLinkId() {
-    return linkId;
-  }
-
-  public LinkMeta setLinkId(Long linkId) {
-    this.linkId = linkId;
     return this;
   }
 
@@ -57,21 +55,21 @@ public class LinkMeta {
     return this;
   }
 
-  public Instant getCreatedAt() {
-    return createdAt;
+  public Instant getCreateAt() {
+    return createAt;
   }
 
-  public LinkMeta setCreatedAt(Instant createdAt) {
-    this.createdAt = createdAt;
+  public LinkMeta setCreateAt(Instant createAt) {
+    this.createAt = createAt;
     return this;
   }
 
-  public Instant getUpdatedAt() {
-    return updatedAt;
+  public Instant getUpdateAt() {
+    return updateAt;
   }
 
-  public LinkMeta setUpdatedAt(Instant updatedAt) {
-    this.updatedAt = updatedAt;
+  public LinkMeta setUpdateAt(Instant updateAt) {
+    this.updateAt = updateAt;
     return this;
   }
 

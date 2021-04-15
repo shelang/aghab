@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS link_meta
     link_id BIGINT,
     title VARCHAR(150),
     description VARCHAR(255),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    create_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    update_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT fk_link_meta
       FOREIGN KEY(link_id)
         REFERENCES links(id)
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS link_analytics
     browser VARCHAR (30),
     location VARCHAR(5),
     ip VARCHAR(32),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    create_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS link_anal_idx ON link_analytics (link_id);
 
@@ -40,10 +40,10 @@ CREATE INDEX IF NOT EXISTS link_anal_idx ON link_analytics (link_id);
 CREATE TABLE IF NOT EXISTS link_expiration
 (
     link_id BIGINT NOT NULL,
-    expire_date TIMESTAMPTZ
+    expire_at TIMESTAMPTZ
 );
 CREATE INDEX IF NOT EXISTS link_exp_idx ON link_expiration (link_id);
-CREATE INDEX IF NOT EXISTS link_exp_date_idx ON link_expiration (expire_date);
+CREATE INDEX IF NOT EXISTS link_exp_date_idx ON link_expiration (expire_at);
 
 
 CREATE TABLE IF NOT EXISTS link_user

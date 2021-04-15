@@ -45,7 +45,7 @@ public class LinksServiceImpl implements LinksService {
 
     LinkMeta linkMeta =
         new LinkMeta()
-            .setCreatedAt(Instant.now())
+            .setCreateAt(Instant.now())
             .setDescription(dto.getDescription())
             .setTitle(dto.getTitle());
 
@@ -65,7 +65,7 @@ public class LinksServiceImpl implements LinksService {
     persistAndRetry(link, retry);
     if (dto.getExpireAt() != null) {
       linkExpirationRepository.persistAndFlush(
-          new LinkExpiration().setLinkId(link.getId()).setExpire_date(dto.getExpireAt()));
+          new LinkExpiration().setLinkId(link.getId()).setExpireAt(dto.getExpireAt()));
     }
     return link;
   }

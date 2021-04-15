@@ -1,19 +1,16 @@
 package io.shelang.aghab.domain;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
-import javax.persistence.Embeddable;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
 
 @Entity
+@Table(name = "link_user")
 public class LinkUser {
 
-  @EmbeddedId
-  private LinkUserId id;
+  @EmbeddedId private LinkUserId id;
 
-  public LinkUser() {
-  }
+  public LinkUser() {}
 
   public LinkUserId getId() {
     return id;
@@ -26,7 +23,10 @@ public class LinkUser {
 
   @Embeddable
   protected static class LinkUserId implements Serializable {
+    @Column(name = "user_id")
     private Long userId;
+
+    @Column(name = "user_hash")
     private String linkHash;
 
     public LinkUserId() {}
@@ -67,5 +67,4 @@ public class LinkUser {
       return Objects.hash(userId, linkHash);
     }
   }
-
 }
