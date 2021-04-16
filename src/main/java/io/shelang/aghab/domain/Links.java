@@ -5,7 +5,10 @@ import javax.persistence.*;
 @Entity
 public class Links {
 
-  @Id @GeneratedValue private Long id;
+  @Id
+  @GeneratedValue(generator = "links_id_seq", strategy = GenerationType.SEQUENCE)
+  private Long id;
+
   private String hash;
   private String alias;
   private String url;
