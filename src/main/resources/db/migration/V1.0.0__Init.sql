@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS link_meta
 CREATE TABLE IF NOT EXISTS link_analytics
 (
     link_id BIGINT NOT NULL,
-    platfrom VARCHAR (30),
+    platform VARCHAR (30),
     device VARCHAR (30),
     browser VARCHAR (30),
     location VARCHAR(5),
