@@ -10,7 +10,10 @@ import java.time.Instant;
 @Table(name = "link_meta")
 public class LinkMeta {
 
-  @Id @GeneratedValue private Long id;
+  @Id
+  @GeneratedValue(generator = "link_meta_id_seq", strategy = GenerationType.SEQUENCE)
+  private Long id;
+
   private String title;
   private String description;
 
