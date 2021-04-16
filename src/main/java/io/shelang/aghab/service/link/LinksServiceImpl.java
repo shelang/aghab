@@ -70,14 +70,15 @@ public class LinksServiceImpl implements LinksService {
     return link;
   }
 
+  @Transactional
   private void persistAndRetry(Links link, byte retryCount) {
     if (retryCount >= MAX_RETRY_COUNT) throw new MaxCreateLinkRetryException();
     try {
       linksRepository.persistAndFlush(link);
     } catch (Exception e) {
+      e.printStackTrace();
       persistAndRetry(link, (byte) (retryCount + 1));
     }
-    return;
   }
 
   @Override
