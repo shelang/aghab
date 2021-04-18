@@ -5,6 +5,7 @@ import io.shelang.aghab.domain.LinkMeta;
 import io.shelang.aghab.domain.Links;
 import io.shelang.aghab.exception.MaxCreateLinkRetryException;
 import io.shelang.aghab.model.LinkCreateDTO;
+import io.shelang.aghab.model.LinkDTO;
 import io.shelang.aghab.repository.LinkExpirationRepository;
 import io.shelang.aghab.repository.LinksRepository;
 import io.shelang.aghab.service.shorty.Shorty;
@@ -25,14 +26,19 @@ public class LinksServiceImpl implements LinksService {
   @Inject LinksRepository linksRepository;
   @Inject LinkExpirationRepository linkExpirationRepository;
 
-  @Override
-  public Links getById(Long id) {
+  private Links findById(Long id) {
     return linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
   @Override
-  public Links getByHash(String hash) {
-    return linksRepository.findByHash(hash).orElseThrow(NotFoundException::new);
+  public LinkDTO getById(Long id) {
+    return toDTO(findById(id));
+  }
+
+  @Override
+  public LinkDTO getByHash(String hash) {
+    Links links = linksRepository.findByHash(hash).orElseThrow(NotFoundException::new);
+    return toDTO(links);
   }
 
   private Links initCreation(LinkCreateDTO dto) {
@@ -49,16 +55,21 @@ public class LinksServiceImpl implements LinksService {
             .setDescription(dto.getDescription())
             .setTitle(dto.getTitle());
 
-    return new Links()
-        .setHash(hash)
-        .setStatus(dto.getStatus().ordinal())
-        .setUrl(dto.getUrl())
-        .setLinkMeta(linkMeta);
+    Links link =
+        new Links()
+            .setHash(hash)
+            .setStatus(dto.getStatus().ordinal())
+            .setUrl(dto.getUrl())
+            .setLinkMeta(linkMeta);
+
+    linkMeta.setLinks(link);
+
+    return link;
   }
 
   @Override
   @Transactional
-  public Links create(LinkCreateDTO dto) {
+  public LinkDTO create(LinkCreateDTO dto) {
     byte retry = 0;
     if (dto.getHash() != null) retry = MAX_RETRY_COUNT - 1;
     Links link = initCreation(dto);
@@ -67,7 +78,7 @@ public class LinksServiceImpl implements LinksService {
       linkExpirationRepository.persistAndFlush(
           new LinkExpiration().setLinkId(link.getId()).setExpireAt(dto.getExpireAt()));
     }
-    return link;
+    return toDTO(link);
   }
 
   @Transactional
@@ -87,9 +98,19 @@ public class LinksServiceImpl implements LinksService {
   }
 
   @Override
-  public Links put(Links links) {
-    Links byId = getById(links.getId());
+  public LinkDTO put(Links links) {
+    findById(links.getId());
     linksRepository.persistAndFlush(links);
-    return links;
+    return toDTO(links);
+  }
+
+  private LinkDTO toDTO(Links link) {
+    return new LinkDTO()
+        .setId(link.getId())
+        .setDescription(link.getLinkMeta().getDescription())
+        .setTitle(link.getLinkMeta().getTitle())
+        .setHash(link.getHash())
+        .setUrl(link.getUrl())
+        .setStatus(link.getStatus());
   }
 }

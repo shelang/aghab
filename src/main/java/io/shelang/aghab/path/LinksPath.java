@@ -1,7 +1,7 @@
 package io.shelang.aghab.path;
 
-import io.shelang.aghab.domain.Links;
 import io.shelang.aghab.model.LinkCreateDTO;
+import io.shelang.aghab.model.LinkDTO;
 import io.shelang.aghab.service.link.LinksService;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
@@ -19,7 +19,7 @@ public class LinksPath {
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public Links get(@PathParam Long id) {
+  public LinkDTO get(@PathParam Long id) {
     return linksService.getById(id);
   }
 
@@ -27,14 +27,14 @@ public class LinksPath {
   @Path("/hash/{hash}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public Links get(@PathParam String hash) {
+  public LinkDTO get(@PathParam String hash) {
     return linksService.getByHash(hash);
   }
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public Links create(@Valid LinkCreateDTO links) {
+  public LinkDTO create(@Valid LinkCreateDTO links) {
     return linksService.create(links);
   }
 }
