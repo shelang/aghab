@@ -6,7 +6,8 @@ import javax.persistence.*;
 public class Links {
 
   @Id
-  @GeneratedValue(generator = "links_id_seq", strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(generator = "links_id_gen", strategy = GenerationType.SEQUENCE)
+  @SequenceGenerator(name = "links_id_gen", allocationSize = 1, sequenceName = "links_id_seq")
   private Long id;
 
   private String hash;
@@ -16,6 +17,7 @@ public class Links {
 
   @OneToOne(mappedBy = "links", cascade = CascadeType.ALL, optional = false)
   @JoinColumn(name = "id", referencedColumnName = "link_id")
+  @PrimaryKeyJoinColumn()
   private LinkMeta linkMeta;
 
   public Links() {}

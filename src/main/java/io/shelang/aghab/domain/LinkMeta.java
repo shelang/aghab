@@ -11,7 +11,11 @@ import java.time.Instant;
 public class LinkMeta {
 
   @Id
-  @GeneratedValue(generator = "link_meta_id_seq", strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(generator = "link_meta_id_gen", strategy = GenerationType.SEQUENCE)
+  @SequenceGenerator(
+      name = "link_meta_id_gen",
+      allocationSize = 1,
+      sequenceName = "link_meta_id_seq")
   private Long id;
 
   private String title;
@@ -26,6 +30,7 @@ public class LinkMeta {
   private Instant updateAt;
 
   @OneToOne(fetch = FetchType.LAZY)
+  @MapsId
   @JoinColumn(name = "link_id")
   private Links links;
 
