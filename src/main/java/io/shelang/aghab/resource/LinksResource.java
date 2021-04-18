@@ -1,14 +1,17 @@
 package io.shelang.aghab.path;
 
 import io.shelang.aghab.model.LinkCreateDTO;
-import io.shelang.aghab.model.LinkDTO;
+import io.shelang.aghab.service.dto.LinksDTO;
 import io.shelang.aghab.service.link.LinksService;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
-
 import javax.inject.Inject;
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 @Path("/api/v1/links")
 public class LinksPath {
@@ -19,7 +22,7 @@ public class LinksPath {
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinkDTO get(@PathParam Long id) {
+  public LinksDTO get(@PathParam Long id) {
     return linksService.getById(id);
   }
 
@@ -27,14 +30,14 @@ public class LinksPath {
   @Path("/hash/{hash}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinkDTO get(@PathParam String hash) {
+  public LinksDTO get(@PathParam String hash) {
     return linksService.getByHash(hash);
   }
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinkDTO create(@Valid LinkCreateDTO links) {
+  public LinksDTO create(@Valid LinkCreateDTO links) {
     return linksService.create(links);
   }
 }
