@@ -1,6 +1,6 @@
-package io.shelang.aghab.path;
+package io.shelang.aghab.resource;
 
-import io.shelang.aghab.model.LinkCreateDTO;
+import io.shelang.aghab.service.dto.LinkCreateDTO;
 import io.shelang.aghab.service.dto.LinksDTO;
 import io.shelang.aghab.service.link.LinksService;
 import javax.inject.Inject;
@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 @Path("/api/v1/links")
-public class LinksPath {
+public class LinksResource {
 
   @Inject LinksService linksService;
 
