@@ -1,18 +1,18 @@
 package io.shelang.aghab.service.link;
 
 import io.shelang.aghab.domain.Links;
-import io.shelang.aghab.model.LinkCreateDTO;
-import io.shelang.aghab.model.LinkDTO;
+import io.shelang.aghab.service.dto.LinkCreateDTO;
+import io.shelang.aghab.service.dto.LinksDTO;
 
 public interface LinksService {
 
-  LinkDTO getById(Long id);
+  LinksDTO getById(Long id);
 
-  LinkDTO getByHash(String hash);
+  LinksDTO getByHash(String hash);
 
-  LinkDTO create(LinkCreateDTO links);
+  LinksDTO create(LinkCreateDTO links);
 
   boolean delete(Long id);
 
-  LinkDTO put(Links links);
+  LinksDTO put(Links links);
 }
