@@ -4,18 +4,18 @@ import io.shelang.aghab.domain.LinkExpiration;
 import io.shelang.aghab.domain.LinkMeta;
 import io.shelang.aghab.domain.Links;
 import io.shelang.aghab.exception.MaxCreateLinkRetryException;
-import io.shelang.aghab.model.LinkCreateDTO;
-import io.shelang.aghab.model.LinkDTO;
+import io.shelang.aghab.service.dto.LinkCreateDTO;
 import io.shelang.aghab.repository.LinkExpirationRepository;
 import io.shelang.aghab.repository.LinksRepository;
+import io.shelang.aghab.service.dto.LinksDTO;
+import io.shelang.aghab.service.mapper.LinksMapper;
 import io.shelang.aghab.service.shorty.Shorty;
-
+import java.time.Instant;
+import java.util.Objects;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
-import java.time.Instant;
-import java.util.Objects;
 
 @ApplicationScoped
 public class LinksServiceImpl implements LinksService {
@@ -25,20 +25,21 @@ public class LinksServiceImpl implements LinksService {
   @Inject Shorty shortyService;
   @Inject LinksRepository linksRepository;
   @Inject LinkExpirationRepository linkExpirationRepository;
+  @Inject LinksMapper linksMapper;
 
   private Links findById(Long id) {
     return linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
   @Override
-  public LinkDTO getById(Long id) {
-    return toDTO(findById(id));
+  public LinksDTO getById(Long id) {
+    return linksMapper.toDTO(findById(id));
   }
 
   @Override
-  public LinkDTO getByHash(String hash) {
+  public LinksDTO getByHash(String hash) {
     Links links = linksRepository.findByHash(hash).orElseThrow(NotFoundException::new);
-    return toDTO(links);
+    return linksMapper.toDTO(links);
   }
 
   private Links initCreation(LinkCreateDTO dto) {
@@ -69,7 +70,7 @@ public class LinksServiceImpl implements LinksService {
 
   @Override
   @Transactional
-  public LinkDTO create(LinkCreateDTO dto) {
+  public LinksDTO create(LinkCreateDTO dto) {
     byte retry = 0;
     if (dto.getHash() != null) retry = MAX_RETRY_COUNT - 1;
     Links link = initCreation(dto);
@@ -78,7 +79,7 @@ public class LinksServiceImpl implements LinksService {
       linkExpirationRepository.persistAndFlush(
           new LinkExpiration().setLinkId(link.getId()).setExpireAt(dto.getExpireAt()));
     }
-    return toDTO(link);
+    return linksMapper.toDTO(link);
   }
 
   @Transactional
@@ -98,19 +99,10 @@ public class LinksServiceImpl implements LinksService {
   }
 
   @Override
-  public LinkDTO put(Links links) {
+  public LinksDTO put(Links links) {
     findById(links.getId());
     linksRepository.persistAndFlush(links);
-    return toDTO(links);
+    return linksMapper.toDTO(links);
   }
 
-  private LinkDTO toDTO(Links link) {
-    return new LinkDTO()
-        .setId(link.getId())
-        .setDescription(link.getLinkMeta().getDescription())
-        .setTitle(link.getLinkMeta().getTitle())
-        .setHash(link.getHash())
-        .setUrl(link.getUrl())
-        .setStatus(link.getStatus());
-  }
 }
