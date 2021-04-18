@@ -1,4 +1,4 @@
-package io.shelang.aghab.model;
+package io.shelang.aghab.service.dto;
 
 import io.shelang.aghab.enums.LinkStatus;
 
