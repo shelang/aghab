@@ -16,10 +16,10 @@ public class RedirectResource {
 
     @Blocking
     @Route(path = "/r/:hash", methods = HttpMethod.GET)
-    public void redirect(RoutingContext ctx) {
+    public void redirect(RoutingContext rc) {
         LinksDTO byHash = linksService.getByHash(
-                ctx.request().getParam("hash"));
-        ctx.response()
+                rc.request().getParam("hash"));
+        rc.response()
                 .putHeader("location", byHash.getUrl())
                 .setStatusCode(301)
                 .end();
