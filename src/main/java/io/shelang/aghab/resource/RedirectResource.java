@@ -7,14 +7,18 @@ import io.smallrye.common.annotation.Blocking;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.RoutingContext;
 
+import javax.annotation.security.PermitAll;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+@RequestScoped
 public class RedirectResource {
 
     @Inject
     LinksService linksService;
 
     @Blocking
+    @PermitAll
     @Route(path = "/r/:hash", methods = HttpMethod.GET)
     public void redirect(RoutingContext rc) {
         LinksDTO byHash = linksService.getByHash(
