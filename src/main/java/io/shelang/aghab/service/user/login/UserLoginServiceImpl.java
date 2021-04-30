@@ -62,7 +62,7 @@ public class UserLoginServiceImpl implements UserLoginService {
   @Override
   public LoginDTO refresh(String authorization) {
     validateRefreshToken();
-    String id = (String) jwt.claim(CLAIM_ID).orElseThrow(ForbiddenException::new);
+    String id = jwt.claim(CLAIM_ID).orElseThrow(ForbiddenException::new).toString();
     var user = usersRepository.findByIdOptional(Long.valueOf(id)).orElseThrow(NotFoundException::new);
     return createTokens(user);
   }
