@@ -30,9 +30,15 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>1.13.0.Final</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -72,8 +78,6 @@
       <artifactId>hashids</artifactId>
       <version>1.0.3</version>
     </dependency>
-
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
@@ -84,8 +88,20 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-jwt-build</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-jwt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>0.4</version>
+    </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -107,15 +123,14 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${compiler-plugin.version}</version>
         <configuration>
-          <source>1.8</source> <!-- depending on your project -->
-          <target>1.8</target> <!-- depending on your project -->
+          <source>1.8</source>
+          <target>1.8</target>
           <annotationProcessorPaths>
             <path>
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
               <version>${org.mapstruct.version}</version>
             </path>
-            <!-- other annotation processors -->
           </annotationProcessorPaths>
         </configuration>
       </plugin>
@@ -129,9 +144,16 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>11</source>
+                <target>11</target>
+            </configuration>
+        </plugin>
     </plugins>
   </build>
-
   <profiles>
     <profile>
       <id>native</id>
