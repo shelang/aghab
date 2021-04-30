@@ -52,3 +52,13 @@ CREATE TABLE IF NOT EXISTS link_user
     link_hash VARCHAR (20) NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS link_user_ul_idx ON link_user (user_id, link_hash);
+
+CREATE TABLE IF NOT EXISTS users
+(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    username varchar(200) UNIQUE NOT NULL,
+    password varchar(72) NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS username_idx ON users (username);
+INSERT INTO users(id, username, password)
+    values (1, 'boss', '$2a$10$DBYku7jU2h0ab3/pgYpdFeTIQUz7DOp7razap3Uni67wwEZUOmNMy');
