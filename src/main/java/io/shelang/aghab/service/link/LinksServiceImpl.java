@@ -12,11 +12,9 @@ import io.shelang.aghab.service.mapper.LinksMapper;
 import io.shelang.aghab.service.shorty.Shorty;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
@@ -32,7 +30,10 @@ public class LinksServiceImpl implements LinksService {
   @Claim(standard = Claims.upn)
   String username;
 
-  @Inject JsonWebToken jwt;
+  @Inject
+  @Claim(standard = Claims.sub)
+  Long userId;
+
   @Inject Shorty shortyService;
   @Inject LinksRepository linksRepository;
   @Inject LinkExpirationRepository linkExpirationRepository;
@@ -51,7 +52,7 @@ public class LinksServiceImpl implements LinksService {
 
   @Override
   public LinksDTO getByHash(String hash) {
-    Links links = linksRepository.findByHash(hash).orElseThrow(NotFoundException::new);
+    var links = linksRepository.findByHash(hash).orElseThrow(NotFoundException::new);
     return linksMapper.toDTO(links);
   }
 
@@ -63,7 +64,7 @@ public class LinksServiceImpl implements LinksService {
 
     if (!dto.getUrl().contains("://")) dto.setUrl("http://" + dto.getUrl());
 
-    LinkMeta linkMeta =
+    var linkMeta =
         new LinkMeta()
             .setCreateAt(Instant.now())
             .setDescription(dto.getDescription())
@@ -84,7 +85,7 @@ public class LinksServiceImpl implements LinksService {
   @Override
   @Transactional
   public LinksDTO create(LinkCreateDTO dto) {
-    User user = usersRepository.findByUsername(username).orElseThrow(NotFoundException::new);
+    User user = usersRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new);
     byte retry = 0;
     if (dto.getHash() != null) retry = MAX_RETRY_COUNT - 1;
     Links link = initCreation(dto);
@@ -116,8 +117,7 @@ public class LinksServiceImpl implements LinksService {
   @Transactional
   public void delete(Long id) {
     Links link = linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
-    Long userId = Long.valueOf(jwt.getClaim("id").toString());
-    LinkUser.LinkUserId linkUserId = new LinkUser.LinkUserId(userId, link.getHash());
+    var linkUserId = new LinkUser.LinkUserId(userId, link.getHash());
     linkUserRepository.findByIdOptional(linkUserId).orElseThrow(ForbiddenException::new);
     linksRepository.deleteById(id);
     linkUserRepository.deleteById(linkUserId);
