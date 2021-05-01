@@ -1,5 +1,6 @@
 package io.shelang.aghab.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,7 +10,11 @@ import java.time.Instant;
 @Table(name = "link_expiration")
 public class LinkExpiration {
 
-  @Id private Long linkId;
+  @Id
+  @Column(name = "link_id")
+  private Long linkId;
+
+  @Column(name = "expire_at")
   private Instant expireAt;
 
   public Long getLinkId() {
@@ -25,8 +30,8 @@ public class LinkExpiration {
     return expireAt;
   }
 
-  public LinkExpiration setExpireAt(Instant expire_date) {
-    this.expireAt = expire_date;
+  public LinkExpiration setExpireAt(Instant expireAt) {
+    this.expireAt = expireAt;
     return this;
   }
 }
