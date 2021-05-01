@@ -12,6 +12,10 @@ public class LinkUser {
 
   public LinkUser() {}
 
+  public LinkUser(Long userId, String linkHash) {
+    this.id = new LinkUserId(userId, linkHash);
+  }
+
   public LinkUserId getId() {
     return id;
   }
@@ -22,11 +26,11 @@ public class LinkUser {
   }
 
   @Embeddable
-  protected static class LinkUserId implements Serializable {
+  public static class LinkUserId implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "user_hash")
+    @Column(name = "link_hash")
     private String linkHash;
 
     public LinkUserId() {}
