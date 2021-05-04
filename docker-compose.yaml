@@ -9,7 +9,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - yugabyte-data:/home/yugabyte/var
+      - postgres-data:/home/yugabyte/var
 
 volumes:
-  yugabyte-data: {}
+  postgres-data: {}
