@@ -15,6 +15,9 @@ public class Links {
   private String url;
   private Integer status;
 
+  @Column(name = "redirect_code")
+  private short redirectCode = 301;
+
   @OneToOne(mappedBy = "links", cascade = CascadeType.ALL, optional = false)
   @JoinColumn(name = "id", referencedColumnName = "link_id")
   @PrimaryKeyJoinColumn()
@@ -73,6 +76,15 @@ public class Links {
 
   public Links setLinkMeta(LinkMeta linkMeta) {
     this.linkMeta = linkMeta;
+    return this;
+  }
+
+  public short getRedirectCode() {
+    return redirectCode;
+  }
+
+  public Links setRedirectCode(short redirectCode) {
+    this.redirectCode = redirectCode;
     return this;
   }
 }
