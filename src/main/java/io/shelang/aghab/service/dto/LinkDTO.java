@@ -1,11 +1,10 @@
 package io.shelang.aghab.service.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class LinksDTO {
+public class LinkDTO {
 
   private Long id;
   private String hash;
@@ -18,7 +17,7 @@ public class LinksDTO {
     return id;
   }
 
-  public LinksDTO setId(Long id) {
+  public LinkDTO setId(Long id) {
     this.id = id;
     return this;
   }
@@ -27,7 +26,7 @@ public class LinksDTO {
     return hash;
   }
 
-  public LinksDTO setHash(String hash) {
+  public LinkDTO setHash(String hash) {
     this.hash = hash;
     return this;
   }
@@ -36,7 +35,7 @@ public class LinksDTO {
     return alias;
   }
 
-  public LinksDTO setAlias(String alias) {
+  public LinkDTO setAlias(String alias) {
     this.alias = alias;
     return this;
   }
@@ -45,7 +44,7 @@ public class LinksDTO {
     return url;
   }
 
-  public LinksDTO setUrl(String url) {
+  public LinkDTO setUrl(String url) {
     this.url = url;
     return this;
   }
@@ -54,7 +53,7 @@ public class LinksDTO {
     return status;
   }
 
-  public LinksDTO setStatus(Integer status) {
+  public LinkDTO setStatus(Integer status) {
     this.status = status;
     return this;
   }
@@ -63,7 +62,7 @@ public class LinksDTO {
     return linkMetaDTO;
   }
 
-  public LinksDTO setLinkMetaDTO(LinkMetaDTO linkMetaDTO) {
+  public LinkDTO setLinkMetaDTO(LinkMetaDTO linkMetaDTO) {
     this.linkMetaDTO = linkMetaDTO;
     return this;
   }

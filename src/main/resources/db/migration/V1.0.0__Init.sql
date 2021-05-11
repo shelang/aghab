@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS links
     hash VARCHAR (20) NOT NULL UNIQUE,
     alias VARCHAR(50),
     url TEXT NOT NULL,
-    status SMALLINT DEFAULT 0
+    status SMALLINT DEFAULT 0,
+    redirect_code SMALLINT DEFAULT 301
 );
 CREATE INDEX IF NOT EXISTS link_hash_idx ON links (hash);
 
@@ -34,7 +35,7 @@ CREATE TABLE IF NOT EXISTS link_analytics
     ip VARCHAR(32),
     create_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX IF NOT EXISTS link_anal_idx ON link_analytics (link_id);
+CREATE INDEX IF NOT EXISTS link_anal_idx ON link_analytics (link_id, create_at);
 
 
 CREATE TABLE IF NOT EXISTS link_expiration
@@ -49,9 +50,12 @@ CREATE INDEX IF NOT EXISTS link_exp_date_idx ON link_expiration (expire_at);
 CREATE TABLE IF NOT EXISTS link_user
 (
     user_id BIGINT NOT NULL,
-    link_hash VARCHAR (20) NOT NULL
+    link_hash VARCHAR (20) NOT NULL,
+    link_id BIGINT NOT NULL,
+    create_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE UNIQUE INDEX IF NOT EXISTS link_user_ul_idx ON link_user (user_id, link_hash);
+CREATE UNIQUE INDEX IF NOT EXISTS link_user_create_at_idx ON link_user (create_at);
 
 CREATE TABLE IF NOT EXISTS users
 (

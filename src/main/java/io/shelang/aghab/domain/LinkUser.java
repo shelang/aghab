@@ -2,6 +2,7 @@ package io.shelang.aghab.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -9,6 +10,12 @@ import java.util.Objects;
 public class LinkUser {
 
   @EmbeddedId private LinkUserId id;
+
+  @Column(name = "link_id")
+  private Long linkId;
+
+  @Column(name = "create_at")
+  private Instant createAt;
 
   public LinkUser() {}
 
@@ -22,6 +29,24 @@ public class LinkUser {
 
   public LinkUser setId(LinkUserId id) {
     this.id = id;
+    return this;
+  }
+
+  public Long getLinkId() {
+    return linkId;
+  }
+
+  public LinkUser setLinkId(Long linkId) {
+    this.linkId = linkId;
+    return this;
+  }
+
+  public Instant getCreateAt() {
+    return createAt;
+  }
+
+  public LinkUser setCreateAt(Instant createAt) {
+    this.createAt = createAt;
     return this;
   }
 

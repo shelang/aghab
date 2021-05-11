@@ -11,7 +11,7 @@ public class LinkCreateDTO {
   @NotBlank private String url;
   private String hash;
   private Instant expireAt;
-
+  private Short redirectCode = 301;
   private LinkStatus status = LinkStatus.ACTIVE;
 
   @Min(150)
@@ -73,6 +73,15 @@ public class LinkCreateDTO {
 
   public LinkCreateDTO setDescription(String description) {
     this.description = description;
+    return this;
+  }
+
+  public Short getRedirectCode() {
+    return redirectCode;
+  }
+
+  public LinkCreateDTO setRedirectCode(Short redirectCode) {
+    this.redirectCode = redirectCode;
     return this;
   }
 }

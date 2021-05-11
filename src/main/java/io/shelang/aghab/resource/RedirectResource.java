@@ -1,9 +1,9 @@
 package io.shelang.aghab.resource;
 
 import io.quarkus.vertx.web.Route;
-import io.shelang.aghab.service.dto.LinksDTO;
-import io.shelang.aghab.service.link.LinksService;
-import io.smallrye.common.annotation.Blocking;
+import io.shelang.aghab.service.redirect.RedirectService;
+import io.smallrye.mutiny.Uni;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.RoutingContext;
 
@@ -14,19 +14,20 @@ import javax.inject.Inject;
 @RequestScoped
 public class RedirectResource {
 
-    @Inject
-    LinksService linksService;
+  @Inject RedirectService redirectService;
 
-    @Blocking
-    @PermitAll
-    @Route(path = "/r/:hash", methods = HttpMethod.GET)
-    public void redirect(RoutingContext rc) {
-        LinksDTO byHash = linksService.getByHash(
-                rc.request().getParam("hash"));
-        rc.response()
-                .putHeader("location", byHash.getUrl())
-                .setStatusCode(301)
-                .end();
-    }
-
+  @PermitAll
+  @Route(path = "/r/:hash", methods = HttpMethod.GET)
+  public Uni<String> redirect(RoutingContext rc) {
+    return redirectService
+        .redirectBy(rc.request().getParam("hash"), rc.request().query())
+        .onItem()
+        .transform(
+            byHash -> {
+              rc.response()
+                  .putHeader(HttpHeaders.LOCATION, byHash.getUrl())
+                  .setStatusCode(byHash.getStatusCode());
+              return "";
+            });
+  }
 }

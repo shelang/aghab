@@ -7,7 +7,9 @@ import io.shelang.aghab.repository.LinkUserRepository;
 import io.shelang.aghab.repository.LinksRepository;
 import io.shelang.aghab.repository.UsersRepository;
 import io.shelang.aghab.service.dto.LinkCreateDTO;
-import io.shelang.aghab.service.dto.LinksDTO;
+import io.shelang.aghab.service.dto.LinkDTO;
+import io.shelang.aghab.service.dto.LinksUserDTO;
+import io.shelang.aghab.service.mapper.LinkUserMapper;
 import io.shelang.aghab.service.mapper.LinksMapper;
 import io.shelang.aghab.service.shorty.Shorty;
 import org.eclipse.microprofile.jwt.Claim;
@@ -19,6 +21,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 @ApplicationScoped
@@ -38,6 +41,7 @@ public class LinksServiceImpl implements LinksService {
   @Inject LinksRepository linksRepository;
   @Inject LinkExpirationRepository linkExpirationRepository;
   @Inject LinksMapper linksMapper;
+  @Inject LinkUserMapper linkUserMapper;
   @Inject UsersRepository usersRepository;
   @Inject LinkUserRepository linkUserRepository;
 
@@ -46,12 +50,19 @@ public class LinksServiceImpl implements LinksService {
   }
 
   @Override
-  public LinksDTO getById(Long id) {
+  public LinksUserDTO get(Integer page, Integer size) {
+    List<LinkUser> result = linkUserRepository.page(userId, page, size);
+    return new LinksUserDTO()
+        .setLinks(linkUserMapper.toDTO(result));
+  }
+
+  @Override
+  public LinkDTO getById(Long id) {
     return linksMapper.toDTO(findById(id));
   }
 
   @Override
-  public LinksDTO getByHash(String hash) {
+  public LinkDTO getByHash(String hash) {
     var links = linksRepository.findByHash(hash).orElseThrow(NotFoundException::new);
     return linksMapper.toDTO(links);
   }
@@ -84,7 +95,7 @@ public class LinksServiceImpl implements LinksService {
 
   @Override
   @Transactional
-  public LinksDTO create(LinkCreateDTO dto) {
+  public LinkDTO create(LinkCreateDTO dto) {
     User user = usersRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new);
     byte retry = 0;
     if (dto.getHash() != null) retry = MAX_RETRY_COUNT - 1;
@@ -99,7 +110,11 @@ public class LinksServiceImpl implements LinksService {
   }
 
   private void persistLinkUser(Links link, User user) {
-    linkUserRepository.persistAndFlush(new LinkUser(user.getId(), link.getHash()));
+    LinkUser linkUser =
+        new LinkUser(user.getId(), link.getHash())
+            .setLinkId(link.getId())
+            .setCreateAt(link.getLinkMeta().getCreateAt());
+    linkUserRepository.persistAndFlush(linkUser);
   }
 
   @Transactional
