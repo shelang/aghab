@@ -50,9 +50,12 @@ CREATE INDEX IF NOT EXISTS link_exp_date_idx ON link_expiration (expire_at);
 CREATE TABLE IF NOT EXISTS link_user
 (
     user_id BIGINT NOT NULL,
-    link_hash VARCHAR (20) NOT NULL
+    link_hash VARCHAR (20) NOT NULL,
+    link_id BIGINT NOT NULL,
+    create_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE UNIQUE INDEX IF NOT EXISTS link_user_ul_idx ON link_user (user_id, link_hash);
+CREATE UNIQUE INDEX IF NOT EXISTS link_user_create_at_idx ON link_user (create_at);
 
 CREATE TABLE IF NOT EXISTS users
 (
