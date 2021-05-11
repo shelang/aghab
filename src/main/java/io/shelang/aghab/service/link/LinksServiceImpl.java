@@ -21,6 +21,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 @ApplicationScoped
@@ -40,6 +41,7 @@ public class LinksServiceImpl implements LinksService {
   @Inject LinksRepository linksRepository;
   @Inject LinkExpirationRepository linkExpirationRepository;
   @Inject LinksMapper linksMapper;
+  @Inject LinkUserMapper linkUserMapper;
   @Inject UsersRepository usersRepository;
   @Inject LinkUserRepository linkUserRepository;
 
@@ -48,7 +50,14 @@ public class LinksServiceImpl implements LinksService {
   }
 
   @Override
-  public LinksDTO getById(Long id) {
+  public LinksUserDTO get(Integer page, Integer size) {
+    List<LinkUser> result = linkUserRepository.page(userId, page, size);
+    return new LinksUserDTO()
+        .setLinks(linkUserMapper.toDTO(result));
+  }
+
+  @Override
+  public LinkDTO getById(Long id) {
     return linksMapper.toDTO(findById(id));
   }
 
