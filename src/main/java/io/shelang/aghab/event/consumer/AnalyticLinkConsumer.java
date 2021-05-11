@@ -26,14 +26,8 @@ public class AnalyticLinkConsumer {
   @ConsumeEvent(value = EventType.ANALYTIC_LINK, blocking = true)
   @Transactional
   public void consume(Message<Long> msg) {
-    //    System.out.println("hi");
-    //    Executors.newCachedThreadPool()
-    //        .execute(
-    //            () -> {
-    //              System.out.println("execed");
     LinkAnalytics linkAnalytics =
         new LinkAnalytics().setLinkId(msg.body()).setCreatedAt(Instant.now());
     linkAnalyticRepository.persistAndFlush(linkAnalytics);
-    //            });
   }
 }
