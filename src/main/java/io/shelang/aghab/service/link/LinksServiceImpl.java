@@ -49,11 +49,22 @@ public class LinksServiceImpl implements LinksService {
     return linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
+  private int normalizeValue(Integer value, int defaultValue) {
+    if (Objects.isNull(value)) {
+      value = defaultValue;
+    }
+    return value;
+  }
+
   @Override
   public LinksUserDTO get(Integer page, Integer size) {
-    List<LinkUser> result = linkUserRepository.page(userId, page, size);
-    return new LinksUserDTO()
-        .setLinks(linkUserMapper.toDTO(result));
+    page = normalizeValue(page, 1);
+    size = normalizeValue(size, 10);
+
+    if (size > 50) size = 50;
+
+    List<LinkUser> result = linkUserRepository.page(userId, page - 1, size);
+    return new LinksUserDTO().setLinks(linkUserMapper.toDTO(result));
   }
 
   @Override
