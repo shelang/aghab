@@ -1,11 +1,20 @@
 package io.shelang.aghab.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.Instant;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "link_expiration")
 public class LinkExpiration {
@@ -16,22 +25,4 @@ public class LinkExpiration {
 
   @Column(name = "expire_at")
   private Instant expireAt;
-
-  public Long getLinkId() {
-    return linkId;
-  }
-
-  public LinkExpiration setLinkId(Long linkId) {
-    this.linkId = linkId;
-    return this;
-  }
-
-  public Instant getExpireAt() {
-    return expireAt;
-  }
-
-  public LinkExpiration setExpireAt(Instant expireAt) {
-    this.expireAt = expireAt;
-    return this;
-  }
 }

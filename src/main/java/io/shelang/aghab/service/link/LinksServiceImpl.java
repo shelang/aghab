@@ -45,7 +45,7 @@ public class LinksServiceImpl implements LinksService {
   @Inject UsersRepository usersRepository;
   @Inject LinkUserRepository linkUserRepository;
 
-  private Links findById(Long id) {
+  private Link findById(Long id) {
     return linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
@@ -78,7 +78,7 @@ public class LinksServiceImpl implements LinksService {
     return linksMapper.toDTO(links);
   }
 
-  private Links initCreation(LinkCreateDTO dto) {
+  private Link initCreation(LinkCreateDTO dto) {
     String hash;
 
     if (Objects.nonNull(dto.getHash()) && dto.getHash().length() > 0) hash = dto.getHash();
@@ -87,17 +87,19 @@ public class LinksServiceImpl implements LinksService {
     if (!dto.getUrl().contains("://")) dto.setUrl("http://" + dto.getUrl());
 
     var linkMeta =
-        new LinkMeta()
-            .setCreateAt(Instant.now())
-            .setDescription(dto.getDescription())
-            .setTitle(dto.getTitle());
+        LinkMeta.builder()
+            .createAt(Instant.now())
+            .description(dto.getDescription())
+            .title(dto.getTitle())
+            .build();
 
-    Links link =
-        new Links()
-            .setHash(hash)
-            .setStatus(dto.getStatus().ordinal())
-            .setUrl(dto.getUrl())
-            .setLinkMeta(linkMeta);
+    var link =
+        Link.builder()
+            .hash(hash)
+            .status(dto.getStatus().ordinal())
+            .url(dto.getUrl())
+            .linkMeta(linkMeta)
+            .build();
 
     linkMeta.setLinks(link);
 
@@ -107,34 +109,39 @@ public class LinksServiceImpl implements LinksService {
   @Override
   @Transactional
   public LinkDTO create(LinkCreateDTO dto) {
-    User user = usersRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new);
+    var user = usersRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new);
     byte retry = 0;
     if (dto.getHash() != null) retry = MAX_RETRY_COUNT - 1;
-    Links link = initCreation(dto);
+    var link = initCreation(dto);
     persistAndRetry(link, retry);
     persistLinkUser(link, user);
     if (dto.getExpireAt() != null) {
       linkExpirationRepository.persistAndFlush(
-          new LinkExpiration().setLinkId(link.getId()).setExpireAt(dto.getExpireAt()));
+          LinkExpiration.builder().linkId(link.getId()).expireAt(dto.getExpireAt()).build());
     }
     return linksMapper.toDTO(link);
   }
 
-  private void persistLinkUser(Links link, User user) {
-    LinkUser linkUser =
-        new LinkUser(user.getId(), link.getHash())
-            .setLinkId(link.getId())
-            .setCreateAt(link.getLinkMeta().getCreateAt());
+  private void persistLinkUser(Link link, User user) {
+    var linkUser = new LinkUser(user.getId(), link.getHash());
+    linkUser.setLinkId(link.getId());
+    linkUser.setCreateAt(link.getLinkMeta().getCreateAt());
     linkUserRepository.persistAndFlush(linkUser);
   }
 
   @Transactional
-  private void persistAndRetry(Links link, byte retryCount) {
+  private void persistAndRetry(Link link, byte retryCount) {
     if (retryCount >= MAX_RETRY_COUNT) throw new MaxCreateLinkRetryException();
+    var existLink = linksRepository.findByHash(link.getHash()).orElse(null);
+    if (Objects.nonNull(existLink)) {
+      persistAndRetry(link, (byte) (retryCount + 1));
+      return;
+    }
     try {
       linksRepository.persistAndFlush(link);
     } catch (Exception e) {
       e.printStackTrace();
+    } finally {
       persistAndRetry(link, (byte) (retryCount + 1));
     }
   }
@@ -142,10 +149,11 @@ public class LinksServiceImpl implements LinksService {
   @Override
   @Transactional
   public void delete(Long id) {
-    Links link = linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    var link = linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
     var linkUserId = new LinkUser.LinkUserId(userId, link.getHash());
-    linkUserRepository.findByIdOptional(linkUserId).orElseThrow(ForbiddenException::new);
+    var linkUser =
+        linkUserRepository.findByIdOptional(linkUserId).orElseThrow(ForbiddenException::new);
     linksRepository.deleteById(id);
-    linkUserRepository.deleteById(linkUserId);
+    linkUserRepository.deleteById(linkUser.getId());
   }
 }

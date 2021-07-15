@@ -1,10 +1,17 @@
 package io.shelang.aghab.domain;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "link_user")
 public class LinkUser {
@@ -17,40 +24,14 @@ public class LinkUser {
   @Column(name = "create_at")
   private Instant createAt;
 
-  public LinkUser() {}
-
   public LinkUser(Long userId, String linkHash) {
     this.id = new LinkUserId(userId, linkHash);
   }
 
-  public LinkUserId getId() {
-    return id;
-  }
-
-  public LinkUser setId(LinkUserId id) {
-    this.id = id;
-    return this;
-  }
-
-  public Long getLinkId() {
-    return linkId;
-  }
-
-  public LinkUser setLinkId(Long linkId) {
-    this.linkId = linkId;
-    return this;
-  }
-
-  public Instant getCreateAt() {
-    return createAt;
-  }
-
-  public LinkUser setCreateAt(Instant createAt) {
-    this.createAt = createAt;
-    return this;
-  }
-
   @Embeddable
+  @Getter
+  @Setter
+  @ToString
   public static class LinkUserId implements Serializable {
     @Column(name = "user_id")
     private Long userId;
@@ -63,24 +44,6 @@ public class LinkUser {
     public LinkUserId(Long userId, String linkHash) {
       this.userId = userId;
       this.linkHash = linkHash;
-    }
-
-    public Long getUserId() {
-      return userId;
-    }
-
-    public LinkUserId setUserId(Long userId) {
-      this.userId = userId;
-      return this;
-    }
-
-    public String getLinkHash() {
-      return linkHash;
-    }
-
-    public LinkUserId setLinkHash(String linkHash) {
-      this.linkHash = linkHash;
-      return this;
     }
 
     @Override
