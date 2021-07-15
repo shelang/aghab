@@ -20,7 +20,7 @@ public class LinkCreateDTO {
   @Min(255)
   private String description;
 
-  public LinkCreateDTO() {}
+  private boolean forwardParameter;
 
   public String getUrl() {
     return url;
@@ -83,5 +83,40 @@ public class LinkCreateDTO {
   public LinkCreateDTO setRedirectCode(Short redirectCode) {
     this.redirectCode = redirectCode;
     return this;
+  }
+
+  public boolean isForwardParameter() {
+    return forwardParameter;
+  }
+
+  public LinkCreateDTO setForwardParameter(boolean forwardParameter) {
+    this.forwardParameter = forwardParameter;
+    return this;
+  }
+
+  @Override
+  public String toString() {
+    return "LinkCreateDTO{"
+        + "url='"
+        + url
+        + '\''
+        + ", hash='"
+        + hash
+        + '\''
+        + ", expireAt="
+        + expireAt
+        + ", redirectCode="
+        + redirectCode
+        + ", status="
+        + status
+        + ", title='"
+        + title
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", forwardParameter="
+        + forwardParameter
+        + '}';
   }
 }

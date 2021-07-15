@@ -1,6 +1,5 @@
 package io.shelang.aghab.service.analytic.impl;
 
-import io.shelang.aghab.domain.Links;
 import io.shelang.aghab.repository.LinkAnalyticRepository;
 import io.shelang.aghab.repository.LinksRepository;
 import io.shelang.aghab.service.analytic.AnalyticService;
@@ -26,7 +25,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 
   @Override
   public AnalyticDTO getAndCount(Long linkId, Date from, Date to) {
-    Links link = linksRepository.findByIdOptional(linkId).orElseThrow(NotFoundException::new);
+    var link = linksRepository.findByIdOptional(linkId).orElseThrow(NotFoundException::new);
     Instant f = Objects.nonNull(from) ? from.toInstant() : link.getLinkMeta().getCreateAt();
     Instant t = Objects.nonNull(from) ? from.toInstant() : Instant.now();
 
