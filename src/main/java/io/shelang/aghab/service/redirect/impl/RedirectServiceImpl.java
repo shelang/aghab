@@ -12,6 +12,7 @@ import io.vertx.mutiny.sqlclient.RowSet;
 import io.vertx.mutiny.sqlclient.Tuple;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.util.Objects;
 
 @ApplicationScoped
@@ -21,6 +22,7 @@ public class RedirectServiceImpl implements RedirectService {
   final LinksService linksService;
   final EventBus bus;
 
+  @Inject
   public RedirectServiceImpl(PgPool client, LinksService linksService, EventBus bus) {
     this.client = client;
     this.linksService = linksService;
@@ -47,8 +49,6 @@ public class RedirectServiceImpl implements RedirectService {
         .transform(RowSet::iterator)
         .onItem()
         .transform(iterator -> iterator.hasNext() ? from(iterator.next()) : null)
-        .onFailure()
-        .recoverWithItem(() -> new RedirectDTO().setStatusCode((short) 404).setUrl(""))
         .onItem()
         .transform(
             byHash -> {
