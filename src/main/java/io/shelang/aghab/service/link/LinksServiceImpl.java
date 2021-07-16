@@ -12,6 +12,7 @@ import io.shelang.aghab.service.dto.LinksUserDTO;
 import io.shelang.aghab.service.mapper.LinkUserMapper;
 import io.shelang.aghab.service.mapper.LinksMapper;
 import io.shelang.aghab.service.shorty.Shorty;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
 
@@ -24,6 +25,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @ApplicationScoped
 public class LinksServiceImpl implements LinksService {
 
@@ -99,11 +101,17 @@ public class LinksServiceImpl implements LinksService {
             .status(dto.getStatus().ordinal())
             .url(dto.getUrl())
             .linkMeta(linkMeta)
+            .forwardParameter(dto.isForwardParameter())
             .build();
 
     linkMeta.setLinks(link);
 
     return link;
+  }
+
+  private void reSetHash(Link link) {
+    log.info("[link-service] re-set link hash {}", link);
+    link.setHash(shortyService.generate());
   }
 
   @Override
@@ -122,6 +130,7 @@ public class LinksServiceImpl implements LinksService {
     return linksMapper.toDTO(link);
   }
 
+  @Transactional
   private void persistLinkUser(Link link, User user) {
     var linkUser = new LinkUser(user.getId(), link.getHash());
     linkUser.setLinkId(link.getId());
@@ -134,14 +143,15 @@ public class LinksServiceImpl implements LinksService {
     if (retryCount >= MAX_RETRY_COUNT) throw new MaxCreateLinkRetryException();
     var existLink = linksRepository.findByHash(link.getHash()).orElse(null);
     if (Objects.nonNull(existLink)) {
+      reSetHash(link);
       persistAndRetry(link, (byte) (retryCount + 1));
       return;
     }
     try {
       linksRepository.persistAndFlush(link);
     } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
+      log.error(e.getMessage(), e);
+      reSetHash(link);
       persistAndRetry(link, (byte) (retryCount + 1));
     }
   }

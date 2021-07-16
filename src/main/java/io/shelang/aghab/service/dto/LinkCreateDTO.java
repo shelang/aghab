@@ -1,122 +1,28 @@
 package io.shelang.aghab.service.dto;
 
 import io.shelang.aghab.enums.LinkStatus;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 
+@Data
+@Accessors(chain = true)
+@NoArgsConstructor
 public class LinkCreateDTO {
-
   @NotBlank private String url;
   private String hash;
   private Instant expireAt;
   private Short redirectCode = 301;
   private LinkStatus status = LinkStatus.ACTIVE;
+  private boolean forwardParameter;
 
   @Min(150)
   private String title;
 
   @Min(255)
   private String description;
-
-  private boolean forwardParameter;
-
-  public String getUrl() {
-    return url;
-  }
-
-  public LinkCreateDTO setUrl(String url) {
-    this.url = url;
-    return this;
-  }
-
-  public String getHash() {
-    return hash;
-  }
-
-  public LinkCreateDTO setHash(String hash) {
-    this.hash = hash;
-    return this;
-  }
-
-  public Instant getExpireAt() {
-    return expireAt;
-  }
-
-  public LinkCreateDTO setExpireAt(Instant expireAt) {
-    this.expireAt = expireAt;
-    return this;
-  }
-
-  public LinkStatus getStatus() {
-    return status;
-  }
-
-  public LinkCreateDTO setStatus(LinkStatus status) {
-    this.status = status;
-    return this;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public LinkCreateDTO setTitle(String title) {
-    this.title = title;
-    return this;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public LinkCreateDTO setDescription(String description) {
-    this.description = description;
-    return this;
-  }
-
-  public Short getRedirectCode() {
-    return redirectCode;
-  }
-
-  public LinkCreateDTO setRedirectCode(Short redirectCode) {
-    this.redirectCode = redirectCode;
-    return this;
-  }
-
-  public boolean isForwardParameter() {
-    return forwardParameter;
-  }
-
-  public LinkCreateDTO setForwardParameter(boolean forwardParameter) {
-    this.forwardParameter = forwardParameter;
-    return this;
-  }
-
-  @Override
-  public String toString() {
-    return "LinkCreateDTO{"
-        + "url='"
-        + url
-        + '\''
-        + ", hash='"
-        + hash
-        + '\''
-        + ", expireAt="
-        + expireAt
-        + ", redirectCode="
-        + redirectCode
-        + ", status="
-        + status
-        + ", title='"
-        + title
-        + '\''
-        + ", description='"
-        + description
-        + '\''
-        + ", forwardParameter="
-        + forwardParameter
-        + '}';
-  }
 }

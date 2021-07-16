@@ -1,0 +1,1 @@
+ALTER TABLE links ADD COLUMN IF NOT EXISTS forward_parameter boolean NOT NULL DEFAULT FALSE;

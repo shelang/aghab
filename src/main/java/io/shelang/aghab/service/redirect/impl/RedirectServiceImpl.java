@@ -31,13 +31,17 @@ public class RedirectServiceImpl implements RedirectService {
     return new RedirectDTO()
         .setId(row.getLong("id"))
         .setUrl(row.getString("url"))
-        .setStatusCode(row.getShort("redirect_code"));
+        .setStatusCode(row.getShort("redirect_code"))
+        .setForwardParameter(row.getBoolean("forward_parameter"));
   }
 
   @Override
   public Uni<RedirectDTO> redirectBy(String hash, String query) {
     return client
-        .preparedQuery("SELECT id, url, redirect_code FROM links WHERE hash = $1 and status = 0")
+        .preparedQuery(
+            "SELECT id, url, redirect_code, forward_parameter "
+                + "FROM links "
+                + "WHERE hash = $1 and status = 0")
         .execute(Tuple.of(hash))
         .onItem()
         .transform(RowSet::iterator)
@@ -49,10 +53,12 @@ public class RedirectServiceImpl implements RedirectService {
         .transform(
             byHash -> {
               String redirectTo = byHash.getUrl();
-              if (Objects.nonNull(query)) {
-                if (byHash.getUrl().charAt(byHash.getUrl().length() - 1) == '/')
-                  redirectTo = redirectTo + query;
-                else redirectTo = redirectTo + "?" + query;
+              if (Objects.nonNull(query) && byHash.isForwardParameter()) {
+                if (byHash.getUrl().contains("?")) {
+                  redirectTo = redirectTo + "&" + query;
+                } else {
+                  redirectTo = redirectTo + "?" + query;
+                }
               }
 
               byHash.setUrl(redirectTo);

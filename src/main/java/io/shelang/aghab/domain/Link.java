@@ -29,6 +29,9 @@ public class Link {
   @Builder.Default
   private short redirectCode = 301;
 
+  @Column(name = "forward_parameter")
+  private boolean forwardParameter;
+
   @OneToOne(mappedBy = "links", cascade = CascadeType.ALL, optional = false)
   @JoinColumn(name = "id", referencedColumnName = "link_id")
   @PrimaryKeyJoinColumn()
