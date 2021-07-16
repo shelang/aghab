@@ -1,6 +1,7 @@
 package io.shelang.aghab.resource;
 
 import io.quarkus.vertx.web.Route;
+import io.shelang.aghab.service.dto.RedirectDTO;
 import io.shelang.aghab.service.redirect.RedirectService;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpHeaders;
@@ -21,6 +22,8 @@ public class RedirectResource {
   public Uni<String> redirect(RoutingContext rc) {
     return redirectService
         .redirectBy(rc.request().getParam("hash"), rc.request().query())
+        .onFailure()
+        .recoverWithItem(() -> new RedirectDTO().setStatusCode((short) 404).setUrl(""))
         .onItem()
         .transform(
             byHash -> {
