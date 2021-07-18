@@ -1,10 +1,16 @@
 package io.shelang.aghab.service.dto;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 
+@Data
+@Accessors(chain = true)
+@NoArgsConstructor
 public class LoginRequestDTO {
-
   @NotBlank
   @Max(200)
   private String username;
@@ -12,22 +18,4 @@ public class LoginRequestDTO {
   @NotBlank
   @Max(64)
   private String password;
-
-  public String getUsername() {
-    return username;
-  }
-
-  public LoginRequestDTO setUsername(String username) {
-    this.username = username;
-    return this;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public LoginRequestDTO setPassword(String password) {
-    this.password = password;
-    return this;
-  }
 }
