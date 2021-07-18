@@ -22,6 +22,7 @@ public class UserLoginServiceImpl implements UserLoginService {
   private static final String CLAIM_TOKEN_TYPE = "t";
   private static final String CLAIM_ID = "i";
 
+  @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject JsonWebToken jwt;
   @Inject UsersRepository usersRepository;
 
@@ -54,15 +55,19 @@ public class UserLoginServiceImpl implements UserLoginService {
   }
 
   private void validateRefreshToken() {
-    jwt.claim(CLAIM_TOKEN_TYPE)
-        .orElseThrow(() -> new ForbiddenException("Use refresh token"))
-        .equals(JwtTokenType.REFRESH.ordinal());
+    var refreshTokenNotFound = new ForbiddenException("Use refresh token");
+    boolean isRefresh = jwt.claim(CLAIM_TOKEN_TYPE)
+            .orElseThrow(() -> refreshTokenNotFound)
+            .equals(JwtTokenType.REFRESH.ordinal());
+    if (!isRefresh) {
+      throw refreshTokenNotFound;
+    }
   }
 
   @Override
   public LoginDTO refresh(String authorization) {
     validateRefreshToken();
-    String id = jwt.claim(CLAIM_ID).orElseThrow(ForbiddenException::new).toString();
+    var id = jwt.claim(CLAIM_ID).orElseThrow(ForbiddenException::new).toString();
     var user = usersRepository.findByIdOptional(Long.valueOf(id)).orElseThrow(NotFoundException::new);
     return createTokens(user);
   }

@@ -14,8 +14,6 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.time.Instant;
-import java.util.Date;
 
 @Path("/api/v1/links")
 @RequestScoped
@@ -32,7 +30,9 @@ public class LinksResource {
     return linksService.get(page, size);
   }
 
+
   @GET
+  @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -41,6 +41,7 @@ public class LinksResource {
   }
 
   @GET
+  @SuppressWarnings("PathAnnotation")
   @Path("/hash/{hash}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -56,6 +57,7 @@ public class LinksResource {
   }
 
   @DELETE
+  @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)

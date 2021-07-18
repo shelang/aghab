@@ -10,8 +10,8 @@ import java.time.Instant;
 public class HashIdShortyImpl implements Shorty {
     @Override
     public String generate() {
-        String key = String.valueOf(Math.random() * Long.MAX_VALUE);
-        Hashids hashids = new Hashids(key);
+        var key = String.valueOf(Math.random() * Long.MAX_VALUE);
+        var hashids = new Hashids(key);
         return hashids.encode(Instant.now().getEpochSecond());
     }
 }
