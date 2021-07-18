@@ -127,7 +127,10 @@ public class LinksServiceImpl implements LinksService {
       linkExpirationRepository.persistAndFlush(
           LinkExpiration.builder().linkId(link.getId()).expireAt(dto.getExpireAt()).build());
     }
-    return linksMapper.toDTO(link);
+    LinkDTO linkDTO = linksMapper.toDTO(link);
+    var host = Objects.nonNull(dto.getHost()) ? dto.getHost() : "";
+    linkDTO.setRedirectTo("https://" + host + "/r/" + linkDTO.getHash());
+    return linkDTO;
   }
 
   @Transactional

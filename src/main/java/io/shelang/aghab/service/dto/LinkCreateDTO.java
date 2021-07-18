@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.ws.rs.HeaderParam;
 import java.time.Instant;
 
 @Data
@@ -25,4 +26,7 @@ public class LinkCreateDTO {
 
   @Min(255)
   private String description;
+
+  @HeaderParam("Host")
+  private String host;
 }
