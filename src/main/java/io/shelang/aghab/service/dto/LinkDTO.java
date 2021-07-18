@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Data
 @NoArgsConstructor
+@Accessors(chain = true)
 @JsonInclude(Include.NON_NULL)
 public class LinkDTO {
   private Long id;
@@ -15,5 +17,6 @@ public class LinkDTO {
   private String url;
   private Integer status;
   private boolean forwardParameter;
+  private String redirectTo;
   private LinkMetaDTO linkMetaDTO;
 }
