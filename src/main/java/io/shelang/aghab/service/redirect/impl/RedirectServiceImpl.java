@@ -1,17 +1,21 @@
 package io.shelang.aghab.service.redirect.impl;
 
 import io.shelang.aghab.event.EventType;
+import io.shelang.aghab.event.dto.AnalyticLinkEvent;
 import io.shelang.aghab.service.dto.RedirectDTO;
 import io.shelang.aghab.service.link.LinksService;
 import io.shelang.aghab.service.redirect.RedirectService;
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.MultiMap;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import io.vertx.mutiny.sqlclient.Tuple;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.Objects;
 
@@ -23,7 +27,7 @@ public class RedirectServiceImpl implements RedirectService {
   final EventBus bus;
 
   @Inject
-  public RedirectServiceImpl(PgPool client, LinksService linksService, EventBus bus) {
+  public RedirectServiceImpl(@Default PgPool client, LinksService linksService, EventBus bus) {
     this.client = client;
     this.linksService = linksService;
     this.bus = bus;
@@ -38,7 +42,14 @@ public class RedirectServiceImpl implements RedirectService {
   }
 
   @Override
-  public Uni<RedirectDTO> redirectBy(String hash, String query) {
+  public Uni<RedirectDTO> redirectBy(RoutingContext rc) {
+      String hash = rc.request().getParam("hash");
+      String query = rc.request().query();
+      MultiMap headers = rc.request().headers();
+      return redirectBy(hash, query, headers);
+  }
+
+  private Uni<RedirectDTO> redirectBy(String hash, String query, MultiMap headers) {
     return client
         .preparedQuery(
             "SELECT id, url, redirect_code, forward_parameter "
@@ -68,8 +79,14 @@ public class RedirectServiceImpl implements RedirectService {
         .onItem()
         .call(
             byHash -> {
-              if (byHash.getStatusCode() >= 300 && byHash.getStatusCode() < 400)
-                bus.send(EventType.ANALYTIC_LINK, byHash.getId());
+              if (byHash.getStatusCode() >= 300 && byHash.getStatusCode() < 400) {
+                  AnalyticLinkEvent event = AnalyticLinkEvent.builder()
+                          .id(byHash.getId())
+                          .headers(headers)
+                          .hash(hash)
+                          .build();
+                  bus.send(EventType.ANALYTIC_LINK, event);
+              }
 
               return Uni.createFrom().item(byHash);
             });

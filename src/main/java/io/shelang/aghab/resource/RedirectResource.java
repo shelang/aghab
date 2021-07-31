@@ -21,7 +21,7 @@ public class RedirectResource {
   @Route(path = "/r/:hash", methods = HttpMethod.GET)
   public Uni<String> redirect(RoutingContext rc) {
     return redirectService
-        .redirectBy(rc.request().getParam("hash"), rc.request().query())
+        .redirectBy(rc)
         .onFailure()
         .recoverWithItem(() -> new RedirectDTO().setStatusCode((short) 404).setUrl(""))
         .onItem()
