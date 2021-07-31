@@ -32,14 +32,12 @@ public class ExpireLinkJob {
       identity = "expire-link-job",
       concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
   public void expireLinks() {
-    log.info("Thread id: {}", Thread.currentThread());
-
     var hasData = true;
     while (hasData) {
       List<LinkExpiration> expired = linkExpirationRepository.find("expireAt < now()")
               .page(0, 20)
               .list();
-      log.info("{} links fetched", expired.size());
+      log.info("{} expired links fetched", expired.size());
       var linkIds = new ArrayList<>();
       for (LinkExpiration linkExpiration : expired) {
         linkIds.add(linkExpiration.getLinkId());
