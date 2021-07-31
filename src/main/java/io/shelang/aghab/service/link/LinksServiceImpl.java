@@ -95,12 +95,14 @@ public class LinksServiceImpl implements LinksService {
             .title(dto.getTitle())
             .build();
 
+    Short redirectCode = Objects.nonNull(dto.getRedirectCode()) ? dto.getRedirectCode() : 301;
     var link =
         Link.builder()
             .hash(hash)
             .status(dto.getStatus().ordinal())
             .url(dto.getUrl())
             .linkMeta(linkMeta)
+            .redirectCode(redirectCode)
             .forwardParameter(dto.isForwardParameter())
             .build();
 
