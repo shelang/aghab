@@ -6,6 +6,7 @@ import io.shelang.aghab.repository.LinkExpirationRepository;
 import io.shelang.aghab.repository.LinkUserRepository;
 import io.shelang.aghab.repository.LinksRepository;
 import io.shelang.aghab.repository.UsersRepository;
+import io.shelang.aghab.service.dto.LinkAlternativeDTO;
 import io.shelang.aghab.service.dto.LinkCreateDTO;
 import io.shelang.aghab.service.dto.LinkDTO;
 import io.shelang.aghab.service.dto.LinksUserDTO;
@@ -22,8 +23,10 @@ import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 @ApplicationScoped
@@ -80,32 +83,61 @@ public class LinksServiceImpl implements LinksService {
     return linksMapper.toDTO(links);
   }
 
-  private Link initCreation(LinkCreateDTO dto) {
+  private LinkMeta buildLinkMeta(LinkCreateDTO dto) {
+    return LinkMeta.builder()
+        .createAt(Instant.now())
+        .description(dto.getDescription())
+        .title(dto.getTitle())
+        .build();
+  }
+
+  private Link buildLink(LinkCreateDTO dto, String hash, LinkMeta linkMeta) {
+    Short redirectCode = Objects.nonNull(dto.getRedirectCode()) ? dto.getRedirectCode() : 301;
+    return Link.builder()
+        .hash(hash)
+        .status(dto.getStatus().ordinal())
+        .url(dto.getUrl())
+        .linkMeta(linkMeta)
+        .redirectCode(redirectCode)
+        .forwardParameter(dto.isForwardParameter())
+        .build();
+  }
+
+  private Set<LinkAlternative> buildAlternatives(LinkCreateDTO dto, Link link) {
+    Set<LinkAlternative> alternatives = new HashSet<>();
+
+    for (LinkAlternativeDTO alternative : dto.getAlternatives()) {
+      alternatives.add(
+          LinkAlternative.builder()
+              .link(link)
+              .key(alternative.getKey())
+              .url(alternative.getUrl())
+              .build());
+    }
+
+    return alternatives;
+  }
+
+  private String generateHash(LinkCreateDTO dto) {
     String hash;
 
     if (Objects.nonNull(dto.getHash()) && dto.getHash().length() > 0) hash = dto.getHash();
     else hash = shortyService.generate();
 
+    return hash;
+  }
+
+  private Link initCreation(LinkCreateDTO dto) {
+    String hash = generateHash(dto);
+
     if (!dto.getUrl().contains("://")) dto.setUrl("http://" + dto.getUrl());
 
-    var linkMeta =
-        LinkMeta.builder()
-            .createAt(Instant.now())
-            .description(dto.getDescription())
-            .title(dto.getTitle())
-            .build();
+    var linkMeta = buildLinkMeta(dto);
 
-    Short redirectCode = Objects.nonNull(dto.getRedirectCode()) ? dto.getRedirectCode() : 301;
-    var link =
-        Link.builder()
-            .hash(hash)
-            .status(dto.getStatus().ordinal())
-            .url(dto.getUrl())
-            .linkMeta(linkMeta)
-            .redirectCode(redirectCode)
-            .forwardParameter(dto.isForwardParameter())
-            .build();
+    var link = buildLink(dto, hash, linkMeta);
+    var alternatives = buildAlternatives(dto, link);
 
+    link.setAlternatives(alternatives);
     linkMeta.setLinks(link);
 
     return link;

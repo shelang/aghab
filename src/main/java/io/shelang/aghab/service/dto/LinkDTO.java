@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
@@ -19,4 +21,5 @@ public class LinkDTO {
   private boolean forwardParameter;
   private String redirectTo;
   private LinkMetaDTO linkMetaDTO;
+  private List<LinkAlternativeDTO> alternatives;
 }

@@ -1,11 +1,9 @@
 package io.shelang.aghab.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -36,4 +34,8 @@ public class Link {
   @JoinColumn(name = "id", referencedColumnName = "link_id")
   @PrimaryKeyJoinColumn()
   private LinkMeta linkMeta;
+
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinColumn(name = "link_id")
+  private Set<LinkAlternative> alternatives;
 }
