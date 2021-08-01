@@ -21,6 +21,8 @@ public class LinkAlternative {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private Link link;
 
   @Column(length = 50)

@@ -33,9 +33,13 @@ public class Link {
   @OneToOne(mappedBy = "links", cascade = CascadeType.ALL, optional = false)
   @JoinColumn(name = "id", referencedColumnName = "link_id")
   @PrimaryKeyJoinColumn()
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private LinkMeta linkMeta;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "link_id")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private Set<LinkAlternative> alternatives;
 }

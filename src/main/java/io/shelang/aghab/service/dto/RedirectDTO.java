@@ -10,6 +10,8 @@ import lombok.experimental.Accessors;
 public class RedirectDTO {
   private long id;
   private String url;
+  private String altKey;
+  private String altUrl;
   private short statusCode;
   private boolean forwardParameter;
 }

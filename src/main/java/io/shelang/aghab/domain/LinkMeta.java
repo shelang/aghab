@@ -1,9 +1,6 @@
 package io.shelang.aghab.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -40,5 +37,7 @@ public class LinkMeta {
   @OneToOne(fetch = FetchType.LAZY)
   @MapsId
   @JoinColumn(name = "link_id")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private Link links;
 }
