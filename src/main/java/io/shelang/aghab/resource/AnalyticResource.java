@@ -8,7 +8,6 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.Date;
 
 @Path("/api/v1/analytics")
 @RequestScoped
@@ -25,7 +24,7 @@ public class AnalyticResource {
 
   @GET
   @Path("/{linkId}")
-  public AnalyticDTO get(@PathParam Long linkId, @QueryParam("from") Date from, @QueryParam("to") Date to) {
+  public AnalyticDTO get(@PathParam Long linkId, @QueryParam("from") String from, @QueryParam("to") String to) {
     return analyticService.getAndCount(linkId, from, to);
   }
 }
