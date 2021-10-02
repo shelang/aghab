@@ -43,12 +43,18 @@ public class AnalyticLinkConsumer {
       String os = null;
       String device = null;
       try {
-        ip = event.getHeaders().get("x-forwarded-for").split(",")[0].substring(0, 32);
-        List<String> uaa = UserAgentAnalyzer.detectType(event.getHeaders().get("user-agent"));
-        device = uaa.size() > 0 ? uaa.get(0) : null;
-        os = uaa.size() > 1 ? uaa.get(1) : null;
+        ip = event.getHeaders().get("x-forwarded-for").split(",")[0];
+        ip = ip.substring(0, 32);
       } catch (Exception ignore) {
         // igonre
+      }
+
+      try {
+        List<String> uaa = UserAgentAnalyzer.detectType(event.getHeaders().get("user-agent"));
+        device = !uaa.isEmpty() ? uaa.get(0) : null;
+        os = uaa.size() > 1 ? uaa.get(1) : null;
+      } catch (Exception e) {
+        // ignore
       }
 
       return LinkAnalytics.builder()
