@@ -1,5 +1,6 @@
 package io.shelang.aghab.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.shelang.aghab.enums.LinkStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,13 @@ public class LinkCreateDTO {
   private LinkStatus status = LinkStatus.ACTIVE;
   private boolean forwardParameter;
 
-  @Valid private List<LinkAlternativeDTO> alternatives = new ArrayList<>();
+  @Valid
+  @JsonAlias(value = {"os", "oses"})
+  private List<LinkAlternativeDTO> osAlternatives = new ArrayList<>();
+
+  @Valid
+  @JsonAlias(value = {"device", "devices"})
+  private List<LinkAlternativeDTO> deviceAlternatives = new ArrayList<>();
 
   @Min(150)
   private String title;
@@ -34,4 +41,7 @@ public class LinkCreateDTO {
 
   @HeaderParam("Host")
   private String host;
+
+  @HeaderParam("Origin")
+  private String origin;
 }
