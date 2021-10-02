@@ -106,13 +106,22 @@ public class LinksServiceImpl implements LinksService {
   private Set<LinkAlternative> buildAlternatives(LinkCreateDTO dto, Link link) {
     Set<LinkAlternative> alternatives = new HashSet<>();
 
-    for (LinkAlternativeDTO alternative : dto.getAlternatives()) {
+    for (LinkAlternativeDTO alternative : dto.getOsAlternatives()) {
       alternatives.add(
-          LinkAlternative.builder()
-              .link(link)
-              .key(alternative.getKey())
-              .url(alternative.getUrl())
-              .build());
+              LinkAlternative.builder()
+                      .link(link)
+                      .key(alternative.getKey())
+                      .url(alternative.getUrl())
+                      .build());
+    }
+
+    for (LinkAlternativeDTO alternative : dto.getDeviceAlternatives()) {
+      alternatives.add(
+              LinkAlternative.builder()
+                      .link(link)
+                      .key(alternative.getKey())
+                      .url(alternative.getUrl())
+                      .build());
     }
 
     return alternatives;
@@ -162,8 +171,11 @@ public class LinksServiceImpl implements LinksService {
           LinkExpiration.builder().linkId(link.getId()).expireAt(dto.getExpireAt()).build());
     }
     var linkDTO = linksMapper.toDTO(link);
-    var host = Objects.nonNull(dto.getHost()) ? dto.getHost() : "";
-    linkDTO.setRedirectTo("https://" + host + "/r/" + linkDTO.getHash());
+    var hostHeader = Objects.nonNull(dto.getHost()) ? dto.getHost() : "";
+    var originHeader = Objects.nonNull(dto.getOrigin()) ? dto.getOrigin() : "";
+    var host = (hostHeader.isBlank() ? originHeader : hostHeader);
+    var rHost = host.isBlank() ? "n.snpp.link" : host;
+    linkDTO.setRedirectTo("https://" + rHost + "/r/" + linkDTO.getHash());
     return linkDTO;
   }
 

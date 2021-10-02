@@ -85,8 +85,8 @@ public class RedirectServiceImpl implements RedirectService {
       byHash = sr.stream().findFirst().orElse(byHash);
 
       for (RedirectDTO r : sr)
-        if (Objects.nonNull(r.getAltKey())
-                && linkTypes.contains(r.getAltKey().toUpperCase())) byHash = r;
+        if (Objects.nonNull(r.getAltKey()) && linkTypes.contains(r.getAltKey().toUpperCase()))
+          byHash = r;
 
       return byHash;
     };
@@ -113,11 +113,7 @@ public class RedirectServiceImpl implements RedirectService {
     return byHash -> {
       if (byHash.getStatusCode() >= 300 && byHash.getStatusCode() < 400) {
         AnalyticLinkEvent event =
-                AnalyticLinkEvent.builder()
-                        .id(byHash.getId())
-                        .headers(headers)
-                        .hash(hash)
-                        .build();
+            AnalyticLinkEvent.builder().id(byHash.getId()).headers(headers).hash(hash).build();
         bus.send(EventType.ANALYTIC_LINK, event);
       }
 
