@@ -26,11 +26,11 @@ public class LinkCreateDTO {
   private boolean forwardParameter;
 
   @Valid
-  @JsonAlias(value = {"os", "oses"})
+  @JsonAlias(value = "os")
   private List<LinkAlternativeDTO> osAlternatives = new ArrayList<>();
 
   @Valid
-  @JsonAlias(value = {"device", "devices"})
+  @JsonAlias(value = "devices")
   private List<LinkAlternativeDTO> deviceAlternatives = new ArrayList<>();
 
   @Min(150)
