@@ -5,16 +5,15 @@ import io.shelang.aghab.domain.LinkAnalytics;
 import io.shelang.aghab.event.EventType;
 import io.shelang.aghab.event.dto.AnalyticLinkEvent;
 import io.shelang.aghab.repository.LinkAnalyticRepository;
-import io.shelang.aghab.service.uaa.UserAgentAnalyzerFields;
+import io.shelang.aghab.service.uaa.UserAgentAnalyzer;
 import io.vertx.core.eventbus.Message;
-import io.vertx.core.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
-import nl.basjes.parse.useragent.UserAgentAnalyzer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -22,7 +21,6 @@ import java.util.Objects;
 public class AnalyticLinkConsumer {
 
   @Inject LinkAnalyticRepository linkAnalyticRepository;
-  @Inject UserAgentAnalyzer uaa;
 
   @ConsumeEvent(value = EventType.ANALYTIC_LINK, blocking = true)
   @Transactional
@@ -38,19 +36,26 @@ public class AnalyticLinkConsumer {
       return null;
     }
     try {
-      var parsedUA = uaa.parse(event.getHeaders().get(HttpHeaders.USER_AGENT));
+
+      log.error("headers: {}", event.getHeaders());
+
+      String ip = null;
+      String os = null;
+      String device = null;
+      try {
+        ip = event.getHeaders().get("x-forwarded-for").split(",")[0].substring(0, 32);
+        List<String> uaa = UserAgentAnalyzer.detectType(event.getHeaders().get("user-agent"));
+        device = uaa.size() > 0 ? uaa.get(0) : null;
+        os = uaa.size() > 1 ? uaa.get(1) : null;
+      } catch (Exception ignore) {
+        // igonre
+      }
 
       return LinkAnalytics.builder()
           .linkId(event.getId())
-          .os(parsedUA.getValue(UserAgentAnalyzerFields.OperatingSystemClass.field()))
-          .osName(parsedUA.getValue(UserAgentAnalyzerFields.OperatingSystemName.field()))
-          .osVersion(parsedUA.getValue(UserAgentAnalyzerFields.OperatingSystemVersion.field()))
-          .device(parsedUA.getValue(UserAgentAnalyzerFields.DeviceClass.field()))
-          .deviceName(parsedUA.getValue(UserAgentAnalyzerFields.AgentName.field()))
-          .deviceBrand(parsedUA.getValue(UserAgentAnalyzerFields.DeviceBrand.field()))
-          .agent(parsedUA.getValue(UserAgentAnalyzerFields.AgentClass.field()))
-          .agentName(parsedUA.getValue(UserAgentAnalyzerFields.AgentName.field()))
-          .agentVersion(parsedUA.getValue(UserAgentAnalyzerFields.AgentVersion.field()))
+          .ip(ip)
+          .os(os)
+          .device(device)
           .createAt(Instant.now())
           .build();
     } catch (Exception e) {
