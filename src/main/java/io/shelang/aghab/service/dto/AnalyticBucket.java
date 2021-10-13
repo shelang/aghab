@@ -5,15 +5,12 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.time.Instant;
-import java.util.List;
 
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class AnalyticDTO {
-  private Long linkId;
-  private long count;
-  private Instant from;
-  private Instant to;
-  private List<AnalyticBucket> buckets;
+public class AnalyticBucket {
+    private long count;
+    private Instant from;
+    private Instant to;
 }
