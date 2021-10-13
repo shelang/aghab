@@ -3,6 +3,7 @@ package io.shelang.aghab.resource;
 import io.quarkus.security.Authenticated;
 import io.shelang.aghab.service.analytic.AnalyticService;
 import io.shelang.aghab.service.dto.AnalyticDTO;
+import io.shelang.aghab.service.dto.AnalyticRequestDTO;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 import javax.enterprise.context.RequestScoped;
@@ -24,7 +25,14 @@ public class AnalyticResource {
 
   @GET
   @Path("/{linkId}")
-  public AnalyticDTO get(@PathParam Long linkId, @QueryParam("from") String from, @QueryParam("to") String to) {
-    return analyticService.getAndCount(linkId, from, to);
+  public AnalyticDTO get(@PathParam("linkId") long linkId,
+                         @QueryParam("from") String from,
+                         @QueryParam("to") String to,
+                         @QueryParam("bucket") String bucket) {
+    var request = new AnalyticRequestDTO()
+            .setFrom(from)
+            .setTo(to)
+            .setBucket(bucket);
+    return analyticService.getAndCount(linkId, request);
   }
 }
