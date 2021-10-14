@@ -85,8 +85,10 @@ public class RedirectServiceImpl implements RedirectService {
       byHash = sr.stream().filter(r -> Objects.isNull(r.getAltKey())).findFirst().orElse(byHash);
 
       for (RedirectDTO r : sr)
-        if (Objects.nonNull(r.getAltKey()) && linkTypes.contains(r.getAltKey().toUpperCase()))
+        if (Objects.nonNull(r.getAltKey()) && linkTypes.contains(r.getAltKey().toUpperCase())) {
           byHash = r;
+          break;
+        }
 
       return byHash;
     };
