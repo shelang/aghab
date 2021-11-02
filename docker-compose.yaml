@@ -7,9 +7,14 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: shelang
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - postgres-data:/home/yugabyte/var
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6380:6379/tcp"
 
 volumes:
   postgres-data: {}
