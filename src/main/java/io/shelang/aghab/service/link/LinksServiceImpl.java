@@ -14,6 +14,7 @@ import io.shelang.aghab.service.mapper.LinkUserMapper;
 import io.shelang.aghab.service.mapper.LinksMapper;
 import io.shelang.aghab.service.shorty.Shorty;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
 
@@ -33,6 +34,12 @@ import java.util.Set;
 public class LinksServiceImpl implements LinksService {
 
   private static final byte MAX_RETRY_COUNT = 10;
+
+  @ConfigProperty(name = "app.create.hash.length.default", defaultValue = "6")
+  int defaultHashLength;
+
+  @ConfigProperty(name = "app.create.redirect.base-url", defaultValue = "")
+  String redirectBaseUrl;
 
   @Inject
   @Claim(standard = Claims.upn)
@@ -131,7 +138,7 @@ public class LinksServiceImpl implements LinksService {
     String hash;
 
     if (Objects.nonNull(dto.getHash()) && dto.getHash().length() > 0) hash = dto.getHash();
-    else hash = shortyService.generate();
+    else hash = shortyService.generate(Objects.nonNull(dto.getHashLength()) ? dto.getHashLength() : defaultHashLength);
 
     return hash;
   }
@@ -152,9 +159,9 @@ public class LinksServiceImpl implements LinksService {
     return link;
   }
 
-  private void reSetHash(Link link) {
+  private void reSetHash(Link link, Integer hashLength) {
     log.info("[link-service] re-set link hash {}", link);
-    link.setHash(shortyService.generate());
+    link.setHash(shortyService.generate(Objects.nonNull(hashLength) ? hashLength : defaultHashLength));
   }
 
   @Override
@@ -174,7 +181,7 @@ public class LinksServiceImpl implements LinksService {
     var hostHeader = Objects.nonNull(dto.getHost()) ? dto.getHost() : "";
     var originHeader = Objects.nonNull(dto.getOrigin()) ? dto.getOrigin() : "";
     var host = (hostHeader.isBlank() ? originHeader : hostHeader);
-    var rHost = host.isBlank() ? "n.snpp.link" : host;
+    var rHost = host.isBlank() ? redirectBaseUrl : host;
     linkDTO.setRedirectTo("https://" + rHost + "/r/" + linkDTO.getHash());
     return linkDTO;
   }
@@ -192,7 +199,7 @@ public class LinksServiceImpl implements LinksService {
     if (retryCount >= MAX_RETRY_COUNT) throw new MaxCreateLinkRetryException();
     var existLink = linksRepository.findByHash(link.getHash()).orElse(null);
     if (Objects.nonNull(existLink)) {
-      reSetHash(link);
+      reSetHash(link, link.getHash().length());
       persistAndRetry(link, (byte) (retryCount + 1));
       return;
     }
@@ -200,7 +207,7 @@ public class LinksServiceImpl implements LinksService {
       linksRepository.persistAndFlush(link);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
-      reSetHash(link);
+      reSetHash(link, link.getHash().length());
       persistAndRetry(link, (byte) (retryCount + 1));
     }
   }

@@ -20,6 +20,7 @@ import java.util.List;
 public class LinkCreateDTO {
   @NotBlank private String url;
   private String hash;
+  private Integer hashLength;
   private Instant expireAt;
   private Short redirectCode = 301;
   private LinkStatus status = LinkStatus.ACTIVE;
