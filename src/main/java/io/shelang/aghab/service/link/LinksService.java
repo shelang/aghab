@@ -6,7 +6,7 @@ import io.shelang.aghab.service.dto.LinksUserDTO;
 
 public interface LinksService {
 
-  LinksUserDTO get(Integer page, Integer size);
+  LinksUserDTO get(String q, Integer page, Integer size);
 
   LinkDTO getById(Long id);
 

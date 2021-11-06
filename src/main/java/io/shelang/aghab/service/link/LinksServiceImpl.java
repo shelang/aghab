@@ -69,13 +69,13 @@ public class LinksServiceImpl implements LinksService {
   }
 
   @Override
-  public LinksUserDTO get(Integer page, Integer size) {
+  public LinksUserDTO get(String q, Integer page, Integer size) {
     page = normalizeValue(page, 1);
     size = normalizeValue(size, 10);
 
     if (size > 50) size = 50;
 
-    List<LinkUser> result = linkUserRepository.page(userId, page - 1, size);
+    List<LinkUser> result = linkUserRepository.page(userId, q, page - 1, size);
     return new LinksUserDTO().setLinks(linkUserMapper.toDTO(result));
   }
 

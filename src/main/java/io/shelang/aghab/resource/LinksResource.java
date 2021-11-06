@@ -26,10 +26,12 @@ public class LinksResource {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinksUserDTO getList(@QueryParam("page") Integer page, @QueryParam("size") Integer size) {
-    return linksService.get(page, size);
+  public LinksUserDTO getList(
+      @QueryParam("q") String q,
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size) {
+    return linksService.get(q, page, size);
   }
-
 
   @GET
   @SuppressWarnings("PathAnnotation")
