@@ -40,6 +40,12 @@ public class LinkCreateDTO {
   @Min(255)
   private String description;
 
+  private String type;
+
+  private Long scriptId;
+
+  private Long webhookId;
+
   @HeaderParam("Host")
   private String host;
 

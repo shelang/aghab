@@ -1,6 +1,7 @@
 package io.shelang.aghab.service.link;
 
 import io.shelang.aghab.domain.*;
+import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.exception.MaxCreateLinkRetryException;
 import io.shelang.aghab.repository.LinkExpirationRepository;
 import io.shelang.aghab.repository.LinkUserRepository;
@@ -12,7 +13,12 @@ import io.shelang.aghab.service.dto.LinkDTO;
 import io.shelang.aghab.service.dto.LinksUserDTO;
 import io.shelang.aghab.service.mapper.LinkUserMapper;
 import io.shelang.aghab.service.mapper.LinksMapper;
+import io.shelang.aghab.service.script.ScriptService;
+import io.shelang.aghab.service.script.dto.ScriptDTO;
 import io.shelang.aghab.service.shorty.Shorty;
+import io.shelang.aghab.service.webhook.WebhookService;
+import io.shelang.aghab.service.webhook.dto.WebhookDTO;
+import io.shelang.aghab.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.Claim;
@@ -56,26 +62,21 @@ public class LinksServiceImpl implements LinksService {
   @Inject LinkUserMapper linkUserMapper;
   @Inject UsersRepository usersRepository;
   @Inject LinkUserRepository linkUserRepository;
+  @Inject ScriptService scriptService;
+  @Inject WebhookService webhookService;
 
   private Link findById(Long id) {
     return linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
-  private int normalizeValue(Integer value, int defaultValue) {
-    if (Objects.isNull(value)) {
-      value = defaultValue;
-    }
-    return value;
-  }
-
   @Override
   public LinksUserDTO get(String q, Integer page, Integer size) {
-    page = normalizeValue(page, 1);
-    size = normalizeValue(size, 10);
+    page = NumberUtil.normalizeValue(page, 1) - 1;
+    size = NumberUtil.normalizeValue(size, 10);
 
     if (size > 50) size = 50;
 
-    List<LinkUser> result = linkUserRepository.page(userId, q, page - 1, size);
+    List<LinkUser> result = linkUserRepository.page(userId, q, page, size);
     return new LinksUserDTO().setLinks(linkUserMapper.toDTO(result));
   }
 
@@ -107,6 +108,9 @@ public class LinksServiceImpl implements LinksService {
         .linkMeta(linkMeta)
         .redirectCode(redirectCode)
         .forwardParameter(dto.isForwardParameter())
+        .scriptId(dto.getScriptId())
+        .webhookId(dto.getWebhookId())
+        .type(RedirectType.from(dto.getType()))
         .build();
   }
 
@@ -115,20 +119,20 @@ public class LinksServiceImpl implements LinksService {
 
     for (LinkAlternativeDTO alternative : dto.getOsAlternatives()) {
       alternatives.add(
-              LinkAlternative.builder()
-                      .link(link)
-                      .key(alternative.getKey())
-                      .url(alternative.getUrl())
-                      .build());
+          LinkAlternative.builder()
+              .link(link)
+              .key(alternative.getKey())
+              .url(alternative.getUrl())
+              .build());
     }
 
     for (LinkAlternativeDTO alternative : dto.getDeviceAlternatives()) {
       alternatives.add(
-              LinkAlternative.builder()
-                      .link(link)
-                      .key(alternative.getKey())
-                      .url(alternative.getUrl())
-                      .build());
+          LinkAlternative.builder()
+              .link(link)
+              .key(alternative.getKey())
+              .url(alternative.getUrl())
+              .build());
     }
 
     return alternatives;
@@ -138,7 +142,10 @@ public class LinksServiceImpl implements LinksService {
     String hash;
 
     if (Objects.nonNull(dto.getHash()) && dto.getHash().length() > 0) hash = dto.getHash();
-    else hash = shortyService.generate(Objects.nonNull(dto.getHashLength()) ? dto.getHashLength() : defaultHashLength);
+    else
+      hash =
+          shortyService.generate(
+              Objects.nonNull(dto.getHashLength()) ? dto.getHashLength() : defaultHashLength);
 
     return hash;
   }
@@ -149,6 +156,16 @@ public class LinksServiceImpl implements LinksService {
     if (!dto.getUrl().contains("://")) dto.setUrl("http://" + dto.getUrl());
 
     var linkMeta = buildLinkMeta(dto);
+
+    if (Objects.nonNull(dto.getScriptId())) {
+      ScriptDTO byId = scriptService.getById(dto.getScriptId());
+      log.info("[CREATE LINK] script id {} exist.", byId.getId());
+    }
+
+    if (Objects.nonNull(dto.getWebhookId())) {
+      WebhookDTO byId = webhookService.getById(dto.getScriptId());
+      log.info("[CREATE LINK] webhook id {} exist.", byId.getId());
+    }
 
     var link = buildLink(dto, hash, linkMeta);
     var alternatives = buildAlternatives(dto, link);
@@ -161,7 +178,8 @@ public class LinksServiceImpl implements LinksService {
 
   private void reSetHash(Link link, Integer hashLength) {
     log.info("[link-service] re-set link hash {}", link);
-    link.setHash(shortyService.generate(Objects.nonNull(hashLength) ? hashLength : defaultHashLength));
+    link.setHash(
+        shortyService.generate(Objects.nonNull(hashLength) ? hashLength : defaultHashLength));
   }
 
   @Override
@@ -182,7 +200,7 @@ public class LinksServiceImpl implements LinksService {
     var originHeader = Objects.nonNull(dto.getOrigin()) ? dto.getOrigin() : "";
     var host = (hostHeader.isBlank() ? originHeader : hostHeader);
     var rHost = host.isBlank() ? redirectBaseUrl : host;
-    linkDTO.setRedirectTo("https://" + rHost + "/r/" + linkDTO.getHash());
+    linkDTO.setRedirectTo(rHost + "/r/" + linkDTO.getHash());
     return linkDTO;
   }
 
