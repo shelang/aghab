@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -23,4 +25,20 @@ public class User {
   private String username;
 
   private String password;
+
+  @Builder.Default
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "script_user",
+      joinColumns = {@JoinColumn(name = "user_id")},
+      inverseJoinColumns = {@JoinColumn(name = "script_id")})
+  Set<Script> scripts = new HashSet<>();
+
+  @Builder.Default
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "webhook_user",
+      joinColumns = {@JoinColumn(name = "user_id")},
+      inverseJoinColumns = {@JoinColumn(name = "webhook_id")})
+  Set<Webhook> webhooks = new HashSet<>();
 }

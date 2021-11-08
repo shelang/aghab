@@ -1,5 +1,6 @@
 package io.shelang.aghab.domain;
 
+import io.shelang.aghab.enums.RedirectType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -42,4 +43,13 @@ public class Link {
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private Set<LinkAlternative> alternatives;
+
+  @Enumerated
+  private RedirectType type;
+
+  @Column(name = "script_id")
+  private Long scriptId;
+
+  @Column(name = "webhook_id")
+  private Long webhookId;
 }
