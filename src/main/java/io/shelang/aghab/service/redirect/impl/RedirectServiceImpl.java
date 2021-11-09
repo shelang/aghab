@@ -1,10 +1,12 @@
 package io.shelang.aghab.service.redirect.impl;
 
+import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.event.EventType;
 import io.shelang.aghab.event.dto.AnalyticLinkEvent;
 import io.shelang.aghab.service.dto.RedirectDTO;
 import io.shelang.aghab.service.link.LinksService;
 import io.shelang.aghab.service.redirect.RedirectService;
+import io.shelang.aghab.service.script.ScriptServiceImpl;
 import io.shelang.aghab.service.uaa.UserAgentAnalyzer;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.MultiMap;
@@ -28,6 +30,8 @@ import java.util.function.Function;
 @ApplicationScoped
 public class RedirectServiceImpl implements RedirectService {
 
+  private static final String DEFAULT_REDIRECT_SCRIPT_TITLE = "به زودی به صفحه جدید ریدایرکت میشوید";
+
   final io.vertx.mutiny.pgclient.PgPool client;
   final LinksService linksService;
   final EventBus bus;
@@ -42,19 +46,16 @@ public class RedirectServiceImpl implements RedirectService {
   private static RedirectDTO from(Row row) {
     return new RedirectDTO()
         .setId(row.getLong("id"))
+        .setType(RedirectType.from(row.getString("type")))
+        .setScriptId(row.getLong("script_id"))
+        .setWebhookId(row.getLong("webhook_id"))
         .setUrl(row.getString("url"))
         .setStatusCode(row.getShort("redirect_code"))
         .setForwardParameter(row.getBoolean("forward_parameter"));
   }
 
   private static RedirectDTO fromByUA(Row row) {
-    return new RedirectDTO()
-        .setId(row.getLong("id"))
-        .setUrl(row.getString("url"))
-        .setAltUrl(row.getString("alt_url"))
-        .setAltKey(row.getString("key"))
-        .setStatusCode(row.getShort("redirect_code"))
-        .setForwardParameter(row.getBoolean("forward_parameter"));
+    return from(row).setAltUrl(row.getString("alt_url")).setAltKey(row.getString("key"));
   }
 
   private static Set<RedirectDTO> fromByUA(RowSet<Row> rows) {
@@ -97,18 +98,21 @@ public class RedirectServiceImpl implements RedirectService {
   private Function<RedirectDTO, RedirectDTO> makeRedirectLink(String query) {
     return byHash -> {
       String redirectTo = byHash.getAltUrl() == null ? byHash.getUrl() : byHash.getAltUrl();
-      if (Objects.nonNull(query) && byHash.isForwardParameter()) {
-        if (byHash.getUrl().contains("?")) {
-          redirectTo = redirectTo + "&" + query;
-        } else {
-          redirectTo = redirectTo + "?" + query;
-        }
-      }
-
+      redirectTo = setForwardParameters(query, byHash, redirectTo);
       byHash.setUrl(redirectTo);
-
       return byHash;
     };
+  }
+
+  private String setForwardParameters(String query, RedirectDTO byHash, String redirectTo) {
+    if (Objects.nonNull(query) && byHash.isForwardParameter()) {
+      if (byHash.getUrl().contains("?")) {
+        redirectTo = redirectTo + "&" + query;
+      } else {
+        redirectTo = redirectTo + "?" + query;
+      }
+    }
+    return redirectTo;
   }
 
   private Function<RedirectDTO, Uni<?>> sendAnalyticEvent(String hash, MultiMap headers) {
@@ -123,17 +127,50 @@ public class RedirectServiceImpl implements RedirectService {
     };
   }
 
+  private Function<RedirectDTO, Uni<? extends RedirectDTO>> addMetaData() {
+    return byHash -> {
+      switch (byHash.getType()) {
+        case SCRIPT:
+          return this.client
+              .preparedQuery("SELECT id, name, timeout, content, title FROM scripts WHERE id = $1")
+              .execute(Tuple.of(byHash.getScriptId()))
+              .onItem()
+              .transform(ScriptServiceImpl::from)
+              .onItem()
+              .transform(
+                  script -> {
+                    if (Objects.isNull(script)) return byHash;
+                    String title =
+                        Objects.nonNull(script.getTitle())
+                            ? script.getTitle()
+                            : DEFAULT_REDIRECT_SCRIPT_TITLE;
+                    return byHash
+                        .setStatusCode((short) 200)
+                        .setTitle(title)
+                        .setContent(script.getContent());
+                  });
+        case IFRAME:
+        case REDIRECT:
+        default:
+          return Uni.createFrom().item(byHash);
+      }
+    };
+  }
+
   private Uni<RedirectDTO> redirectByUserAgent(String hash, String query, MultiMap headers) {
     var ua = headers.get(HttpHeaders.USER_AGENT);
     var linkTypes = UserAgentAnalyzer.detectType(ua);
     return client
         .preparedQuery(
             "SELECT l.id, "
-                + "   l.url, "
-                + "   l.redirect_code, "
-                + "   l.forward_parameter, "
-                + "   la.key, "
-                + "   la.url alt_url "
+                + "     l.url, "
+                + "     l.redirect_code, "
+                + "     l.forward_parameter, "
+                + "     la.key, "
+                + "     la.url alt_url, "
+                + "     l.type, "
+                + "     l.script_id, "
+                + "     l.webhook_id "
                 + "FROM links l "
                 + "LEFT JOIN link_alternatives la on l.id = la.link_id "
                 + "WHERE l.hash = $1 and l.status = 0")
@@ -144,6 +181,8 @@ public class RedirectServiceImpl implements RedirectService {
         .transform(addAlternativeLink(linkTypes))
         .onItem()
         .transform(makeRedirectLink(query))
+        .onItem()
+        .transformToUni(addMetaData())
         .onItem()
         .call(sendAnalyticEvent(hash, headers));
   }

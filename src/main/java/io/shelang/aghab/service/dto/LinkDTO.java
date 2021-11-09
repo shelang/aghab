@@ -2,6 +2,7 @@ package io.shelang.aghab.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import io.shelang.aghab.enums.RedirectType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -22,4 +23,7 @@ public class LinkDTO {
   private String redirectTo;
   private LinkMetaDTO linkMetaDTO;
   private List<LinkAlternativeDTO> alternatives;
+  private RedirectType type;
+  private Long scriptId;
+  private Long webhookId;
 }

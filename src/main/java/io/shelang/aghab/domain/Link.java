@@ -1,7 +1,10 @@
 package io.shelang.aghab.domain;
 
+import io.shelang.aghab.domain.enums.PostgreSQLEnumType;
 import io.shelang.aghab.enums.RedirectType;
 import lombok.*;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -12,6 +15,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "links")
+@TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 public class Link {
 
   @Id
@@ -44,7 +48,9 @@ public class Link {
   @EqualsAndHashCode.Exclude
   private Set<LinkAlternative> alternatives;
 
-  @Enumerated
+  @Enumerated(EnumType.STRING)
+  @Type(type = "pgsql_enum")
+  @Column(columnDefinition = "redirect_type")
   private RedirectType type;
 
   @Column(name = "script_id")

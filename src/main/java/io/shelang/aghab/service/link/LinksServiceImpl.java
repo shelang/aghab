@@ -159,7 +159,11 @@ public class LinksServiceImpl implements LinksService {
 
     if (Objects.nonNull(dto.getScriptId())) {
       ScriptDTO byId = scriptService.getById(dto.getScriptId());
+      dto.setType(RedirectType.SCRIPT.name());
       log.info("[CREATE LINK] script id {} exist.", byId.getId());
+    } else {
+      if (RedirectType.SCRIPT.equals(RedirectType.from(dto.getType())))
+        dto.setType(RedirectType.REDIRECT.name());
     }
 
     if (Objects.nonNull(dto.getWebhookId())) {
