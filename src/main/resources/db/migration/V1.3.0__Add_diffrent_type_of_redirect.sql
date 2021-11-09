@@ -38,7 +38,7 @@ DO
 $$
     BEGIN
         IF NOT EXISTS(SELECT 1 FROM pg_type WHERE typname = 'redirect_type') THEN
-            CREATE TYPE redirect_type AS ENUM ('redirect', 'script', 'iframe');
+            CREATE TYPE redirect_type AS ENUM ('REDIRECT', 'SCRIPT', 'IFRAME');
         END IF;
     END
 $$;
