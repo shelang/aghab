@@ -2,17 +2,143 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LinkComposer</title>
+    <title>Please wait while you are redirected to the landing page - LinkComposer</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: grid;
+            height: 100vh;
+            place-items: center;
+        }
+
+        .base-timer {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: auto;
+        }
+
+        .waiting-text {
+            text-align: center;
+            line-height: 30px;
+        }
+
+        .base-timer__svg {
+            transform: scaleX(-1);
+        }
+
+        .base-timer__circle {
+            fill: none;
+            stroke: none;
+        }
+
+        .base-timer__path-elapsed {
+            stroke-width: 7px;
+            stroke: grey;
+        }
+
+        .base-timer__path-remaining {
+            stroke-width: 7px;
+            stroke-linecap: round;
+            transform: rotate(90deg);
+            transform-origin: center;
+            transition: 1s linear all;
+            fill-rule: nonzero;
+            stroke: currentColor;
+        }
+
+        .base-timer__path-remaining.green {
+            color: rgb(65, 184, 131);
+        }
+
+        .base-timer__label {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+    </style>
 </head>
 <body>
-<h1>{title}</h1>
+<div id="app"></div>
 <script>
+    var FULL_DASH_ARRAY = 283;
+    var TIME_LIMIT = 10;
+    var timePassed = 0;
+    var timeLeft = TIME_LIMIT;
+    var timerInterval = null;
+    document.getElementById("app").innerHTML = `
+	<div class="base-timer">
+	  <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	    <g class="base-timer__circle">
+	      <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
+	      <path
+		id="base-timer-path-remaining"
+		stroke-dasharray="283"
+		class="base-timer__path-remaining green"
+		d="
+		  M 50, 50
+		  m -45, 0
+		  a 45,45 0 1,0 90,0
+		  a 45,45 0 1,0 -90,0
+		"
+	      ></path>
+	    </g>
+	  </svg>
+	  <span id="base-timer-label" class="base-timer__label">` + TIME_LIMIT + `</span>
+	</div>
+	<p class="waiting-text">
+		Please wait while you are redirected to the landing page.
+		<br>
+		.لطفا صبور باشید، شما در حال انتقال به صفحه مورد نظر هستید
+	</p>
+	`;
+    function onTimesUp() {
+        clearInterval(timerInterval);
+    }
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timePassed = timePassed += 1;
+            timeLeft = TIME_LIMIT - timePassed;
+            document.getElementById("base-timer-label").innerHTML = formatTime(timeLeft);
+            setCircleDasharray();
+            if (timeLeft === 0) {
+                onTimesUp();
+            }
+        }, 1000);
+    }
+    function formatTime(time) {
+        var result = time;
+        if (result < 0) {
+            result = '00';
+        } else if (result < 10) {
+            result = '0' + result;
+        }
+        return result;
+    }
+    function calculateTimeFraction() {
+        var rawTimeFraction = timeLeft / TIME_LIMIT;
+        return rawTimeFraction - (1 / TIME_LIMIT) * (1 - rawTimeFraction);
+    }
+    function setCircleDasharray() {
+        var cd = (calculateTimeFraction() * FULL_DASH_ARRAY).toFixed(0);
+        var circleDasharray = cd +' 283';
+        document
+            .getElementById("base-timer-path-remaining")
+            .setAttribute("stroke-dasharray", circleDasharray);
+    }
     window.addEventListener('load', () => {
         setTimeout(function () {
             window.location.replace("{url}");
         }, {timeoutInMillis});
+        startTimer();
         {script}
     });
 </script>
+
 </body>
 </html>
