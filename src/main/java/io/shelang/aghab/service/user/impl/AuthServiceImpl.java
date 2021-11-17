@@ -1,10 +1,10 @@
-package io.shelang.aghab.service.user.login;
+package io.shelang.aghab.service.user.impl;
 
 import io.shelang.aghab.domain.User;
 import io.shelang.aghab.enums.JwtTokenType;
-import io.shelang.aghab.repository.UsersRepository;
+import io.shelang.aghab.repository.UserRepository;
 import io.shelang.aghab.service.dto.LoginDTO;
-import io.shelang.aghab.service.user.UserLoginService;
+import io.shelang.aghab.service.user.AuthService;
 import io.smallrye.jwt.build.Jwt;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.mindrot.jbcrypt.BCrypt;
@@ -17,14 +17,15 @@ import javax.ws.rs.NotFoundException;
 import java.time.Duration;
 
 @ApplicationScoped
-public class UserLoginServiceImpl implements UserLoginService {
+public class AuthServiceImpl implements AuthService {
 
   private static final String CLAIM_TOKEN_TYPE = "t";
   private static final String CLAIM_ID = "i";
 
   @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject JsonWebToken jwt;
-  @Inject UsersRepository usersRepository;
+  @Inject
+  UserRepository userRepository;
 
   private LoginDTO createTokens(User user) {
     String token =
@@ -47,7 +48,7 @@ public class UserLoginServiceImpl implements UserLoginService {
 
   @Override
   public LoginDTO login(String username, String password) {
-    var user = usersRepository.findByUsername(username).orElseThrow(NotFoundException::new);
+    var user = userRepository.findByUsername(username).orElseThrow(NotFoundException::new);
     if (!BCrypt.checkpw(password, user.getPassword())) {
       throw new BadRequestException("Wrong password");
     }
@@ -68,7 +69,7 @@ public class UserLoginServiceImpl implements UserLoginService {
   public LoginDTO refresh(String authorization) {
     validateRefreshToken();
     var id = jwt.claim(CLAIM_ID).orElseThrow(ForbiddenException::new).toString();
-    var user = usersRepository.findByIdOptional(Long.valueOf(id)).orElseThrow(NotFoundException::new);
+    var user = userRepository.findByIdOptional(Long.valueOf(id)).orElseThrow(NotFoundException::new);
     return createTokens(user);
   }
 }

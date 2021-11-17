@@ -6,7 +6,7 @@ import io.shelang.aghab.exception.MaxCreateLinkRetryException;
 import io.shelang.aghab.repository.LinkExpirationRepository;
 import io.shelang.aghab.repository.LinkUserRepository;
 import io.shelang.aghab.repository.LinksRepository;
-import io.shelang.aghab.repository.UsersRepository;
+import io.shelang.aghab.repository.UserRepository;
 import io.shelang.aghab.service.dto.LinkAlternativeDTO;
 import io.shelang.aghab.service.dto.LinkCreateDTO;
 import io.shelang.aghab.service.dto.LinkDTO;
@@ -60,7 +60,8 @@ public class LinksServiceImpl implements LinksService {
   @Inject LinkExpirationRepository linkExpirationRepository;
   @Inject LinksMapper linksMapper;
   @Inject LinkUserMapper linkUserMapper;
-  @Inject UsersRepository usersRepository;
+  @Inject
+  UserRepository userRepository;
   @Inject LinkUserRepository linkUserRepository;
   @Inject ScriptService scriptService;
   @Inject WebhookService webhookService;
@@ -189,7 +190,7 @@ public class LinksServiceImpl implements LinksService {
   @Override
   @Transactional
   public LinkDTO create(LinkCreateDTO dto) {
-    var user = usersRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new);
+    var user = userRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new);
     byte retry = 0;
     if (dto.getHash() != null) retry = MAX_RETRY_COUNT - 1;
     var link = initCreation(dto);

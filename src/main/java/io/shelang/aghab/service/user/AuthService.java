@@ -2,7 +2,7 @@ package io.shelang.aghab.service.user;
 
 import io.shelang.aghab.service.dto.LoginDTO;
 
-public interface UserLoginService {
+public interface AuthService {
 
     LoginDTO login(String username, String password);
 

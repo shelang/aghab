@@ -3,7 +3,7 @@ package io.shelang.aghab.resource;
 import io.quarkus.security.Authenticated;
 import io.shelang.aghab.service.dto.LoginDTO;
 import io.shelang.aghab.service.dto.LoginRequestDTO;
-import io.shelang.aghab.service.user.UserLoginService;
+import io.shelang.aghab.service.user.AuthService;
 
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
@@ -16,14 +16,14 @@ import javax.ws.rs.core.MediaType;
 @RequestScoped
 public class UserLoginResource {
 
-  @Inject UserLoginService userLoginService;
+  @Inject AuthService authService;
 
   @POST
   @PermitAll
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public LoginDTO login(@Valid LoginRequestDTO request) {
-    return userLoginService.login(request.getUsername(), request.getPassword());
+    return authService.login(request.getUsername(), request.getPassword());
   }
 
   @Path("/refresh")
@@ -32,6 +32,6 @@ public class UserLoginResource {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public LoginDTO refresh(@HeaderParam("Authorization") String authorization) {
-    return userLoginService.refresh(authorization);
+    return authService.refresh(authorization);
   }
 }
