@@ -30,7 +30,9 @@ import java.util.function.Function;
 @ApplicationScoped
 public class RedirectServiceImpl implements RedirectService {
 
-  private static final String DEFAULT_REDIRECT_SCRIPT_TITLE = "به زودی به صفحه جدید ریدایرکت میشوید";
+  private static final String DEFAULT_REDIRECT_SCRIPT_TITLE =
+      "به زودی به صفحه جدید ریدایرکت میشوید";
+  private static final Integer DEFAULT_SCRIPT_TIMEOUT = 10_000;
 
   final io.vertx.mutiny.pgclient.PgPool client;
   final LinksService linksService;
@@ -147,6 +149,10 @@ public class RedirectServiceImpl implements RedirectService {
                     return byHash
                         .setStatusCode((short) 200)
                         .setTitle(title)
+                        .setTimeout(
+                            Objects.nonNull(script.getTimeout())
+                                ? script.getTimeout()
+                                : DEFAULT_SCRIPT_TIMEOUT)
                         .setContent(script.getContent());
                   });
         case IFRAME:

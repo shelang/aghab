@@ -16,7 +16,6 @@ import lombok.extern.java.Log;
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import java.util.Objects;
 
 @PermitAll
 @RequestScoped
@@ -59,11 +58,9 @@ public class RedirectResource {
                             scriptTemplate
                                 .data("url", byHash.getUrl())
                                 .data("title", byHash.getTitle())
-                                .data(
-                                    "timeoutInMillis",
-                                    Objects.nonNull(byHash.getTimeout())
-                                        ? byHash.getTimeout()
-                                        : 10000)
+                                .data("timeoutInMillis", byHash.getTimeout())
+                                .data("timeoutInSeconds", byHash.getTimeout() / 1000)
+                                .data("redirectInMillis", byHash.getTimeout() * 0.8)
                                 .data("script", new RawString(byHash.getContent()))
                                 .renderAsync());
               } else { // Simple redirect

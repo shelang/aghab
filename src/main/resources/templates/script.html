@@ -67,7 +67,7 @@
 <div id="app"></div>
 <script>
     var FULL_DASH_ARRAY = 283;
-    var TIME_LIMIT = 10;
+    var TIME_LIMIT = {timeoutInSeconds};
     var timePassed = 0;
     var timeLeft = TIME_LIMIT;
     var timerInterval = null;
@@ -134,7 +134,7 @@
     window.addEventListener('load', () => {
         setTimeout(function () {
             window.location.replace("{url}");
-        }, {timeoutInMillis});
+        }, {redirectInMillis});
         startTimer();
         {script}
     });
