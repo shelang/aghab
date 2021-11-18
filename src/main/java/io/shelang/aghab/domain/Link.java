@@ -37,12 +37,19 @@ public class Link {
   @Column(name = "forward_parameter")
   private boolean forwardParameter;
 
-  @OneToOne(mappedBy = "links", cascade = CascadeType.ALL, optional = false)
+  @OneToOne(mappedBy = "link", cascade = CascadeType.ALL, optional = false)
   @JoinColumn(name = "id", referencedColumnName = "link_id")
   @PrimaryKeyJoinColumn()
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private LinkMeta linkMeta;
+
+  @OneToOne(mappedBy = "link", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinColumn(name = "id", referencedColumnName = "link_id")
+  @PrimaryKeyJoinColumn()
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private LinkExpiration linkExpiration;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "link_id")

@@ -1,14 +1,8 @@
 package io.shelang.aghab.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.Instant;
 
 @Data
@@ -25,4 +19,11 @@ public class LinkExpiration {
 
   @Column(name = "expire_at")
   private Instant expireAt;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @MapsId
+  @JoinColumn(name = "link_id")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private Link link;
 }

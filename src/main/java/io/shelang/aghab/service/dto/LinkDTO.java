@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.List;
+import java.time.Instant;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -17,15 +18,17 @@ import java.util.List;
 public class LinkDTO {
   private Long id;
   private String hash;
-  private String alias;
   private String url;
   private Instant expireAt;
   private short redirectCode;
   private LinkStatus status;
   private boolean forwardParameter;
   private String redirectTo;
-  private LinkMetaDTO linkMetaDTO;
-  private List<LinkAlternativeDTO> alternatives;
+  private Set<LinkAlternativeDTO> alternatives;
+  private Set<LinkAlternativeDTO> os;
+  private Set<LinkAlternativeDTO> devices;
+  private String title;
+  private String description;
   private RedirectType type;
   private Long scriptId;
   private Long webhookId;

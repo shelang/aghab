@@ -39,5 +39,5 @@ public class LinkMeta {
   @JoinColumn(name = "link_id")
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  private Link links;
+  private Link link;
 }

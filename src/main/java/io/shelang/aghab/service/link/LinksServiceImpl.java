@@ -60,8 +60,7 @@ public class LinksServiceImpl implements LinksService {
   @Inject LinkExpirationRepository linkExpirationRepository;
   @Inject LinksMapper linksMapper;
   @Inject LinkUserMapper linkUserMapper;
-  @Inject
-  UserRepository userRepository;
+  @Inject UserRepository userRepository;
   @Inject LinkUserRepository linkUserRepository;
   @Inject ScriptService scriptService;
   @Inject WebhookService webhookService;
@@ -176,7 +175,7 @@ public class LinksServiceImpl implements LinksService {
     var alternatives = buildAlternatives(dto, link);
 
     link.setAlternatives(alternatives);
-    linkMeta.setLinks(link);
+    linkMeta.setLink(link);
 
     return link;
   }
@@ -198,7 +197,10 @@ public class LinksServiceImpl implements LinksService {
     persistLinkUser(link, user);
     if (dto.getExpireAt() != null) {
       linkExpirationRepository.persistAndFlush(
-          LinkExpiration.builder().linkId(link.getId()).expireAt(dto.getExpireAt()).build());
+          LinkExpiration.builder().linkId(link.getId())
+                  .expireAt(dto.getExpireAt())
+                  .link(link)
+                  .build());
     }
     var linkDTO = linksMapper.toDTO(link);
     var hostHeader = Objects.nonNull(dto.getHost()) ? dto.getHost() : "";
