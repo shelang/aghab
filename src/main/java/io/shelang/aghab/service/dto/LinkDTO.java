@@ -2,6 +2,7 @@ package io.shelang.aghab.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.enums.RedirectType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,9 @@ public class LinkDTO {
   private String hash;
   private String alias;
   private String url;
-  private Integer status;
+  private Instant expireAt;
+  private short redirectCode;
+  private LinkStatus status;
   private boolean forwardParameter;
   private String redirectTo;
   private LinkMetaDTO linkMetaDTO;

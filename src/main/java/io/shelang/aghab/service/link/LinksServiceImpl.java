@@ -104,7 +104,7 @@ public class LinksServiceImpl implements LinksService {
     Short redirectCode = Objects.nonNull(dto.getRedirectCode()) ? dto.getRedirectCode() : 301;
     return Link.builder()
         .hash(hash)
-        .status(dto.getStatus().ordinal())
+        .status(dto.getStatus())
         .url(dto.getUrl())
         .linkMeta(linkMeta)
         .redirectCode(redirectCode)

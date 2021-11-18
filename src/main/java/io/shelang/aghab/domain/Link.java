@@ -1,6 +1,7 @@
 package io.shelang.aghab.domain;
 
 import io.shelang.aghab.domain.enums.PostgreSQLEnumType;
+ import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.enums.RedirectType;
 import lombok.*;
 import org.hibernate.annotations.Type;
@@ -26,7 +27,8 @@ public class Link {
   private String hash;
   private String alias;
   private String url;
-  private Integer status;
+  @Enumerated(EnumType.ORDINAL)
+  private LinkStatus status;
 
   @Column(name = "redirect_code")
   @Builder.Default
