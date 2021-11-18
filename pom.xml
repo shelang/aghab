@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.shelang</groupId>
   <artifactId>aghab</artifactId>
-  <version>1.5.0-SNAPSHOT</version>
+  <version>1.5.2-SNAPSHOT</version>
 
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
@@ -17,7 +17,7 @@
     <maven.compiler.target>11</maven.compiler.target>
     <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.lombok.version>1.18.20</project.lombok.version>
+    <project.lombok.version>1.18.22</project.lombok.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus-plugin.version>1.13.0.Final</quarkus-plugin.version>
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
@@ -72,7 +72,7 @@
     <dependency>
       <groupId>com.vladmihalcea</groupId>
       <artifactId>hibernate-types-52</artifactId>
-      <version>2.10.3</version>
+      <version>2.14.0</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
