@@ -15,4 +15,6 @@ public interface LinksService {
   LinkDTO create(LinkCreateDTO links);
 
   void delete(Long id);
+
+  LinkDTO update(Long id, LinkCreateDTO links);
 }

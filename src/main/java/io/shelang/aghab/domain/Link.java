@@ -1,9 +1,10 @@
 package io.shelang.aghab.domain;
 
 import io.shelang.aghab.domain.enums.PostgreSQLEnumType;
- import io.shelang.aghab.enums.LinkStatus;
+import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.enums.RedirectType;
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -13,6 +14,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 @Builder
 @Entity
 @Table(name = "links")
@@ -27,6 +29,7 @@ public class Link {
   private String hash;
   private String alias;
   private String url;
+
   @Enumerated(EnumType.ORDINAL)
   private LinkStatus status;
 

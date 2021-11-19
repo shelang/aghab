@@ -58,6 +58,14 @@ public class LinksResource {
     return linksService.create(links);
   }
 
+  @PUT
+  @Path("/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  public LinkDTO update(@PathParam Long id, @Valid LinkCreateDTO links) {
+    return linksService.update(id, links);
+  }
+
   @DELETE
   @SuppressWarnings("PathAnnotation")
   @Path("/{id}")

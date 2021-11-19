@@ -3,6 +3,7 @@ package io.shelang.aghab.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
@@ -12,21 +13,32 @@ import javax.persistence.*;
 @Table(name = "link_alternatives")
 public class LinkAlternative {
 
-  @Id
-  @GeneratedValue(generator = "link_alternatives_id_gen", strategy = GenerationType.SEQUENCE)
-  @SequenceGenerator(
-      name = "link_alternatives_id_gen",
-      allocationSize = 1,
-      sequenceName = "link_alternatives_id_seq")
-  private Long id;
+  @EmbeddedId private LinkAlternativeId id;
 
+  @MapsId("linkId")
+  @JoinColumn(insertable = false, updatable = false)
   @ManyToOne(fetch = FetchType.LAZY)
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private Link link;
 
-  @Column(length = 50)
+  @Column(length = 50, insertable = false, updatable = false)
   private String key;
 
   private String url;
+
+  @Embeddable
+  @Getter
+  @Setter
+  @ToString
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @EqualsAndHashCode
+  public static class LinkAlternativeId implements Serializable {
+    @Column(name = "link_id")
+    private Long linkId;
+
+    @Column(name = "key")
+    private String key;
+  }
 }
