@@ -15,15 +15,15 @@ public class WebhookRepository implements PanacheRepository<Webhook> {
     PanacheQuery<Webhook> query =
         find(
             "SELECT w FROM Webhook w "
-                + "LEFT JOIN webhook_user wu on wu.webhook_id = w.id "
-                + "WHERE and wu.user_id = ?1",
+                + "LEFT JOIN WebhookUser wu on wu.webhookId = w.id "
+                + "WHERE wu.userId = ?1",
             userId);
-    if (Objects.nonNull(name)) {
+    if (Objects.nonNull(name) && name.length() > 0) {
       query =
           find(
               "SELECT w FROM Webhook w "
-                  + "LEFT JOIN webhook_user wu on wu.webhook_id = w.id "
-                  + "WHERE w.name like '%?1%' and wu.user_id = ?2",
+                  + "LEFT JOIN WebhookUser wu on wu.webhookId = w.id "
+                  + "WHERE w.name like CONCAT('%', ?1, '%') and wu.userId = ?2",
               name, userId);
     }
     return query.page(page).list();
