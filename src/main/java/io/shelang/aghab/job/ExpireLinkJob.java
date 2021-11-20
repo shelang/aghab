@@ -34,10 +34,9 @@ public class ExpireLinkJob {
   public void expireLinks() {
     var hasData = true;
     while (hasData) {
-      List<LinkExpiration> expired = linkExpirationRepository.find("expireAt < now()")
-              .page(0, 20)
-              .list();
-      log.info("{} expired links fetched", expired.size());
+      List<LinkExpiration> expired =
+          linkExpirationRepository.find("expireAt < now()").page(0, 20).list();
+      if (!expired.isEmpty()) log.info("{} expired links fetched", expired.size());
       var linkIds = new ArrayList<>();
       for (LinkExpiration linkExpiration : expired) {
         linkIds.add(linkExpiration.getLinkId());
@@ -50,5 +49,4 @@ public class ExpireLinkJob {
       }
     }
   }
-
 }
