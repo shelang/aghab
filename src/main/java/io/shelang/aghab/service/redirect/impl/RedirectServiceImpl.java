@@ -31,7 +31,7 @@ import java.util.function.Function;
 public class RedirectServiceImpl implements RedirectService {
 
   private static final String DEFAULT_REDIRECT_SCRIPT_TITLE =
-      "به زودی به صفحه جدید ریدایرکت میشوید";
+      ".لطفا صبور باشید، شما در حال انتقال به صفحه مورد نظر هستید";
   private static final Integer DEFAULT_SCRIPT_TIMEOUT = 10_000;
 
   final io.vertx.mutiny.pgclient.PgPool client;
