@@ -48,7 +48,7 @@ public class WebhookResource {
 
   @PUT
   @Path("/{id}")
-  public WebhookDTO get(@QueryParam("id") Long id, @Valid WebhookDTO dto) {
-    return webhookService.update(dto);
+  public WebhookDTO get(@PathParam("id") Long id, @Valid WebhookDTO dto) {
+    return webhookService.update(id, dto);
   }
 }
