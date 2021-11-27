@@ -49,7 +49,7 @@ public class LinkAnalyticRepository implements PanacheRepository<LinkAnalytics> 
     if (!mapped.isEmpty()) {
       int lastIndex = mapped.size() - 1;
       mapped.set(lastIndex, mapped.get(lastIndex).setTo(Instant.now()));
-      for (int i = 0; i < lastIndex - 1; i++) {
+      for (int i = 0; i < lastIndex; i++) {
         mapped.set(i, mapped.get(i).setTo(mapped.get(i + 1).getFrom()));
       }
     }
