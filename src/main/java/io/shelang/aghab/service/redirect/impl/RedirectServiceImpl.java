@@ -3,6 +3,7 @@ package io.shelang.aghab.service.redirect.impl;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.event.EventType;
 import io.shelang.aghab.event.dto.AnalyticLinkEvent;
+import io.shelang.aghab.event.dto.WebhookCallEvent;
 import io.shelang.aghab.service.dto.RedirectDTO;
 import io.shelang.aghab.service.link.LinksService;
 import io.shelang.aghab.service.redirect.RedirectService;
@@ -163,6 +164,21 @@ public class RedirectServiceImpl implements RedirectService {
     };
   }
 
+  private Function<RedirectDTO, Uni<?>> sendWebhookEvent(String hash) {
+    return byHash -> {
+      if (Objects.nonNull(byHash.getWebhookId())) {
+        WebhookCallEvent event =
+            WebhookCallEvent.builder()
+                .webhookId(byHash.getWebhookId())
+                .linkId(byHash.getId())
+                .hash(hash)
+                .build();
+        bus.send(EventType.WEBHOOK_CALL, event);
+      }
+      return Uni.createFrom().item(byHash);
+    };
+  }
+
   private Uni<RedirectDTO> redirectByUserAgent(String hash, String query, MultiMap headers) {
     var ua = headers.get(HttpHeaders.USER_AGENT);
     var linkTypes = UserAgentAnalyzer.detectType(ua);
@@ -190,6 +206,8 @@ public class RedirectServiceImpl implements RedirectService {
         .onItem()
         .transformToUni(addMetaData())
         .onItem()
-        .call(sendAnalyticEvent(hash, headers));
+        .call(sendAnalyticEvent(hash, headers))
+        .onItem()
+        .call(sendWebhookEvent(hash));
   }
 }

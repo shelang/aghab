@@ -6,16 +6,20 @@ import io.shelang.aghab.domain.WebhookUser;
 import io.shelang.aghab.repository.WebhookRepository;
 import io.shelang.aghab.repository.WebhookUserRepository;
 import io.shelang.aghab.service.mapper.WebhookMapper;
+import io.shelang.aghab.service.webhook.dto.WebhookAPICallDTO;
 import io.shelang.aghab.service.webhook.dto.WebhookDTO;
 import io.shelang.aghab.util.NumberUtil;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
+import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,12 +60,32 @@ public class WebhookServiceImpl implements WebhookService {
 
   @Override
   @Transactional
-  public WebhookDTO update(WebhookDTO dto) {
-    Webhook webhook = getValidatedWebhook(dto.getId());
+  public WebhookDTO update(Long id, WebhookDTO dto) {
+    Webhook webhook = getValidatedWebhook(id);
     webhook.setUrl(dto.getUrl());
     webhookRepository.persistAndFlush(webhook);
     saveWebhookUser(webhook);
     return webhookMapper.toDTO(webhook);
+  }
+
+  @Override
+  public void call(Long webhookId, String hash) {
+    webhookRepository
+        .findByIdOptional(webhookId)
+        .ifPresent(
+            webhook -> {
+              try {
+                SimplePostAPI api =
+                    RestClientBuilder.newBuilder()
+                        .baseUri(new URI(webhook.getUrl()))
+                        .build(SimplePostAPI.class);
+                WebhookAPICallDTO dto =
+                    new WebhookAPICallDTO().setHash(hash).setDate(Instant.now());
+                api.executePost(dto);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            });
   }
 
   private Webhook getValidatedWebhook(Long id) {

@@ -35,28 +35,27 @@ public class AnalyticLinkConsumer {
     if (Objects.isNull(event)) {
       return null;
     }
+
+    String ip = null;
+    String os = null;
+    String device = null;
+
     try {
+      ip = event.getHeaders().get("x-forwarded-for").split(",")[0];
+      ip = ip.substring(0, 32);
+    } catch (Exception ignore) {
+      // ignore
+    }
 
-      log.error("headers: {}", event.getHeaders());
+    try {
+      List<String> uaa = UserAgentAnalyzer.detectType(event.getHeaders().get("user-agent"));
+      device = !uaa.isEmpty() ? uaa.get(0) : null;
+      os = uaa.size() > 1 ? uaa.get(1) : null;
+    } catch (Exception e) {
+      // ignore
+    }
 
-      String ip = null;
-      String os = null;
-      String device = null;
-      try {
-        ip = event.getHeaders().get("x-forwarded-for").split(",")[0];
-        ip = ip.substring(0, 32);
-      } catch (Exception ignore) {
-        // igonre
-      }
-
-      try {
-        List<String> uaa = UserAgentAnalyzer.detectType(event.getHeaders().get("user-agent"));
-        device = !uaa.isEmpty() ? uaa.get(0) : null;
-        os = uaa.size() > 1 ? uaa.get(1) : null;
-      } catch (Exception e) {
-        // ignore
-      }
-
+    try {
       return LinkAnalytics.builder()
           .linkId(event.getId())
           .ip(ip)

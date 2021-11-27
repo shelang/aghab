@@ -11,4 +11,8 @@ public class LinksRepository implements PanacheRepository<Link> {
   public Optional<Link> findByHash(String hash) {
     return find("hash", hash).firstResultOptional();
   }
+
+  public boolean removeWebhookLink(Long id) {
+    return update("webhook_id = NULL WHERE id = ?1", id) > 0;
+  }
 }

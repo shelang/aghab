@@ -7,4 +7,6 @@ public final class EventType {
   }
 
   public static final String ANALYTIC_LINK = "analytic-link";
+  public static final String WEBHOOK_CALL = "webhook-call";
+
 }
