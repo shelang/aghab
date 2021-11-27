@@ -16,6 +16,7 @@ import lombok.extern.java.Log;
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import java.util.logging.Level;
 
 @PermitAll
 @RequestScoped
@@ -23,10 +24,6 @@ import javax.inject.Inject;
 public class RedirectResource {
 
   @Inject RedirectService redirectService;
-
-  @Inject
-  @Location("hello.html")
-  Template helloTemplate;
 
   @Inject
   @Location("iframe.html")
@@ -41,7 +38,11 @@ public class RedirectResource {
     return redirectService
         .redirectBy(rc)
         .onFailure()
-        .recoverWithItem(() -> new RedirectDTO().setStatusCode((short) 404).setUrl(""))
+        .recoverWithItem(
+            throwable -> {
+              log.log(Level.SEVERE, throwable.getMessage(), throwable);
+              return new RedirectDTO().setStatusCode((short) 404).setUrl("");
+            })
         .onItem()
         .transformToUni(
             byHash -> {
@@ -68,16 +69,5 @@ public class RedirectResource {
                 return Uni.createFrom().item("");
               }
             });
-  }
-
-  @Route(path = "/s/:name", methods = HttpMethod.GET)
-  public Uni<String> rScript(RoutingContext rc) {
-    return Uni.createFrom()
-        .completionStage(
-            () ->
-                helloTemplate
-                    .data("name", rc.request().getParam("name"))
-                    .data("script", new RawString(""))
-                    .renderAsync());
   }
 }
