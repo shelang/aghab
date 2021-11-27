@@ -167,7 +167,7 @@ public class LinksServiceImpl implements LinksService {
     }
 
     if (Objects.nonNull(dto.getWebhookId())) {
-      WebhookDTO byId = webhookService.getById(dto.getScriptId());
+      WebhookDTO byId = webhookService.getById(dto.getWebhookId());
       log.info("[CREATE LINK] webhook id {} exist.", byId.getId());
     }
 
@@ -269,8 +269,6 @@ public class LinksServiceImpl implements LinksService {
         la ->
             linkAlternativeRepository.delete(
                 "link_id = ?1 AND key = ?2", la.getId().getLinkId(), la.getId().getKey()));
-
-    //    link.getAlternatives().removeIf(deleted::contains);
 
     alternatives.removeIf(
         dto ->
