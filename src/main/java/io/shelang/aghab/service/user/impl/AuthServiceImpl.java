@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
   public LoginDTO refresh(String authorization) {
     var user =
         userRepository
-            .findByIdOptional(Long.valueOf(tokenService.getId()))
+            .findByIdOptional(Long.valueOf(tokenService.getRefreshTokenUserId()))
             .orElseThrow(NotFoundException::new);
     return tokenService.createTokens(user);
   }

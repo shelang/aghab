@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -43,6 +44,9 @@ public class LinksServiceImpl implements LinksService {
 
   @ConfigProperty(name = "app.create.redirect.base-url", defaultValue = "")
   String redirectBaseUrl;
+
+  @Inject
+  JsonWebToken jwt;
 
   @Inject
   @Claim(standard = Claims.upn)
@@ -74,7 +78,7 @@ public class LinksServiceImpl implements LinksService {
 
     if (size > 50) size = 50;
 
-    List<LinkUser> result = linkUserRepository.page(userId, q, page, size);
+    List<LinkUser> result = linkUserRepository.page(Long.parseLong(jwt.getSubject()), q, page, size);
     return new LinksUserDTO().setLinks(linkUserMapper.toDTO(result));
   }
 

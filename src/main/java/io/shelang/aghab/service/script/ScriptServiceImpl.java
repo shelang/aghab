@@ -7,11 +7,10 @@ import io.shelang.aghab.repository.ScriptRepository;
 import io.shelang.aghab.repository.ScriptUserRepository;
 import io.shelang.aghab.service.mapper.ScriptMapper;
 import io.shelang.aghab.service.script.dto.ScriptDTO;
+import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.util.NumberUtil;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
-import org.eclipse.microprofile.jwt.Claim;
-import org.eclipse.microprofile.jwt.Claims;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -27,20 +26,18 @@ public class ScriptServiceImpl implements ScriptService {
   @Inject ScriptRepository scriptRepository;
   @Inject ScriptUserRepository scriptUserRepository;
   @Inject ScriptMapper scriptMapper;
-
-  @Inject
-  @Claim(standard = Claims.sub)
-  Long userId;
+  @Inject TokenService tokenService;
 
   public static ScriptDTO from(RowSet<Row> rows) {
     var result = new ScriptDTO();
     for (var row : rows) {
-      result = new ScriptDTO()
-          .setId(row.getLong("id"))
-          .setName(row.getString("name"))
-          .setTimeout(row.getInteger("timeout"))
-          .setTitle(row.getString("title"))
-          .setContent(row.getString("content"));
+      result =
+          new ScriptDTO()
+              .setId(row.getLong("id"))
+              .setName(row.getString("name"))
+              .setTimeout(row.getInteger("timeout"))
+              .setTitle(row.getString("title"))
+              .setContent(row.getString("content"));
     }
     return result;
   }
@@ -57,7 +54,8 @@ public class ScriptServiceImpl implements ScriptService {
 
     if (size > 50) size = 50;
 
-    return scriptMapper.toDTO(scriptRepository.search(name, userId, Page.of(page, size)));
+    return scriptMapper.toDTO(
+        scriptRepository.search(name, tokenService.getAccessTokenUserId(), Page.of(page, size)));
   }
 
   @Override
@@ -83,7 +81,8 @@ public class ScriptServiceImpl implements ScriptService {
   private Script getValidatedScript(Long id) {
     ScriptUser scriptUser = getScriptUser(id).orElseThrow(ForbiddenException::new);
     Script script = scriptRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
-    if (!userId.equals(scriptUser.getUserId())) throw new ForbiddenException();
+    if (!tokenService.getAccessTokenUserId().equals(scriptUser.getUserId()))
+      throw new ForbiddenException();
     return script;
   }
 
@@ -99,10 +98,13 @@ public class ScriptServiceImpl implements ScriptService {
   }
 
   private ScriptUser makeScriptUser(Long id) {
-    return new ScriptUser().setScriptId(id).setUserId(userId).setId(getScriptUserId(id));
+    return new ScriptUser()
+        .setScriptId(id)
+        .setUserId(tokenService.getAccessTokenUserId())
+        .setId(getScriptUserId(id));
   }
 
   private ScriptUser.ScriptUserId getScriptUserId(Long id) {
-    return new ScriptUser.ScriptUserId(userId, id);
+    return new ScriptUser.ScriptUserId(tokenService.getAccessTokenUserId(), id);
   }
 }

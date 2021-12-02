@@ -6,11 +6,10 @@ import io.shelang.aghab.domain.WebhookUser;
 import io.shelang.aghab.repository.WebhookRepository;
 import io.shelang.aghab.repository.WebhookUserRepository;
 import io.shelang.aghab.service.mapper.WebhookMapper;
+import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.webhook.dto.WebhookAPICallDTO;
 import io.shelang.aghab.service.webhook.dto.WebhookDTO;
 import io.shelang.aghab.util.NumberUtil;
-import org.eclipse.microprofile.jwt.Claim;
-import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -29,10 +28,7 @@ public class WebhookServiceImpl implements WebhookService {
   @Inject WebhookRepository webhookRepository;
   @Inject WebhookUserRepository webhookUserRepository;
   @Inject WebhookMapper webhookMapper;
-
-  @Inject
-  @Claim(standard = Claims.sub)
-  Long userId;
+  @Inject TokenService tokenService;
 
   @Override
   public WebhookDTO getById(Long id) {
@@ -46,7 +42,8 @@ public class WebhookServiceImpl implements WebhookService {
 
     if (size > 50) size = 50;
 
-    return webhookMapper.toDTO(webhookRepository.search(name, userId, Page.of(page, size)));
+    return webhookMapper.toDTO(
+        webhookRepository.search(name, tokenService.getAccessTokenUserId(), Page.of(page, size)));
   }
 
   @Override
@@ -91,7 +88,8 @@ public class WebhookServiceImpl implements WebhookService {
   private Webhook getValidatedWebhook(Long id) {
     WebhookUser webhookUser = getWebhookUser(id).orElseThrow(ForbiddenException::new);
     Webhook webhook = webhookRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
-    if (!userId.equals(webhookUser.getUserId())) throw new ForbiddenException();
+    if (!tokenService.getAccessTokenUserId().equals(webhookUser.getUserId()))
+      throw new ForbiddenException();
     return webhook;
   }
 
@@ -107,10 +105,13 @@ public class WebhookServiceImpl implements WebhookService {
   }
 
   private WebhookUser makeWebhookUser(Long id) {
-    return new WebhookUser().setWebhookId(id).setUserId(userId).setId(getWebhookUserId(id));
+    return new WebhookUser()
+        .setWebhookId(id)
+        .setUserId(tokenService.getAccessTokenUserId())
+        .setId(getWebhookUserId(id));
   }
 
   private WebhookUser.WebhookUserId getWebhookUserId(Long id) {
-    return new WebhookUser.WebhookUserId(userId, id);
+    return new WebhookUser.WebhookUserId(tokenService.getAccessTokenUserId(), id);
   }
 }

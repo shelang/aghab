@@ -12,8 +12,6 @@ import io.shelang.aghab.service.mapper.UserMeMapper;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.user.UserService;
 import io.shelang.aghab.util.NumberUtil;
-import org.eclipse.microprofile.jwt.Claim;
-import org.eclipse.microprofile.jwt.Claims;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -30,10 +28,6 @@ public class UserServiceImpl implements UserService {
   @Inject UserMapper userMapper;
   @Inject UserMeMapper userMeMapper;
   @Inject TokenService tokenService;
-
-  @Inject
-  @Claim(standard = Claims.sub)
-  Long userId;
 
   @Override
   public UserDTO getById(Long id) {
@@ -76,13 +70,18 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserMeDTO getMe() {
     return userMeMapper.toDTO(
-        userRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new));
+        userRepository
+            .findByIdOptional(tokenService.getAccessTokenUserId())
+            .orElseThrow(NotFoundException::new));
   }
 
   @Override
   @Transactional
   public UserMeDTO generateAPIToken() {
-    User user = userRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new);
+    User user =
+        userRepository
+            .findByIdOptional(tokenService.getAccessTokenUserId())
+            .orElseThrow(NotFoundException::new);
 
     user.setTokenIssueAt(Instant.now());
     user.setToken(tokenService.createAPIToken(user));

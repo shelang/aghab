@@ -38,7 +38,7 @@ public class TokenServiceImpl implements TokenService {
     String refresh =
         Jwt.issuer(ISSUER)
             .claim(CLAIM_TOKEN_TYPE, JwtTokenType.REFRESH.ordinal())
-            .claim(CLAIM_ID, user.getId())
+            .claim(REFRESH_CLAIM_USER_ID, user.getId())
             .groups(Roles.REFRESH_TOKEN)
             .expiresIn(Duration.ofDays(8))
             .sign();
@@ -47,8 +47,13 @@ public class TokenServiceImpl implements TokenService {
   }
 
   @Override
-  public String getId() {
-    return jwt.claim(TokenService.CLAIM_ID).orElseThrow(ForbiddenException::new).toString();
+  public Long getAccessTokenUserId() {
+    return Long.parseLong(jwt.getSubject());
+  }
+
+  @Override
+  public String getRefreshTokenUserId() {
+    return jwt.claim(TokenService.REFRESH_CLAIM_USER_ID).orElseThrow(ForbiddenException::new).toString();
   }
 
   @Override
