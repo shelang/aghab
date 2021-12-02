@@ -5,16 +5,22 @@ import io.shelang.aghab.domain.User;
 import io.shelang.aghab.repository.UserRepository;
 import io.shelang.aghab.service.dto.UserCredentialDTO;
 import io.shelang.aghab.service.dto.UserDTO;
+import io.shelang.aghab.service.dto.UserMeDTO;
 import io.shelang.aghab.service.dto.UsersDTO;
 import io.shelang.aghab.service.mapper.UserMapper;
+import io.shelang.aghab.service.mapper.UserMeMapper;
+import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.user.UserService;
 import io.shelang.aghab.util.NumberUtil;
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.Claims;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
+import java.time.Instant;
 import java.util.List;
 
 @ApplicationScoped
@@ -22,6 +28,12 @@ public class UserServiceImpl implements UserService {
 
   @Inject UserRepository userRepository;
   @Inject UserMapper userMapper;
+  @Inject UserMeMapper userMeMapper;
+  @Inject TokenService tokenService;
+
+  @Inject
+  @Claim(standard = Claims.sub)
+  Long userId;
 
   @Override
   public UserDTO getById(Long id) {
@@ -62,8 +74,26 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public UserMeDTO getMe() {
+    return userMeMapper.toDTO(
+        userRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new));
+  }
+
+  @Override
+  @Transactional
+  public UserMeDTO generateAPIToken() {
+    User user = userRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new);
+
+    user.setTokenIssueAt(Instant.now());
+    user.setToken(tokenService.createAPIToken(user));
+    userRepository.persistAndFlush(user);
+
+    return userMeMapper.toDTO(user);
+  }
+
+  @Override
   @Transactional
   public void delete(Long id) {
-    // soft delete
+    // TODO: soft delete
   }
 }

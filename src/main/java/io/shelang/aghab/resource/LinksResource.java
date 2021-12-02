@@ -1,6 +1,6 @@
 package io.shelang.aghab.resource;
 
-import io.quarkus.security.Authenticated;
+import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.dto.LinkCreateDTO;
 import io.shelang.aghab.service.dto.LinkDTO;
 import io.shelang.aghab.service.dto.LinksUserDTO;
@@ -8,6 +8,7 @@ import io.shelang.aghab.service.link.LinksService;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -17,7 +18,7 @@ import javax.ws.rs.core.Response;
 
 @Path("/api/v1/links")
 @RequestScoped
-@Authenticated
+@RolesAllowed({Roles.BOSS, Roles.USER, Roles.API})
 public class LinksResource {
 
   @Inject LinksService linksService;

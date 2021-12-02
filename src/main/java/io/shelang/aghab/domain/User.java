@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +28,11 @@ public class User {
   private String username;
 
   private String password;
+
+  private String token;
+
+  @Column(name = "token_issue_at")
+  private Instant tokenIssueAt;
 
   @Builder.Default
   @ManyToMany(fetch = FetchType.LAZY)

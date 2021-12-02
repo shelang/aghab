@@ -1,11 +1,12 @@
 package io.shelang.aghab.resource;
 
-import io.quarkus.security.Authenticated;
+import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.dto.LoginDTO;
 import io.shelang.aghab.service.dto.LoginRequestDTO;
 import io.shelang.aghab.service.user.AuthService;
 
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -28,7 +29,7 @@ public class UserLoginResource {
 
   @Path("/refresh")
   @POST
-  @Authenticated
+  @RolesAllowed({Roles.REFRESH_TOKEN})
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public LoginDTO refresh(@HeaderParam("Authorization") String authorization) {

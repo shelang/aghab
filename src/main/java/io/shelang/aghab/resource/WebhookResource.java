@@ -1,12 +1,13 @@
 package io.shelang.aghab.resource;
 
-import io.quarkus.security.Authenticated;
+import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.webhook.WebhookService;
 import io.shelang.aghab.service.webhook.dto.WebhookDTO;
 import io.shelang.aghab.service.webhook.dto.WebhooksDTO;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -14,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/api/v1/webhook")
 @RequestScoped
-@Authenticated
+@RolesAllowed({Roles.BOSS, Roles.USER})
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class WebhookResource {
