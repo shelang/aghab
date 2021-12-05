@@ -66,7 +66,7 @@ public class TokenServiceImpl implements TokenService {
         .upn(user.getUsername())
         .subject(user.getId().toString())
         .issuedAt(Instant.now().plusSeconds(2))
-        .expiresIn(Duration.ofDays(Long.MAX_VALUE))
+        .expiresIn(Duration.ofDays(3650000))
         .sign();
   }
 }
