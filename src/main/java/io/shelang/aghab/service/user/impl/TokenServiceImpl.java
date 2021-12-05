@@ -53,7 +53,9 @@ public class TokenServiceImpl implements TokenService {
 
   @Override
   public String getRefreshTokenUserId() {
-    return jwt.claim(TokenService.REFRESH_CLAIM_USER_ID).orElseThrow(ForbiddenException::new).toString();
+    return jwt.claim(TokenService.REFRESH_CLAIM_USER_ID)
+        .orElseThrow(ForbiddenException::new)
+        .toString();
   }
 
   @Override
@@ -64,6 +66,7 @@ public class TokenServiceImpl implements TokenService {
         .upn(user.getUsername())
         .subject(user.getId().toString())
         .issuedAt(Instant.now().plusSeconds(2))
+        .expiresIn(Duration.ofDays(Long.MAX_VALUE))
         .sign();
   }
 }
