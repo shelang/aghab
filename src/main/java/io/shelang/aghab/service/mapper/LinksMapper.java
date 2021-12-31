@@ -72,11 +72,11 @@ public interface LinksMapper extends EntityMapper<LinkDTO, Link> {
   default Set<LinkAlternativeDTO> linkAlternativeSetToLinkAlternativeDTOSet(
       Set<LinkAlternative> set) {
     if (set == null) {
-      return null;
+      return Collections.emptySet();
     }
 
     Set<LinkAlternativeDTO> set1 =
-        new HashSet<LinkAlternativeDTO>(Math.max((int) (set.size() / .75f) + 1, 16));
+        new HashSet<>(Math.max((int) (set.size() / .75f) + 1, 16));
     for (LinkAlternative linkAlternative : set) {
       set1.add(linkAlternativeToLinkAlternativeDTO(linkAlternative));
     }
