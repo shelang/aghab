@@ -2,8 +2,8 @@ package io.shelang.aghab.resource;
 
 import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.webhook.WebhookService;
-import io.shelang.aghab.service.webhook.dto.WebhookDTO;
-import io.shelang.aghab.service.webhook.dto.WebhooksDTO;
+ import io.shelang.aghab.service.dto.WebhookDTO;
+import io.shelang.aghab.service.dto.WebhooksDTO;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
