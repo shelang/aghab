@@ -7,8 +7,8 @@ import io.shelang.aghab.repository.WebhookRepository;
 import io.shelang.aghab.repository.WebhookUserRepository;
 import io.shelang.aghab.service.mapper.WebhookMapper;
 import io.shelang.aghab.service.user.TokenService;
-import io.shelang.aghab.service.webhook.dto.WebhookAPICallDTO;
-import io.shelang.aghab.service.webhook.dto.WebhookDTO;
+import io.shelang.aghab.service.dto.WebhookAPICallDTO;
+import io.shelang.aghab.service.dto.WebhookDTO;
 import io.shelang.aghab.util.NumberUtil;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 

@@ -6,7 +6,7 @@ import io.shelang.aghab.domain.ScriptUser;
 import io.shelang.aghab.repository.ScriptRepository;
 import io.shelang.aghab.repository.ScriptUserRepository;
 import io.shelang.aghab.service.mapper.ScriptMapper;
-import io.shelang.aghab.service.script.dto.ScriptDTO;
+import io.shelang.aghab.service.dto.ScriptDTO;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.util.NumberUtil;
 import io.vertx.mutiny.sqlclient.Row;

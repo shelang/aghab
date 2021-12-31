@@ -2,8 +2,8 @@ package io.shelang.aghab.resource;
 
 import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.script.ScriptService;
-import io.shelang.aghab.service.script.dto.ScriptDTO;
-import io.shelang.aghab.service.script.dto.ScriptsDTO;
+import io.shelang.aghab.service.dto.ScriptDTO;
+import io.shelang.aghab.service.dto.ScriptsDTO;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 

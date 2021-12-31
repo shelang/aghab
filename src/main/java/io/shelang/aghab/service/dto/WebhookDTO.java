@@ -1,4 +1,4 @@
-package io.shelang.aghab.service.script.dto;
+package io.shelang.aghab.service.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,12 +7,10 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class ScriptDTO {
+public class WebhookDTO {
 
     private Long id;
     private String name;
-    private Integer timeout;
-    private String title;
-    private String content;
+    private String url;
 
 }

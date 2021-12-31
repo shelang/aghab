@@ -1,4 +1,4 @@
-package io.shelang.aghab.service.webhook.dto;
+package io.shelang.aghab.service.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
