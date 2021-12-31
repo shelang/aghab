@@ -9,7 +9,6 @@ import io.shelang.aghab.service.dto.RedirectDTO;
 import io.shelang.aghab.service.redirect.RedirectService;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.RoutingContext;
 import lombok.extern.java.Log;
 
@@ -33,7 +32,7 @@ public class RedirectResource {
   @Location("script.html")
   Template scriptTemplate;
 
-  @Route(path = "/r/:hash", methods = HttpMethod.GET)
+  @Route(path = "/r/:hash", methods = Route.HttpMethod.GET)
   public Uni<String> redirect(RoutingContext rc) {
     return redirectService
         .redirectBy(rc)
