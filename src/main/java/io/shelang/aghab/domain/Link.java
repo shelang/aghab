@@ -31,6 +31,7 @@ public class Link {
   private String url;
 
   @Enumerated(EnumType.ORDINAL)
+  @Column(columnDefinition = "int2")
   private LinkStatus status;
 
   @Column(name = "redirect_code")
