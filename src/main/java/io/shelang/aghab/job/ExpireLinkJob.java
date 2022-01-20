@@ -2,6 +2,7 @@ package io.shelang.aghab.job;
 
 import io.quarkus.scheduler.Scheduled;
 import io.shelang.aghab.domain.LinkExpiration;
+import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.repository.LinkExpirationRepository;
 import io.shelang.aghab.repository.LinksRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,8 @@ public class ExpireLinkJob {
       if (linkIds.isEmpty()) {
         hasData = false;
       } else {
-        linkRepository.update("status = 2 where id in (?1)", linkIds);
+        linkRepository.update(
+            "status = " + LinkStatus.EXPIRED.ordinal() + " where id in (?1)", linkIds);
         linkExpirationRepository.delete("link_id in (?1)", linkIds);
       }
     }

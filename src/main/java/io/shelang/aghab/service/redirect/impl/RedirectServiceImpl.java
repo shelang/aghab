@@ -1,5 +1,6 @@
 package io.shelang.aghab.service.redirect.impl;
 
+import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.event.EventType;
 import io.shelang.aghab.event.dto.AnalyticLinkEvent;
@@ -197,7 +198,8 @@ public class RedirectServiceImpl implements RedirectService {
                 + "     l.webhook_id "
                 + "FROM links l "
                 + "LEFT JOIN link_alternatives la on l.id = la.link_id "
-                + "WHERE l.hash = $1 and l.status = 0")
+                + "WHERE l.hash = $1 and l.status = "
+                + LinkStatus.ACTIVE.ordinal())
         .execute(Tuple.of(hash))
         .onItem()
         .transform(RedirectServiceImpl::fromByUA)

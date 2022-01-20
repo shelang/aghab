@@ -20,6 +20,7 @@ public class WebhookCallConsumer {
 
   private static final String LOCK_EXPIRE = "100";
 
+  @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject RedisClient redisClient;
   @Inject LinksRepository linksRepository;
   @Inject WebhookService webhookService;
@@ -41,7 +42,7 @@ public class WebhookCallConsumer {
     webhookService.call(event.getWebhookId(), event.getHash());
 
     webhookLinkRepository.persistAndFlush(
-        new WebhookLink(new WebhookLink.WebhookLinkId(event.getLinkId(), event.getWebhookId()), 1));
+        new WebhookLink(new WebhookLink.WebhookLinkId(event.getLinkId(), event.getWebhookId()), 1L));
 
     linksRepository.removeWebhookLink(event.getLinkId());
   }
