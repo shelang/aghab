@@ -4,21 +4,17 @@ import io.shelang.aghab.domain.*;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.exception.MaxCreateLinkRetryException;
 import io.shelang.aghab.repository.*;
-import io.shelang.aghab.service.dto.LinkAlternativeDTO;
-import io.shelang.aghab.service.dto.LinkCreateDTO;
-import io.shelang.aghab.service.dto.LinkDTO;
-import io.shelang.aghab.service.dto.LinksUserDTO;
+import io.shelang.aghab.service.dto.*;
 import io.shelang.aghab.service.mapper.LinkUserMapper;
 import io.shelang.aghab.service.mapper.LinksMapper;
 import io.shelang.aghab.service.script.ScriptService;
-import io.shelang.aghab.service.dto.ScriptDTO;
 import io.shelang.aghab.service.shorty.Shorty;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.webhook.WebhookService;
-import io.shelang.aghab.service.dto.WebhookDTO;
 import io.shelang.aghab.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -43,8 +39,8 @@ public class LinksServiceImpl implements LinksService {
   @ConfigProperty(name = "app.create.redirect.base-url", defaultValue = "")
   String redirectBaseUrl;
 
-  @Inject TokenService tokenService;
   @Inject Shorty shortyService;
+  @Inject TokenService tokenService;
   @Inject LinksRepository linksRepository;
   @Inject LinkExpirationRepository linkExpirationRepository;
   @Inject LinksMapper linksMapper;
