@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class WebhookLink {
 
   @EmbeddedId private WebhookLinkId id;
-  private Integer count;
+  private Long count;
 
   @Embeddable
   @Getter
