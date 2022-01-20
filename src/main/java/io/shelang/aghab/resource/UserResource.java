@@ -28,6 +28,7 @@ public class UserResource {
 
   @GET
   @Path("/me")
+  @RolesAllowed({Roles.BOSS, Roles.USER})
   public UserMeDTO getMe() {
     return userService.getMe();
   }
