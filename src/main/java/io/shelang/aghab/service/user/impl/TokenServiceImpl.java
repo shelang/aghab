@@ -39,6 +39,7 @@ public class TokenServiceImpl implements TokenService {
         Jwt.issuer(ISSUER)
             .claim(CLAIM_TOKEN_TYPE, JwtTokenType.REFRESH.ordinal())
             .claim(REFRESH_CLAIM_USER_ID, user.getId())
+            .upn(user.getUsername())
             .groups(Roles.REFRESH_TOKEN)
             .expiresIn(Duration.ofDays(8))
             .sign();
