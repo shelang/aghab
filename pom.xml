@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.shelang</groupId>
   <artifactId>aghab</artifactId>
-  <version>1.7.1-SNAPSHOT</version>
+  <version>1.8.0</version>
 
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
@@ -212,6 +212,7 @@
         <configuration>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+            <!--suppress MavenModelInspection -->
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
         </configuration>
@@ -242,6 +243,7 @@
                   <systemPropertyVariables>
                     <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                     <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    <!--suppress MavenModelInspection -->
                     <maven.home>${maven.home}</maven.home>
                   </systemPropertyVariables>
                 </configuration>
