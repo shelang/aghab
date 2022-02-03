@@ -13,7 +13,7 @@ import java.util.Objects;
 public class LinkUserRepository implements PanacheRepositoryBase<LinkUser, LinkUser.LinkUserId> {
   public List<LinkUser> page(Long userId, String hash, Integer page, Integer size) {
     PanacheQuery<LinkUser> query;
-    if (Objects.nonNull(hash)) {
+    if (Objects.nonNull(hash) && hash.length() > 0) {
       query =
           find(
               "user_id = ?1 and link_hash = ?2 ",
