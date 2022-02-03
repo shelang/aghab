@@ -13,14 +13,12 @@ import io.shelang.aghab.service.mapper.LinksMapper;
 import io.shelang.aghab.service.script.ScriptService;
 import io.shelang.aghab.service.script.dto.ScriptDTO;
 import io.shelang.aghab.service.shorty.Shorty;
+import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.webhook.WebhookService;
 import io.shelang.aghab.service.webhook.dto.WebhookDTO;
 import io.shelang.aghab.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.jwt.Claim;
-import org.eclipse.microprofile.jwt.Claims;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -45,17 +43,7 @@ public class LinksServiceImpl implements LinksService {
   @ConfigProperty(name = "app.create.redirect.base-url", defaultValue = "")
   String redirectBaseUrl;
 
-  @Inject
-  JsonWebToken jwt;
-
-  @Inject
-  @Claim(standard = Claims.upn)
-  String username;
-
-  @Inject
-  @Claim(standard = Claims.sub)
-  Long userId;
-
+  @Inject TokenService tokenService;
   @Inject Shorty shortyService;
   @Inject LinksRepository linksRepository;
   @Inject LinkExpirationRepository linkExpirationRepository;
@@ -78,7 +66,8 @@ public class LinksServiceImpl implements LinksService {
 
     if (size > 50) size = 50;
 
-    List<LinkUser> result = linkUserRepository.page(Long.parseLong(jwt.getSubject()), q, page, size);
+    List<LinkUser> result =
+        linkUserRepository.page(tokenService.getAccessTokenUserId(), q, page, size);
     return new LinksUserDTO().setLinks(linkUserMapper.toDTO(result));
   }
 
@@ -193,7 +182,10 @@ public class LinksServiceImpl implements LinksService {
   @Override
   @Transactional
   public LinkDTO create(LinkCreateDTO dto) {
-    var user = userRepository.findByIdOptional(userId).orElseThrow(NotFoundException::new);
+    var user =
+        userRepository
+            .findByIdOptional(tokenService.getAccessTokenUserId())
+            .orElseThrow(NotFoundException::new);
     byte retry = 0;
     if (dto.getHash() != null) retry = MAX_RETRY_COUNT - 1;
     var link = initCreation(dto);
@@ -246,7 +238,7 @@ public class LinksServiceImpl implements LinksService {
   @Transactional
   public void delete(Long id) {
     var link = linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
-    var linkUserId = new LinkUser.LinkUserId(userId, link.getHash());
+    var linkUserId = new LinkUser.LinkUserId(tokenService.getAccessTokenUserId(), link.getHash());
     var linkUser =
         linkUserRepository.findByIdOptional(linkUserId).orElseThrow(ForbiddenException::new);
     linksRepository.deleteById(id);
@@ -342,7 +334,8 @@ public class LinksServiceImpl implements LinksService {
   public LinkDTO update(Long id, LinkCreateDTO request) {
     var linkUser =
         linkUserRepository
-            .findByIdOptional(new LinkUser.LinkUserId(userId, request.getHash()))
+            .findByIdOptional(
+                new LinkUser.LinkUserId(tokenService.getAccessTokenUserId(), request.getHash()))
             .orElseThrow(ForbiddenException::new);
     var link =
         linksRepository.findByIdOptional(linkUser.getLinkId()).orElseThrow(NotFoundException::new);
