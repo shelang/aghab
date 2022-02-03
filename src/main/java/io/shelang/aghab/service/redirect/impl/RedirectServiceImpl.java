@@ -40,7 +40,9 @@ public class RedirectServiceImpl implements RedirectService {
   final EventBus bus;
 
   @Inject
-  public RedirectServiceImpl(@Default PgPool client, LinksService linksService, EventBus bus) {
+  public RedirectServiceImpl(@SuppressWarnings("CdiInjectionPointsInspection") @Default PgPool client,
+                             LinksService linksService,
+                             @SuppressWarnings("CdiInjectionPointsInspection") EventBus bus) {
     this.client = client;
     this.linksService = linksService;
     this.bus = bus;
@@ -109,7 +111,7 @@ public class RedirectServiceImpl implements RedirectService {
 
   private String setForwardParameters(String query, RedirectDTO byHash, String redirectTo) {
     if (Objects.nonNull(query) && byHash.isForwardParameter()) {
-      if (byHash.getUrl().contains("?")) {
+      if (redirectTo.contains("?")) {
         redirectTo = redirectTo + "&" + query;
       } else {
         redirectTo = redirectTo + "?" + query;
