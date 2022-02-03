@@ -14,7 +14,6 @@ import io.shelang.aghab.service.webhook.WebhookService;
 import io.shelang.aghab.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -69,11 +68,14 @@ public class LinksServiceImpl implements LinksService {
 
   @Override
   public LinkDTO getById(Long id) {
-    return linksMapper.toDTO(findById(id));
+    var link = findById(id);
+    validateLinkUser(link.getHash());
+    return linksMapper.toDTO(link);
   }
 
   @Override
   public LinkDTO getByHash(String hash) {
+    validateLinkUser(hash);
     var links = linksRepository.findByHash(hash).orElseThrow(NotFoundException::new);
     return linksMapper.toDTO(links);
   }
@@ -328,11 +330,7 @@ public class LinksServiceImpl implements LinksService {
   @Override
   @Transactional
   public LinkDTO update(Long id, LinkCreateDTO request) {
-    var linkUser =
-        linkUserRepository
-            .findByIdOptional(
-                new LinkUser.LinkUserId(tokenService.getAccessTokenUserId(), request.getHash()))
-            .orElseThrow(ForbiddenException::new);
+    LinkUser linkUser = validateLinkUser(request.getHash());
     var link =
         linksRepository.findByIdOptional(linkUser.getLinkId()).orElseThrow(NotFoundException::new);
     updateAlternatives(link, request.getOsAlternatives(), request.getDeviceAlternatives());
@@ -344,5 +342,12 @@ public class LinksServiceImpl implements LinksService {
     linksRepository.persistAndFlush(link);
     linksRepository.getEntityManager().clear();
     return linksMapper.toDTO(linksRepository.findById(link.getId()));
+  }
+
+  private LinkUser validateLinkUser(String hash) {
+    return linkUserRepository
+        .findByIdOptional(
+            new LinkUser.LinkUserId(tokenService.getAccessTokenUserId(), hash))
+        .orElseThrow(ForbiddenException::new);
   }
 }
