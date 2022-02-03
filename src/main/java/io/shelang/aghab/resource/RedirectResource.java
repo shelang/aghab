@@ -3,7 +3,9 @@ package io.shelang.aghab.resource;
 import io.quarkus.qute.Location;
 import io.quarkus.qute.RawString;
 import io.quarkus.qute.Template;
+import io.quarkus.vertx.web.Param;
 import io.quarkus.vertx.web.Route;
+import io.quarkus.vertx.web.RouteBase;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.service.dto.RedirectDTO;
 import io.shelang.aghab.service.redirect.RedirectService;
@@ -11,6 +13,8 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
 import lombok.extern.java.Log;
+import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
@@ -20,6 +24,7 @@ import java.util.logging.Level;
 @PermitAll
 @RequestScoped
 @Log
+@RouteBase(path = "/r")
 public class RedirectResource {
 
   @Inject RedirectService redirectService;
@@ -32,8 +37,9 @@ public class RedirectResource {
   @Location("script.html")
   Template scriptTemplate;
 
-  @Route(path = "/r/:hash", methods = Route.HttpMethod.GET)
-  public Uni<String> redirect(RoutingContext rc) {
+  @Route(path = "/:hash", methods = Route.HttpMethod.GET)
+  public Uni<String> redirect(RoutingContext rc,
+                              @SuppressWarnings("unused") @Param("hash") String hash) {
     return redirectService
         .redirectBy(rc)
         .onFailure()

@@ -36,11 +36,11 @@ public class UserResource {
   @GET
   @Path("/{linkId}")
   public UserDTO get(
-      @PathParam("id") long id,
+      @PathParam("linkId") Long linkId,
       @QueryParam("from") String from,
       @QueryParam("to") String to,
       @QueryParam("bucket") String bucket) {
-    return userService.getById(id);
+    return userService.getById(linkId);
   }
 
   @GET
@@ -61,7 +61,7 @@ public class UserResource {
   @PUT
   @Path("/{id}")
   @RolesAllowed({Roles.BOSS, Roles.USER})
-  public UserDTO update(@PathParam("id") long id, UserCredentialDTO userCredential) {
+  public UserDTO update(@PathParam("id") Long id, UserCredentialDTO userCredential) {
     return userService.update(userCredential);
   }
 
