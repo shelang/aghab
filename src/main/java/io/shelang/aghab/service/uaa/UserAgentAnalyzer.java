@@ -1,33 +1,68 @@
 package io.shelang.aghab.service.uaa;
 
-import io.shelang.aghab.enums.AlternativeLinkType;
+import nl.basjes.parse.useragent.UserAgent;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class UserAgentAnalyzer {
+
+  private static final List<String> FIELD_NAMES =
+      Arrays.stream(UserAgentField.values())
+          .map(UserAgentField::getFieldName)
+          .collect(Collectors.toList());
+
+  private static final nl.basjes.parse.useragent.UserAgentAnalyzer uaa =
+      nl.basjes.parse.useragent.UserAgentAnalyzer.newBuilder()
+          .withFields(FIELD_NAMES)
+          .hideMatcherLoadStats()
+          .immediateInitialization()
+          .withCache(10000)
+          .build();
 
   private UserAgentAnalyzer() throws IllegalAccessException {
     throw new IllegalAccessException();
   }
 
   public static List<String> detectType(String ua) {
-    if (ua == null || ua.isEmpty() || ua.isBlank()) return Collections.emptyList();
+    UserAgent.ImmutableUserAgent agent = uaa.parse(ua);
 
-    ua = ua.toLowerCase();
+    String os = agent.get(UserAgent.OPERATING_SYSTEM_NAME).getValue().toLowerCase();
+    String device = agent.get(UserAgent.DEVICE_CLASS).getValue().toLowerCase();
 
-    if (ua.contains("android"))
-      return Arrays.asList(AlternativeLinkType.MOBILE.name(), AlternativeLinkType.ANDROID.name());
-    else if (ua.contains("iphone") || ua.contains("ios"))
-      return Arrays.asList(AlternativeLinkType.MOBILE.name(), AlternativeLinkType.IOS.name());
-    else if (ua.contains("mobile")
-        || ua.contains("phone")
-        || ua.contains("ipad")
-        || ua.contains("tablet")) return List.of(AlternativeLinkType.MOBILE.name());
-    else if (ua.contains("windows") || ua.contains("macintosh") || ua.contains("linux"))
-      return List.of(AlternativeLinkType.DESKTOP.name());
+    if (device.equals("phone")) device = "mobile";
 
-    return Collections.emptyList();
+    switch (os) {
+      case "darwin (ios)":
+        os = "ios";
+        break;
+      case "windows nt":
+        os = "windows";
+        break;
+      case "mac os x":
+      case "mac os":
+        os = "macos";
+        break;
+      case "ubuntu":
+      case "freebsd":
+      case "netbsd":
+      case "openbsd":
+      case "sunos":
+      case "fedora":
+        os = "linux";
+        break;
+      case "windows phone":
+        os = "windowsphone";
+        break;
+      default:
+        break;
+    }
+
+    return List.of(device, os);
+  }
+
+  public static UserAgent.ImmutableUserAgent parse(String ua) {
+    return uaa.parse(ua);
   }
 }
