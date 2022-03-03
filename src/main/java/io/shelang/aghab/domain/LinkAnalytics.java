@@ -24,7 +24,7 @@ public class LinkAnalytics {
   @Column(name = "link_id")
   private Long linkId;
 
-  private String os; //
+  private String os; // mobile, desktop, tablet
 
   @Column(name = "os_name")
   private String osName; // iOS, Linux, Android, Windows
@@ -32,15 +32,15 @@ public class LinkAnalytics {
   @Column(name = "os_version")
   private String osVersion;
 
-  private String device; // Desktop, Phone, Tablet
+  private String device; // Desktop, Phone, Tablet, ...
 
   @Column(name = "device_name")
-  private String deviceName; // Apple iPhone,
+  private String deviceName;
 
   @Column(name = "device_brand")
-  private String deviceBrand; // Desktop, Phone, Tablet
+  private String deviceBrand;
 
-  private String agent; // Chrome, Safari, FireFox,
+  private String agent; // Chrome, Safari, FireFox, Postman, ...
 
   @Column(name = "agent_name")
   private String agentName;
