@@ -2,7 +2,8 @@ package io.shelang.aghab.service.mapper;
 
 import io.shelang.aghab.domain.Link;
 import io.shelang.aghab.domain.LinkAlternative;
-import io.shelang.aghab.enums.AlternativeLinkType;
+import io.shelang.aghab.enums.AlternativeLinkDeviceType;
+import io.shelang.aghab.enums.AlternativeLinkOSType;
 import io.shelang.aghab.service.dto.LinkAlternativeDTO;
 import io.shelang.aghab.service.dto.LinkDTO;
 import org.mapstruct.Mapper;
@@ -37,9 +38,8 @@ public interface LinksMapper extends EntityMapper<LinkDTO, Link> {
     if (Objects.isNull(alternatives) || alternatives.isEmpty()) return Collections.emptySet();
     var os = new HashSet<LinkAlternativeDTO>();
     for (var alt : alternatives) {
-      AlternativeLinkType altType = AlternativeLinkType.valueOf(alt.getKey().toUpperCase());
-      if (AlternativeLinkType.ANDROID.equals(altType) || AlternativeLinkType.IOS.equals(altType))
-        os.add(alt);
+      AlternativeLinkOSType altType = AlternativeLinkOSType.valueOf(alt.getKey().toUpperCase());
+      if (!AlternativeLinkOSType.UNPARSEABLE.equals(altType)) os.add(alt);
     }
     return os;
   }
@@ -48,10 +48,8 @@ public interface LinksMapper extends EntityMapper<LinkDTO, Link> {
     if (Objects.isNull(alternatives) || alternatives.isEmpty()) return Collections.emptySet();
     var devices = new HashSet<LinkAlternativeDTO>();
     for (var alt : alternatives) {
-      AlternativeLinkType altType = AlternativeLinkType.valueOf(alt.getKey().toUpperCase());
-      if (AlternativeLinkType.MOBILE.equals(altType)
-          || AlternativeLinkType.DESKTOP.equals(altType)
-          || AlternativeLinkType.TABLET.equals(altType)) devices.add(alt);
+      AlternativeLinkDeviceType altType = AlternativeLinkDeviceType.from(alt.getKey());
+      if (!AlternativeLinkDeviceType.UNPARSEABLE.equals(altType)) devices.add(alt);
     }
     return devices;
   }
@@ -75,8 +73,7 @@ public interface LinksMapper extends EntityMapper<LinkDTO, Link> {
       return Collections.emptySet();
     }
 
-    Set<LinkAlternativeDTO> set1 =
-        new HashSet<>(Math.max((int) (set.size() / .75f) + 1, 16));
+    Set<LinkAlternativeDTO> set1 = new HashSet<>(Math.max((int) (set.size() / .75f) + 1, 16));
     for (LinkAlternative linkAlternative : set) {
       set1.add(linkAlternativeToLinkAlternativeDTO(linkAlternative));
     }

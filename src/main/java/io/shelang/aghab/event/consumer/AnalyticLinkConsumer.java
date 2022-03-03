@@ -7,13 +7,14 @@ import io.shelang.aghab.event.dto.AnalyticLinkEvent;
 import io.shelang.aghab.repository.LinkAnalyticRepository;
 import io.shelang.aghab.service.uaa.UserAgentAnalyzer;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
+import nl.basjes.parse.useragent.UserAgent;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -37,8 +38,6 @@ public class AnalyticLinkConsumer {
     }
 
     String ip = null;
-    String os = null;
-    String device = null;
 
     try {
       ip = event.getHeaders().get("x-forwarded-for").split(",")[0];
@@ -47,20 +46,22 @@ public class AnalyticLinkConsumer {
       // ignore
     }
 
-    try {
-      List<String> uaa = UserAgentAnalyzer.detectType(event.getHeaders().get("user-agent"));
-      device = !uaa.isEmpty() ? uaa.get(0) : null;
-      os = uaa.size() > 1 ? uaa.get(1) : null;
-    } catch (Exception e) {
-      // ignore
-    }
+    UserAgent.ImmutableUserAgent clientUA =
+        UserAgentAnalyzer.parse(event.getHeaders().get(HttpHeaders.USER_AGENT));
 
     try {
       return LinkAnalytics.builder()
           .linkId(event.getId())
           .ip(ip)
-          .os(os)
-          .device(device)
+          .os(clientUA.get(UserAgent.OPERATING_SYSTEM_CLASS).getValue())
+          .osName(clientUA.get(UserAgent.OPERATING_SYSTEM_NAME).getValue())
+          .osVersion(clientUA.get(UserAgent.OPERATING_SYSTEM_VERSION).getValue())
+          .device(clientUA.get(UserAgent.DEVICE_CLASS).getValue())
+          .deviceName(clientUA.get(UserAgent.DEVICE_NAME).getValue())
+          .deviceBrand(clientUA.get(UserAgent.DEVICE_BRAND).getValue())
+          .agent(clientUA.get(UserAgent.AGENT_CLASS).getValue())
+          .agentName(clientUA.get(UserAgent.AGENT_NAME).getValue())
+          .agentVersion(clientUA.get(UserAgent.AGENT_VERSION).getValue())
           .createAt(Instant.now())
           .build();
     } catch (Exception e) {

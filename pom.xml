@@ -9,7 +9,7 @@
 
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
-    <log4j2.version>2.17.1</log4j2.version>
+    <log4j2.version>2.17.2</log4j2.version>
     <lombok.mapstruct.binding.version>0.2.0</lombok.mapstruct.binding.version>
     <lombok.output.dir>${project.build.directory}/delombok</lombok.output.dir>
     <maven.compiler.parameters>true</maven.compiler.parameters>
@@ -21,7 +21,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.6.1.Final</quarkus.platform.version>
+    <quarkus.platform.version>2.7.3.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
 
@@ -141,6 +141,15 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>nl.basjes.parse.useragent</groupId>
+      <artifactId>yauaa</artifactId>
+      <version>6.10</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.logmanager</groupId>
+      <artifactId>log4j2-jboss-logmanager</artifactId>
     </dependency>
   </dependencies>
   <build>
