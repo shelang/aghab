@@ -202,7 +202,7 @@ public class LinksServiceImpl implements LinksService {
     var originHeader = Objects.nonNull(dto.getOrigin()) ? dto.getOrigin() : "";
     var host = (hostHeader.isBlank() ? originHeader : hostHeader);
     var rHost = host.isBlank() ? redirectBaseUrl : host;
-    linkDTO.setRedirectTo(rHost + "/r/" + linkDTO.getHash());
+    linkDTO.setRedirectTo(rHost + linkDTO.getHash());
     return linkDTO;
   }
 
