@@ -38,7 +38,7 @@ public interface LinksMapper extends EntityMapper<LinkDTO, Link> {
     if (Objects.isNull(alternatives) || alternatives.isEmpty()) return Collections.emptySet();
     var os = new HashSet<LinkAlternativeDTO>();
     for (var alt : alternatives) {
-      AlternativeLinkOSType altType = AlternativeLinkOSType.valueOf(alt.getKey().toUpperCase());
+      AlternativeLinkOSType altType = AlternativeLinkOSType.from(alt.getKey().toUpperCase());
       if (!AlternativeLinkOSType.UNPARSEABLE.equals(altType)) os.add(alt);
     }
     return os;
