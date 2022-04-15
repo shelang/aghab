@@ -1,6 +1,8 @@
 package io.shelang.aghab.service.link;
 
 import io.shelang.aghab.domain.*;
+import io.shelang.aghab.enums.AlternativeLinkDeviceType;
+import io.shelang.aghab.enums.AlternativeLinkOSType;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.exception.MaxCreateLinkRetryException;
 import io.shelang.aghab.repository.*;
@@ -21,16 +23,24 @@ import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ApplicationScoped
 public class LinksServiceImpl implements LinksService {
 
   private static final byte MAX_RETRY_COUNT = 10;
+
+  private static final List<String> osesAlternativeTypes =
+      Arrays.stream(AlternativeLinkOSType.values()).map(Enum::name).collect(Collectors.toList());
+  private static final List<String> devicesAlternativeTypes =
+      Arrays.stream(AlternativeLinkDeviceType.values())
+          .map(Enum::name)
+          .collect(Collectors.toList());
+
+  private static final LinkAlternativeTypesDTO LINK_ALTERNATIVE_TYPES =
+      new LinkAlternativeTypesDTO().setOs(osesAlternativeTypes).setDevices(devicesAlternativeTypes);
 
   @ConfigProperty(name = "app.create.hash.length.default", defaultValue = "6")
   int defaultHashLength;
@@ -344,10 +354,14 @@ public class LinksServiceImpl implements LinksService {
     return linksMapper.toDTO(linksRepository.findById(link.getId()));
   }
 
+  @Override
+  public LinkAlternativeTypesDTO getLinkAlternativeTypes() {
+    return LINK_ALTERNATIVE_TYPES;
+  }
+
   private LinkUser validateLinkUser(String hash) {
     return linkUserRepository
-        .findByIdOptional(
-            new LinkUser.LinkUserId(tokenService.getAccessTokenUserId(), hash))
+        .findByIdOptional(new LinkUser.LinkUserId(tokenService.getAccessTokenUserId(), hash))
         .orElseThrow(ForbiddenException::new);
   }
 }

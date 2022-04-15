@@ -1,6 +1,8 @@
 package io.shelang.aghab.resource;
 
+import io.quarkus.security.Authenticated;
 import io.shelang.aghab.role.Roles;
+import io.shelang.aghab.service.dto.LinkAlternativeTypesDTO;
 import io.shelang.aghab.service.dto.LinkCreateDTO;
 import io.shelang.aghab.service.dto.LinkDTO;
 import io.shelang.aghab.service.dto.LinksUserDTO;
@@ -75,5 +77,13 @@ public class LinksResource {
   public Response delete(@PathParam Long id) {
     linksService.delete(id);
     return Response.noContent().build();
+  }
+
+  @GET
+  @Authenticated
+  @Path("/alt/types")
+  @Produces(MediaType.APPLICATION_JSON)
+  public LinkAlternativeTypesDTO getLinkAlternativeTypes() {
+    return linksService.getLinkAlternativeTypes();
   }
 }
