@@ -59,7 +59,7 @@ public final class UserAgentAnalyzer {
         break;
     }
 
-    return List.of(device, os);
+    return List.of(device.toUpperCase(), os.toUpperCase());
   }
 
   public static UserAgent.ImmutableUserAgent parse(String ua) {
