@@ -39,8 +39,10 @@ nb-configuration.xml
 .env
 
 # JWT secret files
+scripts/rsaPrivateKey.pem
 scripts/privateKey.pem
 scripts/publicKey.pem
-scripts/rsaPrivateKey.pem
+src/main/resources/privateKey.pem
+src/main/resources/publicKey.pem
 
 src/main/resources/**/*.pem
