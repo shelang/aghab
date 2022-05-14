@@ -1,17 +1,21 @@
 package io.shelang.aghab.resource;
 
 import io.shelang.aghab.role.Roles;
-import io.shelang.aghab.service.webhook.WebhookService;
- import io.shelang.aghab.service.dto.WebhookDTO;
+import io.shelang.aghab.service.dto.WebhookDTO;
 import io.shelang.aghab.service.dto.WebhooksDTO;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
-import org.jboss.resteasy.annotations.jaxrs.QueryParam;
-
+import io.shelang.aghab.service.webhook.WebhookService;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
+import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
 @Path("/api/v1/webhook")
 @RequestScoped

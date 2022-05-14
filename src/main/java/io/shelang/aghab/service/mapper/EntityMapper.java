@@ -5,16 +5,16 @@ import java.util.Set;
 
 public interface EntityMapper<D, E> {
 
-  public E toEntity(D dto);
+  E toEntity(D dto);
 
-  public D toDTO(E entity);
+  D toDTO(E entity);
 
-  public List<E> toEntity(List<D> dtoList);
+  List<E> toEntity(List<D> dtoList);
 
-  public List<D> toDTO(List<E> entityList);
+  List<D> toDTO(List<E> entityList);
 
-  public Set<E> toEntity(Set<D> dtoList);
+  Set<E> toEntity(Set<D> dtoList);
 
-  public Set<D> toDTO(Set<E> entityList);
+  Set<D> toDTO(Set<E> entityList);
 
 }

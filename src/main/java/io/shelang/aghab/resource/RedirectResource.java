@@ -12,14 +12,11 @@ import io.shelang.aghab.service.redirect.RedirectService;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
-import lombok.extern.java.Log;
-import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
-
+import java.util.logging.Level;
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import java.util.logging.Level;
+import lombok.extern.java.Log;
 
 @PermitAll
 @RequestScoped
@@ -27,7 +24,8 @@ import java.util.logging.Level;
 @RouteBase(path = "/r")
 public class RedirectResource {
 
-  @Inject RedirectService redirectService;
+  @Inject
+  RedirectService redirectService;
 
   @Inject
   @Location("iframe.html")
@@ -39,7 +37,7 @@ public class RedirectResource {
 
   @Route(path = "/:hash", methods = Route.HttpMethod.GET)
   public Uni<String> redirect(RoutingContext rc,
-                              @SuppressWarnings("unused") @Param("hash") String hash) {
+      @SuppressWarnings("unused") @Param("hash") String hash) {
     return redirectService
         .redirectBy(rc)
         .onFailure()

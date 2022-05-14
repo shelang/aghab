@@ -9,11 +9,10 @@ import io.shelang.aghab.repository.LinksRepository;
 import io.shelang.aghab.repository.WebhookLinkRepository;
 import io.shelang.aghab.repository.WebhookRepository;
 import io.shelang.aghab.service.webhook.WebhookService;
-
+import java.time.Instant;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.time.Instant;
 
 @ApplicationScoped
 public class WebhookCallConsumer {
@@ -21,11 +20,16 @@ public class WebhookCallConsumer {
   private static final String LOCK_EXPIRE = "100";
 
   @SuppressWarnings("CdiInjectionPointsInspection")
-  @Inject RedisClient redisClient;
-  @Inject LinksRepository linksRepository;
-  @Inject WebhookService webhookService;
-  @Inject WebhookRepository webhookRepository;
-  @Inject WebhookLinkRepository webhookLinkRepository;
+  @Inject
+  RedisClient redisClient;
+  @Inject
+  LinksRepository linksRepository;
+  @Inject
+  WebhookService webhookService;
+  @Inject
+  WebhookRepository webhookRepository;
+  @Inject
+  WebhookLinkRepository webhookLinkRepository;
 
   @ConsumeEvent(value = EventType.WEBHOOK_CALL, blocking = true)
   @Transactional
@@ -42,7 +46,8 @@ public class WebhookCallConsumer {
     webhookService.call(event.getWebhookId(), event.getHash());
 
     webhookLinkRepository.persistAndFlush(
-        new WebhookLink(new WebhookLink.WebhookLinkId(event.getLinkId(), event.getWebhookId()), 1L));
+        new WebhookLink(new WebhookLink.WebhookLinkId(event.getLinkId(), event.getWebhookId()),
+            1L));
 
     linksRepository.removeWebhookLink(event.getLinkId());
   }

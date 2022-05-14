@@ -5,13 +5,12 @@ import io.shelang.aghab.domain.LinkExpiration;
 import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.repository.LinkExpirationRepository;
 import io.shelang.aghab.repository.LinksRepository;
-import lombok.extern.slf4j.Slf4j;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ApplicationScoped
@@ -37,7 +36,9 @@ public class ExpireLinkJob {
     while (hasData) {
       List<LinkExpiration> expired =
           linkExpirationRepository.find("expireAt < now()").page(0, 20).list();
-      if (!expired.isEmpty()) log.info("{} expired links fetched", expired.size());
+      if (!expired.isEmpty()) {
+        log.info("{} expired links fetched", expired.size());
+      }
       var linkIds = new ArrayList<>();
       for (LinkExpiration linkExpiration : expired) {
         linkIds.add(linkExpiration.getLinkId());

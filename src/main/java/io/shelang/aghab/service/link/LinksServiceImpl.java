@@ -1,12 +1,27 @@
 package io.shelang.aghab.service.link;
 
-import io.shelang.aghab.domain.*;
+import io.shelang.aghab.domain.Link;
+import io.shelang.aghab.domain.LinkAlternative;
+import io.shelang.aghab.domain.LinkExpiration;
+import io.shelang.aghab.domain.LinkMeta;
+import io.shelang.aghab.domain.LinkUser;
+import io.shelang.aghab.domain.User;
 import io.shelang.aghab.enums.AlternativeLinkDeviceType;
 import io.shelang.aghab.enums.AlternativeLinkOSType;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.exception.MaxCreateLinkRetryException;
-import io.shelang.aghab.repository.*;
-import io.shelang.aghab.service.dto.*;
+import io.shelang.aghab.repository.LinkAlternativeRepository;
+import io.shelang.aghab.repository.LinkExpirationRepository;
+import io.shelang.aghab.repository.LinkUserRepository;
+import io.shelang.aghab.repository.LinksRepository;
+import io.shelang.aghab.repository.UserRepository;
+import io.shelang.aghab.service.dto.LinkAlternativeDTO;
+import io.shelang.aghab.service.dto.LinkAlternativeTypesDTO;
+import io.shelang.aghab.service.dto.LinkCreateDTO;
+import io.shelang.aghab.service.dto.LinkDTO;
+import io.shelang.aghab.service.dto.LinksUserDTO;
+import io.shelang.aghab.service.dto.ScriptDTO;
+import io.shelang.aghab.service.dto.WebhookDTO;
 import io.shelang.aghab.service.mapper.LinkUserMapper;
 import io.shelang.aghab.service.mapper.LinksMapper;
 import io.shelang.aghab.service.script.ScriptService;
@@ -14,17 +29,20 @@ import io.shelang.aghab.service.shorty.Shorty;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.webhook.WebhookService;
 import io.shelang.aghab.util.NumberUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Slf4j
 @ApplicationScoped
@@ -33,10 +51,14 @@ public class LinksServiceImpl implements LinksService {
   private static final byte MAX_RETRY_COUNT = 10;
 
   private static final List<String> osesAlternativeTypes =
-      Arrays.stream(AlternativeLinkOSType.values()).map(Enum::name).collect(Collectors.toList());
+      Arrays.stream(AlternativeLinkOSType.values())
+          .map(Enum::name)
+          .map(String::toLowerCase)
+          .collect(Collectors.toList());
   private static final List<String> devicesAlternativeTypes =
       Arrays.stream(AlternativeLinkDeviceType.values())
           .map(Enum::name)
+          .map(String::toLowerCase)
           .collect(Collectors.toList());
 
   private static final LinkAlternativeTypesDTO LINK_ALTERNATIVE_TYPES =
@@ -48,17 +70,28 @@ public class LinksServiceImpl implements LinksService {
   @ConfigProperty(name = "app.create.redirect.base-url", defaultValue = "")
   String redirectBaseUrl;
 
-  @Inject Shorty shortyService;
-  @Inject TokenService tokenService;
-  @Inject LinksRepository linksRepository;
-  @Inject LinkExpirationRepository linkExpirationRepository;
-  @Inject LinksMapper linksMapper;
-  @Inject LinkUserMapper linkUserMapper;
-  @Inject UserRepository userRepository;
-  @Inject LinkUserRepository linkUserRepository;
-  @Inject LinkAlternativeRepository linkAlternativeRepository;
-  @Inject ScriptService scriptService;
-  @Inject WebhookService webhookService;
+  @Inject
+  Shorty shortyService;
+  @Inject
+  TokenService tokenService;
+  @Inject
+  LinksRepository linksRepository;
+  @Inject
+  LinkExpirationRepository linkExpirationRepository;
+  @Inject
+  LinksMapper linksMapper;
+  @Inject
+  LinkUserMapper linkUserMapper;
+  @Inject
+  UserRepository userRepository;
+  @Inject
+  LinkUserRepository linkUserRepository;
+  @Inject
+  LinkAlternativeRepository linkAlternativeRepository;
+  @Inject
+  ScriptService scriptService;
+  @Inject
+  WebhookService webhookService;
 
   private Link findById(Long id) {
     return linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
@@ -69,7 +102,9 @@ public class LinksServiceImpl implements LinksService {
     page = NumberUtil.normalizeValue(page, 1) - 1;
     size = NumberUtil.normalizeValue(size, 10);
 
-    if (size > 50) size = 50;
+    if (size > 50) {
+      size = 50;
+    }
 
     List<LinkUser> result =
         linkUserRepository.page(tokenService.getAccessTokenUserId(), q, page, size);
@@ -142,11 +177,13 @@ public class LinksServiceImpl implements LinksService {
   private String generateHash(LinkCreateDTO dto) {
     String hash;
 
-    if (Objects.nonNull(dto.getHash()) && dto.getHash().length() > 0) hash = dto.getHash();
-    else
+    if (Objects.nonNull(dto.getHash()) && dto.getHash().length() > 0) {
+      hash = dto.getHash();
+    } else {
       hash =
           shortyService.generate(
               Objects.nonNull(dto.getHashLength()) ? dto.getHashLength() : defaultHashLength);
+    }
 
     return hash;
   }
@@ -154,7 +191,9 @@ public class LinksServiceImpl implements LinksService {
   private Link initCreation(LinkCreateDTO dto) {
     String hash = generateHash(dto);
 
-    if (!dto.getUrl().contains("://")) dto.setUrl("http://" + dto.getUrl());
+    if (!dto.getUrl().contains("://")) {
+      dto.setUrl("http://" + dto.getUrl());
+    }
 
     var linkMeta = buildLinkMeta(dto);
 
@@ -163,8 +202,9 @@ public class LinksServiceImpl implements LinksService {
       dto.setType(RedirectType.SCRIPT.name()).setRedirectCode((short) 200);
       log.info("[CREATE LINK] script id {} exist.", byId.getId());
     } else {
-      if (RedirectType.SCRIPT.equals(RedirectType.from(dto.getType())))
+      if (RedirectType.SCRIPT.equals(RedirectType.from(dto.getType()))) {
         dto.setType(RedirectType.REDIRECT.name());
+      }
     }
 
     if (Objects.nonNull(dto.getWebhookId())) {
@@ -195,7 +235,9 @@ public class LinksServiceImpl implements LinksService {
             .findByIdOptional(tokenService.getAccessTokenUserId())
             .orElseThrow(NotFoundException::new);
     byte retry = 0;
-    if (dto.getHash() != null) retry = MAX_RETRY_COUNT - 1;
+    if (dto.getHash() != null) {
+      retry = MAX_RETRY_COUNT - 1;
+    }
     var link = initCreation(dto);
     persistAndRetry(link, retry);
     persistLinkUser(link, user);
@@ -226,7 +268,9 @@ public class LinksServiceImpl implements LinksService {
 
   @Transactional
   private void persistAndRetry(Link link, byte retryCount) {
-    if (retryCount >= MAX_RETRY_COUNT) throw new MaxCreateLinkRetryException();
+    if (retryCount >= MAX_RETRY_COUNT) {
+      throw new MaxCreateLinkRetryException();
+    }
     var existLink = linksRepository.findByHash(link.getHash()).orElse(null);
     if (Objects.nonNull(existLink)) {
       reSetHash(link, link.getHash().length());
@@ -316,9 +360,11 @@ public class LinksServiceImpl implements LinksService {
     } else {
       link.setScriptId(null);
       if (Objects.nonNull(request.getRedirectCode())
-          && (request.getRedirectCode() >= 301 || request.getRedirectCode() <= 308))
+          && (request.getRedirectCode() >= 301 || request.getRedirectCode() <= 308)) {
         link.setRedirectCode(request.getRedirectCode());
-      else link.setRedirectCode((short) 301);
+      } else {
+        link.setRedirectCode((short) 301);
+      }
     }
     link.setType(newType);
   }

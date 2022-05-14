@@ -4,13 +4,13 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
 import io.shelang.aghab.domain.Webhook;
-
-import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Objects;
+import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class WebhookRepository implements PanacheRepository<Webhook> {
+
   public List<Webhook> search(String name, Long userId, Page page) {
     PanacheQuery<Webhook> query =
         find(

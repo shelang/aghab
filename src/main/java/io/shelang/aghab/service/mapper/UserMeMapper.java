@@ -5,4 +5,6 @@ import io.shelang.aghab.service.dto.UserMeDTO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "cdi")
-public interface UserMeMapper extends EntityMapper<UserMeDTO, User> {}
+public interface UserMeMapper extends EntityMapper<UserMeDTO, User> {
+
+}

@@ -23,9 +23,9 @@ public enum AnalyticBucketType {
 
   public static Optional<AnalyticBucketType> from(String type) {
     try {
-        return Optional.of(AnalyticBucketType.valueOf(type.toUpperCase()));
+      return Optional.of(AnalyticBucketType.valueOf(type.toUpperCase()));
     } catch (NullPointerException | IllegalArgumentException ex) {
-        return Optional.empty();
+      return Optional.empty();
     }
   }
 }

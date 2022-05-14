@@ -9,8 +9,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class WebhookDTO {
 
-    private Long id;
-    private String name;
-    private String url;
+  private Long id;
+  private String name;
+  private String url;
 
 }

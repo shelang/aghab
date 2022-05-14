@@ -5,4 +5,6 @@ import io.shelang.aghab.service.dto.WebhookDTO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "cdi")
-public interface WebhookMapper extends EntityMapper<WebhookDTO, Webhook> {}
+public interface WebhookMapper extends EntityMapper<WebhookDTO, Webhook> {
+
+}

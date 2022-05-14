@@ -1,10 +1,9 @@
 package io.shelang.aghab.service.uaa;
 
-import nl.basjes.parse.useragent.UserAgent;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import nl.basjes.parse.useragent.UserAgent;
 
 public final class UserAgentAnalyzer {
 
@@ -31,7 +30,9 @@ public final class UserAgentAnalyzer {
     String os = agent.get(UserAgent.OPERATING_SYSTEM_NAME).getValue().toLowerCase();
     String device = agent.get(UserAgent.DEVICE_CLASS).getValue().toLowerCase();
 
-    if (device.equals("phone")) device = "mobile";
+    if (device.equals("phone")) {
+      device = "mobile";
+    }
 
     switch (os) {
       case "darwin (ios)":

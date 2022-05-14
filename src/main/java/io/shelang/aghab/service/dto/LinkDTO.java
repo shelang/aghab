@@ -4,18 +4,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.enums.RedirectType;
+import java.time.Instant;
+import java.util.Set;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-
-import java.time.Instant;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
 @JsonInclude(Include.NON_NULL)
 public class LinkDTO {
+
   private Long id;
   private String hash;
   private String url;

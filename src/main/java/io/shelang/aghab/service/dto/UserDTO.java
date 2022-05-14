@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class UserDTO {
 
-    private Long id;
-    private String username;
+  private Long id;
+  private String username;
 
 }

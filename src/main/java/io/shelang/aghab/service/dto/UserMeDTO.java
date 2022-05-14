@@ -9,8 +9,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class UserMeDTO {
 
-    private Long id;
-    private String username;
-    private String token;
+  private Long id;
+  private String username;
+  private String token;
 
 }

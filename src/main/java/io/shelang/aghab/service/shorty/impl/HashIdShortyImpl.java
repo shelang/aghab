@@ -2,16 +2,18 @@ package io.shelang.aghab.service.shorty.impl;
 
 import io.shelang.aghab.exception.InvalidLengthOfHash;
 import io.shelang.aghab.service.shorty.Shorty;
-import org.hashids.Hashids;
-
-import javax.enterprise.context.ApplicationScoped;
 import java.time.Instant;
+import javax.enterprise.context.ApplicationScoped;
+import org.hashids.Hashids;
 
 @ApplicationScoped
 public class HashIdShortyImpl implements Shorty {
+
   @Override
   public String generate(int length) throws InvalidLengthOfHash {
-    if (length < 1) throw new InvalidLengthOfHash();
+    if (length < 1) {
+      throw new InvalidLengthOfHash();
+    }
 
     StringBuilder gen = new StringBuilder(randomString());
 
@@ -19,7 +21,9 @@ public class HashIdShortyImpl implements Shorty {
       gen.append(randomString());
     }
 
-    if (gen.length() > length) return gen.substring(0, length);
+    if (gen.length() > length) {
+      return gen.substring(0, length);
+    }
 
     return gen.toString();
   }

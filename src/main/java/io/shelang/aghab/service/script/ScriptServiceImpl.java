@@ -5,28 +5,31 @@ import io.shelang.aghab.domain.Script;
 import io.shelang.aghab.domain.ScriptUser;
 import io.shelang.aghab.repository.ScriptRepository;
 import io.shelang.aghab.repository.ScriptUserRepository;
-import io.shelang.aghab.service.mapper.ScriptMapper;
 import io.shelang.aghab.service.dto.ScriptDTO;
+import io.shelang.aghab.service.mapper.ScriptMapper;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.util.NumberUtil;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
-
+import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
-import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 public class ScriptServiceImpl implements ScriptService {
 
-  @Inject ScriptRepository scriptRepository;
-  @Inject ScriptUserRepository scriptUserRepository;
-  @Inject ScriptMapper scriptMapper;
-  @Inject TokenService tokenService;
+  @Inject
+  ScriptRepository scriptRepository;
+  @Inject
+  ScriptUserRepository scriptUserRepository;
+  @Inject
+  ScriptMapper scriptMapper;
+  @Inject
+  TokenService tokenService;
 
   public static ScriptDTO from(RowSet<Row> rows) {
     var result = new ScriptDTO();
@@ -52,7 +55,9 @@ public class ScriptServiceImpl implements ScriptService {
     page = NumberUtil.normalizeValue(page, 1) - 1;
     size = NumberUtil.normalizeValue(size, 10);
 
-    if (size > 50) size = 50;
+    if (size > 50) {
+      size = 50;
+    }
 
     return scriptMapper.toDTO(
         scriptRepository.search(name, tokenService.getAccessTokenUserId(), Page.of(page, size)));
@@ -81,8 +86,9 @@ public class ScriptServiceImpl implements ScriptService {
   private Script getValidatedScript(Long id) {
     ScriptUser scriptUser = getScriptUser(id).orElseThrow(ForbiddenException::new);
     Script script = scriptRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
-    if (!tokenService.getAccessTokenUserId().equals(scriptUser.getUserId()))
+    if (!tokenService.getAccessTokenUserId().equals(scriptUser.getUserId())) {
       throw new ForbiddenException();
+    }
     return script;
   }
 
@@ -94,7 +100,9 @@ public class ScriptServiceImpl implements ScriptService {
   private void saveScriptUser(Script script) {
     ScriptUser scriptUser = makeScriptUser(script.getId());
     Optional<ScriptUser> exist = scriptUserRepository.findByIdOptional(scriptUser.getId());
-    if (exist.isEmpty()) scriptUserRepository.persistAndFlush(scriptUser);
+    if (exist.isEmpty()) {
+      scriptUserRepository.persistAndFlush(scriptUser);
+    }
   }
 
   private ScriptUser makeScriptUser(Long id) {

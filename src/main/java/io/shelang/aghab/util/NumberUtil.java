@@ -4,14 +4,14 @@ import java.util.Objects;
 
 public final class NumberUtil {
 
-    private NumberUtil() throws IllegalAccessException {
-        throw new IllegalAccessException();
-    }
+  private NumberUtil() throws IllegalAccessException {
+    throw new IllegalAccessException();
+  }
 
-    public static int normalizeValue(Integer value, int defaultValue) {
-        if (Objects.isNull(value)) {
-            value = defaultValue;
-        }
-        return value;
+  public static int normalizeValue(Integer value, int defaultValue) {
+    if (Objects.isNull(value)) {
+      value = defaultValue;
     }
+    return value;
+  }
 }

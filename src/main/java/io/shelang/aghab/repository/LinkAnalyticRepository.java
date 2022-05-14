@@ -4,14 +4,13 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.shelang.aghab.domain.LinkAnalytics;
 import io.shelang.aghab.enums.AnalyticBucketType;
 import io.shelang.aghab.service.dto.AnalyticBucket;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.Query;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.Query;
 
 @ApplicationScoped
 public class LinkAnalyticRepository implements PanacheRepository<LinkAnalytics> {
