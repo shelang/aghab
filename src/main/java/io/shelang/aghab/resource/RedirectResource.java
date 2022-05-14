@@ -29,10 +29,12 @@ public class RedirectResource {
 
   @Inject
   @Location("iframe.html")
+  @SuppressWarnings("CdiInjectionPointsInspection")
   Template iframeTemplate;
 
   @Inject
   @Location("script.html")
+  @SuppressWarnings("CdiInjectionPointsInspection")
   Template scriptTemplate;
 
   @Route(path = "/:hash", methods = Route.HttpMethod.GET)

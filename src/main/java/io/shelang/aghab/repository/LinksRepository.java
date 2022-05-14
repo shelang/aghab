@@ -12,7 +12,7 @@ public class LinksRepository implements PanacheRepository<Link> {
     return find("hash", hash).firstResultOptional();
   }
 
-  public boolean removeWebhookLink(Long id) {
-    return update("webhook_id = NULL WHERE id = ?1", id) > 0;
+  public void removeWebhookLink(Long id) {
+    update("webhook_id = NULL WHERE id = ?1", id);
   }
 }

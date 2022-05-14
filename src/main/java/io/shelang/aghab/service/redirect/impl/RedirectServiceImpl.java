@@ -40,10 +40,8 @@ public class RedirectServiceImpl implements RedirectService {
   final EventBus bus;
 
   @Inject
-  public RedirectServiceImpl(
-      @SuppressWarnings("CdiInjectionPointsInspection") @Default PgPool client,
-      LinksService linksService,
-      @SuppressWarnings("CdiInjectionPointsInspection") EventBus bus) {
+  @SuppressWarnings("CdiInjectionPointsInspection")
+  public RedirectServiceImpl(@Default PgPool client, LinksService linksService, EventBus bus) {
     this.client = client;
     this.linksService = linksService;
     this.bus = bus;

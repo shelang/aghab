@@ -19,7 +19,7 @@ public class APITokenAuthenticationFilter implements ContainerRequestFilter {
   UserRepository userRepository;
 
   @Override
-  public void filter(ContainerRequestContext ctx) throws IOException {
+  public void filter(ContainerRequestContext ctx) {
     final SecurityContext securityContext = ctx.getSecurityContext();
     if (securityContext != null) {
       DefaultJWTCallerPrincipal userPrincipal =
