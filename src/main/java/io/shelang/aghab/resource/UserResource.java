@@ -39,6 +39,7 @@ public class UserResource {
   }
 
   @GET
+  @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}")
   public UserDTO get(
       @PathParam("linkId") Long linkId,
@@ -64,6 +65,7 @@ public class UserResource {
   }
 
   @PUT
+  @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   @RolesAllowed({Roles.BOSS, Roles.USER})
   public UserDTO update(@PathParam("id") Long id, UserCredentialDTO userCredential) {

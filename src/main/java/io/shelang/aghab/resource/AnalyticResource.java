@@ -30,6 +30,7 @@ public class AnalyticResource {
   }
 
   @GET
+  @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}")
   public AnalyticDTO get(
       @PathParam("linkId") String linkId,

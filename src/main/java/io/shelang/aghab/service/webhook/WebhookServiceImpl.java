@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 @ApplicationScoped
@@ -83,7 +84,10 @@ public class WebhookServiceImpl implements WebhookService {
                         .build(SimplePostAPI.class);
                 WebhookAPICallDTO dto =
                     new WebhookAPICallDTO().setHash(hash).setDate(Instant.now());
-                api.executePost(dto);
+                //noinspection EmptyTryBlock
+                try (Response ignored = api.executePost(dto)) {
+                  // empty block
+                }
               } catch (Exception e) {
                 e.printStackTrace();
               }

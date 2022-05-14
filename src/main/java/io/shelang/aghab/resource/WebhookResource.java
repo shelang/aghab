@@ -31,6 +31,7 @@ public class WebhookResource {
   }
 
   @GET
+  @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   public WebhookDTO get(@PathParam("id") Long id) {
     return webhookService.getById(id);
@@ -52,6 +53,7 @@ public class WebhookResource {
   }
 
   @PUT
+  @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   public WebhookDTO get(@PathParam("id") Long id, @Valid WebhookDTO dto) {
     return webhookService.update(id, dto);
