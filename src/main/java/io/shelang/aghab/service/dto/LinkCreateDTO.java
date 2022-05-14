@@ -2,23 +2,24 @@ package io.shelang.aghab.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import io.shelang.aghab.enums.LinkStatus;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.ws.rs.HeaderParam;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
 public class LinkCreateDTO {
-  @NotBlank private String url;
+
+  @NotBlank
+  private String url;
   private String hash;
   private Integer hashLength;
   private Instant expireAt;

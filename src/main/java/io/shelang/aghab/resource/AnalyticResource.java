@@ -5,12 +5,16 @@ import io.shelang.aghab.service.analytic.AnalyticService;
 import io.shelang.aghab.service.dto.AnalyticDTO;
 import io.shelang.aghab.service.dto.AnalyticRequestDTO;
 import io.shelang.aghab.service.uaa.UserAgentAnalyzer;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
-
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 @Path("/api/v1/analytics")
 @RequestScoped

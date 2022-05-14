@@ -9,10 +9,10 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class ScriptDTO {
 
-    private Long id;
-    private String name;
-    private Integer timeout;
-    private String title;
-    private String content;
+  private Long id;
+  private String name;
+  private Integer timeout;
+  private String title;
+  private String content;
 
 }

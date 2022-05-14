@@ -6,13 +6,12 @@ import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.dto.LoginDTO;
 import io.shelang.aghab.service.user.TokenService;
 import io.smallrye.jwt.build.Jwt;
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
+import java.time.Duration;
+import java.time.Instant;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
-import java.time.Duration;
-import java.time.Instant;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @ApplicationScoped
 public class TokenServiceImpl implements TokenService {

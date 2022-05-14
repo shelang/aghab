@@ -1,11 +1,20 @@
 package io.shelang.aghab.domain;
 
-import lombok.*;
-import lombok.experimental.Accessors;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
@@ -16,7 +25,8 @@ import java.util.Objects;
 @Table(name = "webhook_user")
 public class WebhookUser {
 
-  @EmbeddedId private WebhookUserId id;
+  @EmbeddedId
+  private WebhookUserId id;
 
   @Column(name = "webhook_id", insertable = false, updatable = false)
   private Long webhookId;
@@ -29,13 +39,15 @@ public class WebhookUser {
   @Setter
   @ToString
   public static class WebhookUserId implements Serializable {
+
     @Column(name = "webhook_id")
     private Long webhookId;
 
     @Column(name = "user_id")
     private Long userId;
 
-    public WebhookUserId() {}
+    public WebhookUserId() {
+    }
 
     public WebhookUserId(Long userId, Long webhookId) {
       this.userId = userId;
@@ -44,8 +56,12 @@ public class WebhookUser {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
       WebhookUserId that = (WebhookUserId) o;
       return userId.equals(that.userId) && webhookId.equals(that.webhookId);
     }

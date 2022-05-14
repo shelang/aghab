@@ -9,8 +9,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class UserCredentialDTO {
 
-    private Long id;
-    private String username;
-    private String password;
+  private Long id;
+  private String username;
+  private String password;
 
 }

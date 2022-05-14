@@ -6,13 +6,12 @@ import io.shelang.aghab.enums.AlternativeLinkDeviceType;
 import io.shelang.aghab.enums.AlternativeLinkOSType;
 import io.shelang.aghab.service.dto.LinkAlternativeDTO;
 import io.shelang.aghab.service.dto.LinkDTO;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(
     componentModel = "cdi",
@@ -35,21 +34,29 @@ public interface LinksMapper extends EntityMapper<LinkDTO, Link> {
   LinkDTO toDTO(Link entity);
 
   default Set<LinkAlternativeDTO> toOs(Set<LinkAlternativeDTO> alternatives) {
-    if (Objects.isNull(alternatives) || alternatives.isEmpty()) return Collections.emptySet();
+    if (Objects.isNull(alternatives) || alternatives.isEmpty()) {
+      return Collections.emptySet();
+    }
     var os = new HashSet<LinkAlternativeDTO>();
     for (var alt : alternatives) {
       AlternativeLinkOSType altType = AlternativeLinkOSType.from(alt.getKey().toUpperCase());
-      if (!AlternativeLinkOSType.UNPARSEABLE.equals(altType)) os.add(alt);
+      if (!AlternativeLinkOSType.UNPARSEABLE.equals(altType)) {
+        os.add(alt);
+      }
     }
     return os;
   }
 
   default Set<LinkAlternativeDTO> toDevices(Set<LinkAlternativeDTO> alternatives) {
-    if (Objects.isNull(alternatives) || alternatives.isEmpty()) return Collections.emptySet();
+    if (Objects.isNull(alternatives) || alternatives.isEmpty()) {
+      return Collections.emptySet();
+    }
     var devices = new HashSet<LinkAlternativeDTO>();
     for (var alt : alternatives) {
       AlternativeLinkDeviceType altType = AlternativeLinkDeviceType.from(alt.getKey());
-      if (!AlternativeLinkDeviceType.UNPARSEABLE.equals(altType)) devices.add(alt);
+      if (!AlternativeLinkDeviceType.UNPARSEABLE.equals(altType)) {
+        devices.add(alt);
+      }
     }
     return devices;
   }

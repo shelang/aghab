@@ -5,30 +5,33 @@ import io.shelang.aghab.domain.Webhook;
 import io.shelang.aghab.domain.WebhookUser;
 import io.shelang.aghab.repository.WebhookRepository;
 import io.shelang.aghab.repository.WebhookUserRepository;
-import io.shelang.aghab.service.mapper.WebhookMapper;
-import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.dto.WebhookAPICallDTO;
 import io.shelang.aghab.service.dto.WebhookDTO;
+import io.shelang.aghab.service.mapper.WebhookMapper;
+import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.util.NumberUtil;
-import org.eclipse.microprofile.rest.client.RestClientBuilder;
-
+import java.net.URI;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
-import java.net.URI;
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 @ApplicationScoped
 public class WebhookServiceImpl implements WebhookService {
 
-  @Inject WebhookRepository webhookRepository;
-  @Inject WebhookUserRepository webhookUserRepository;
-  @Inject WebhookMapper webhookMapper;
-  @Inject TokenService tokenService;
+  @Inject
+  WebhookRepository webhookRepository;
+  @Inject
+  WebhookUserRepository webhookUserRepository;
+  @Inject
+  WebhookMapper webhookMapper;
+  @Inject
+  TokenService tokenService;
 
   @Override
   public WebhookDTO getById(Long id) {
@@ -40,7 +43,9 @@ public class WebhookServiceImpl implements WebhookService {
     page = NumberUtil.normalizeValue(page, 1) - 1;
     size = NumberUtil.normalizeValue(size, 10);
 
-    if (size > 50) size = 50;
+    if (size > 50) {
+      size = 50;
+    }
 
     return webhookMapper.toDTO(
         webhookRepository.search(name, tokenService.getAccessTokenUserId(), Page.of(page, size)));
@@ -88,8 +93,9 @@ public class WebhookServiceImpl implements WebhookService {
   private Webhook getValidatedWebhook(Long id) {
     WebhookUser webhookUser = getWebhookUser(id).orElseThrow(ForbiddenException::new);
     Webhook webhook = webhookRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
-    if (!tokenService.getAccessTokenUserId().equals(webhookUser.getUserId()))
+    if (!tokenService.getAccessTokenUserId().equals(webhookUser.getUserId())) {
       throw new ForbiddenException();
+    }
     return webhook;
   }
 
@@ -101,7 +107,9 @@ public class WebhookServiceImpl implements WebhookService {
   private void saveWebhookUser(Webhook webhook) {
     WebhookUser webhookUser = makeWebhookUser(webhook.getId());
     Optional<WebhookUser> exist = webhookUserRepository.findByIdOptional(webhookUser.getId());
-    if (exist.isEmpty()) webhookUserRepository.persistAndFlush(webhookUser);
+    if (exist.isEmpty()) {
+      webhookUserRepository.persistAndFlush(webhookUser);
+    }
   }
 
   private WebhookUser makeWebhookUser(Long id) {

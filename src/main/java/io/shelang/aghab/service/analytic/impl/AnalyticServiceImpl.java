@@ -7,16 +7,15 @@ import io.shelang.aghab.service.analytic.AnalyticService;
 import io.shelang.aghab.service.dto.AnalyticBucket;
 import io.shelang.aghab.service.dto.AnalyticDTO;
 import io.shelang.aghab.service.dto.AnalyticRequestDTO;
-import lombok.extern.slf4j.Slf4j;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.NotFoundException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.enterprise.context.ApplicationScoped;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ApplicationScoped
@@ -33,12 +32,16 @@ public class AnalyticServiceImpl implements AnalyticService {
 
   private Instant toInstant(Object input, Instant defaultValue) {
     try {
-      if (input instanceof String) return Instant.ofEpochMilli(Long.parseLong((String) input));
+      if (input instanceof String) {
+        return Instant.ofEpochMilli(Long.parseLong((String) input));
+      }
     } catch (Exception ignore) {
       // ignored
     }
     try {
-      if (input instanceof String) return Instant.parse((String) input);
+      if (input instanceof String) {
+        return Instant.parse((String) input);
+      }
       return defaultValue;
     } catch (Exception ignore) {
       log.error("[Analytics] Can not parse {}", input);
@@ -58,7 +61,9 @@ public class AnalyticServiceImpl implements AnalyticService {
     AnalyticBucketType.from(request.getBucket())
         .ifPresentOrElse(
             type -> {
-              buckets.set(linkAnalyticRepository.groupByTypeAndLinkIdAndCreateAtBetween(type, linkId, f, t));
+              buckets.set(
+                  linkAnalyticRepository.groupByTypeAndLinkIdAndCreateAtBetween(type, linkId, f,
+                      t));
               count.set(buckets.get().stream().map(AnalyticBucket::getCount).reduce(0L, Long::sum));
             },
             () ->

@@ -5,19 +5,20 @@ import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.dto.LoginDTO;
 import io.shelang.aghab.service.user.AuthService;
 import io.shelang.aghab.service.user.TokenService;
-import org.mindrot.jbcrypt.BCrypt;
-
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
+import org.mindrot.jbcrypt.BCrypt;
 
 @ApplicationScoped
 public class AuthServiceImpl implements AuthService {
 
-  @Inject UserRepository userRepository;
-  @Inject TokenService tokenService;
+  @Inject
+  UserRepository userRepository;
+  @Inject
+  TokenService tokenService;
 
   @Override
   public LoginDTO login(String username, String password) {

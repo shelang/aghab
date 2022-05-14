@@ -6,12 +6,17 @@ import io.shelang.aghab.service.dto.UserDTO;
 import io.shelang.aghab.service.dto.UserMeDTO;
 import io.shelang.aghab.service.dto.UsersDTO;
 import io.shelang.aghab.service.user.UserService;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
-
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 @Path("/api/v1/users")
 @RequestScoped

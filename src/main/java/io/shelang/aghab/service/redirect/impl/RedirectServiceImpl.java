@@ -19,15 +19,14 @@ import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import io.vertx.mutiny.sqlclient.Tuple;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
 @ApplicationScoped
 public class RedirectServiceImpl implements RedirectService {
@@ -41,9 +40,10 @@ public class RedirectServiceImpl implements RedirectService {
   final EventBus bus;
 
   @Inject
-  public RedirectServiceImpl(@SuppressWarnings("CdiInjectionPointsInspection") @Default PgPool client,
-                             LinksService linksService,
-                             @SuppressWarnings("CdiInjectionPointsInspection") EventBus bus) {
+  public RedirectServiceImpl(
+      @SuppressWarnings("CdiInjectionPointsInspection") @Default PgPool client,
+      LinksService linksService,
+      @SuppressWarnings("CdiInjectionPointsInspection") EventBus bus) {
     this.client = client;
     this.linksService = linksService;
     this.bus = bus;
@@ -87,15 +87,18 @@ public class RedirectServiceImpl implements RedirectService {
   private Function<Set<RedirectDTO>, RedirectDTO> addAlternativeLink(List<String> linkTypes) {
     return sr -> {
       var byHash = new RedirectDTO().setStatusCode((short) 404);
-      if (sr.isEmpty()) return byHash;
+      if (sr.isEmpty()) {
+        return byHash;
+      }
 
       byHash = sr.stream().filter(r -> Objects.isNull(r.getAltKey())).findFirst().orElse(byHash);
 
-      for (RedirectDTO r : sr)
+      for (RedirectDTO r : sr) {
         if (Objects.nonNull(r.getAltKey()) && linkTypes.contains(r.getAltKey().toUpperCase())) {
           byHash = r;
           break;
         }
+      }
 
       return byHash;
     };
@@ -145,7 +148,9 @@ public class RedirectServiceImpl implements RedirectService {
               .onItem()
               .transform(
                   script -> {
-                    if (Objects.isNull(script)) return byHash;
+                    if (Objects.isNull(script)) {
+                      return byHash;
+                    }
                     String title =
                         Objects.nonNull(script.getTitle())
                             ? script.getTitle()

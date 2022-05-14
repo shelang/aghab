@@ -12,22 +12,25 @@ import io.shelang.aghab.service.mapper.UserMeMapper;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.user.UserService;
 import io.shelang.aghab.util.NumberUtil;
-import org.mindrot.jbcrypt.BCrypt;
-
+import java.time.Instant;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
-import java.time.Instant;
-import java.util.List;
+import org.mindrot.jbcrypt.BCrypt;
 
 @ApplicationScoped
 public class UserServiceImpl implements UserService {
 
-  @Inject UserRepository userRepository;
-  @Inject UserMapper userMapper;
-  @Inject UserMeMapper userMeMapper;
-  @Inject TokenService tokenService;
+  @Inject
+  UserRepository userRepository;
+  @Inject
+  UserMapper userMapper;
+  @Inject
+  UserMeMapper userMeMapper;
+  @Inject
+  TokenService tokenService;
 
   @Override
   public UserDTO getById(Long id) {
@@ -40,7 +43,9 @@ public class UserServiceImpl implements UserService {
     page = NumberUtil.normalizeValue(page, 1) - 1;
     size = NumberUtil.normalizeValue(size, 10);
 
-    if (size > 50) size = 50;
+    if (size > 50) {
+      size = 50;
+    }
 
     List<UserDTO> users = userMapper.toDTO(userRepository.search(username, Page.of(page, size)));
     return new UsersDTO().setUsers(users);

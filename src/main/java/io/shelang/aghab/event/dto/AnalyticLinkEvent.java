@@ -1,7 +1,12 @@
 package io.shelang.aghab.event.dto;
 
 import io.vertx.core.MultiMap;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @NoArgsConstructor
@@ -11,8 +16,8 @@ import lombok.*;
 @Builder
 public class AnalyticLinkEvent {
 
-    private Long id;
-    private String hash;
-    private MultiMap headers;
+  private Long id;
+  private String hash;
+  private MultiMap headers;
 
 }

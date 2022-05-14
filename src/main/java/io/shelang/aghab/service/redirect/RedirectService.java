@@ -6,6 +6,6 @@ import io.vertx.ext.web.RoutingContext;
 
 public interface RedirectService {
 
-    Uni<RedirectDTO> redirectBy(RoutingContext rc);
+  Uni<RedirectDTO> redirectBy(RoutingContext rc);
 
 }

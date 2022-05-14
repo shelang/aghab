@@ -8,20 +8,20 @@ import io.shelang.aghab.repository.LinkAnalyticRepository;
 import io.shelang.aghab.service.uaa.UserAgentAnalyzer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpHeaders;
-import lombok.extern.slf4j.Slf4j;
-import nl.basjes.parse.useragent.UserAgent;
-
+import java.time.Instant;
+import java.util.Objects;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.time.Instant;
-import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
+import nl.basjes.parse.useragent.UserAgent;
 
 @Slf4j
 @ApplicationScoped
 public class AnalyticLinkConsumer {
 
-  @Inject LinkAnalyticRepository linkAnalyticRepository;
+  @Inject
+  LinkAnalyticRepository linkAnalyticRepository;
 
   @ConsumeEvent(value = EventType.ANALYTIC_LINK, blocking = true)
   @Transactional

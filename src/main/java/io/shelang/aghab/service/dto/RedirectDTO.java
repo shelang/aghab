@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @NoArgsConstructor
 public class RedirectDTO {
+
   private long id;
   private RedirectType type;
   private String url;
