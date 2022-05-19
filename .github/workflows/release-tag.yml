@@ -1,11 +1,12 @@
 # This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
 
-name: Maven Package
+name: Release Tag
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - *
 
 jobs:
   build:
@@ -20,11 +21,8 @@ jobs:
     - name: Setup GraalVM
       uses: DeLaGuardo/setup-graalvm@5.0
       with:
-        # GraalVM version, no pattern syntax available atm
         graalvm: '22.1.0'
-        # Java version, optional, defaults to 'java8'. Available options are 'java8' and 'java11'.
         java: 'java11'
-        # Architecture flag, optional, defaults to 'amd64'. Available options are 'amd64' and 'aarch64'. Later is available only for linux runners.
         arch: 'amd64'
     - name: Install native-image component
       run: gu install native-image
@@ -34,15 +32,9 @@ jobs:
       run: ./mvnw package -Dnative
     - uses: actions/upload-artifact@v3
       with:
-        name: my-artifact
+        name: aghab-${{ github.event.release.tag_name }}-runner
         path: target/*-runner
-    - name: Upload native executable
-      id: upload-native-executable
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Release
+      uses: actions/action-gh-release@v1
       with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./target/aghab-${{ github.event.release.tag_name }}-runner 
-        asset_name: aghab-${{ github.event.release.tag_name }}-runner
-        asset_content_type: application/octet-stream
+        files: target/*-runner
