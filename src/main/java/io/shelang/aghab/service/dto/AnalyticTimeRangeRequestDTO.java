@@ -1,6 +1,5 @@
 package io.shelang.aghab.service.dto;
 
-import java.time.Instant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -8,10 +7,8 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class AnalyticBucket {
+public class AnalyticTimeRangeRequestDTO {
 
-  private long count;
-  private long uniqCount;
-  private Instant from;
-  private Instant to;
+  String from;
+  String to;
 }

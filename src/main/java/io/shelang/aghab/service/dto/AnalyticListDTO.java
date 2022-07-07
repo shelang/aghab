@@ -1,6 +1,7 @@
 package io.shelang.aghab.service.dto;
 
-import java.time.Instant;
+import java.math.BigInteger;
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -8,10 +9,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class AnalyticBucket {
+public class AnalyticListDTO {
 
-  private long count;
-  private long uniqCount;
-  private Instant from;
-  private Instant to;
+  List<AnalyticKeyValueDTO<String, BigInteger>> data;
 }

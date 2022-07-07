@@ -13,6 +13,7 @@ public class AnalyticDTO {
 
   private Long linkId;
   private long count;
+  private long uniqCount;
   private Instant from;
   private Instant to;
   private List<AnalyticBucket> buckets;
