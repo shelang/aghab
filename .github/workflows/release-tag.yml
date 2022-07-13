@@ -38,3 +38,5 @@ jobs:
       uses: softprops/action-gh-release@v0.1.14
       with:
         files: target/*-runner
+    - name: Docker Build
+      run: docker build -t shelang/aghab:${{ github.event.release.tag_name }} -f src/main/docker/Dockerfile.native .
