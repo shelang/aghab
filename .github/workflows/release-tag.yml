@@ -34,9 +34,13 @@ jobs:
       with:
         name: aghab-${{ github.event.release.tag_name }}-runner
         path: target/*-runner
+    - name: Docker Build and Save
+      run: |
+        docker build -t shelang/aghab:${{ github.event.release.tag_name }} -f src/main/docker/Dockerfile.native .
+        docker save shelang/aghab:${{ github.event.release.tag_name }} > shelang-aghab-${{ github.event.release.tag_name }}.docker.tar.gz
     - name: Create Release
       uses: softprops/action-gh-release@v0.1.14
       with:
-        files: target/*-runner
-    - name: Docker Build
-      run: docker build -t shelang/aghab:${{ github.event.release.tag_name }} -f src/main/docker/Dockerfile.native .
+        files: |
+          target/*-runner
+          *.docker.tar.gz
