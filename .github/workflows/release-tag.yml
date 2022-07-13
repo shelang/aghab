@@ -18,6 +18,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Set tag env
+      run: echo "TAG_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
     - name: Setup GraalVM
       uses: DeLaGuardo/setup-graalvm@5.0
       with:
@@ -27,17 +29,17 @@ jobs:
     - name: Install native-image component
       run: gu install native-image
     - name: Set version
-      run: ./mvnw versions:set -DnewVersion="${{ github.event.release.tag_name }}"
+      run: ./mvnw versions:set -DnewVersion="$RELEASE_VERSION"
     - name: Build native executable
       run: ./mvnw package -Dnative
     - uses: actions/upload-artifact@v3
       with:
-        name: aghab-${{ github.event.release.tag_name }}-runner
+        name: aghab-$RELEASE_VERSION-runner
         path: target/*-runner
     - name: Docker Build and Save
       run: |
-        docker build -t shelang/aghab:${{ github.event.release.tag_name }} -f src/main/docker/Dockerfile.native .
-        docker save shelang/aghab:${{ github.event.release.tag_name }} > shelang-aghab-${{ github.event.release.tag_name }}.docker.tar.gz
+        docker build -t shelang/aghab:$RELEASE_VERSION -f src/main/docker/Dockerfile.native .
+        docker save shelang/aghab:$RELEASE_VERSION > shelang-aghab-$RELEASE_VERSION.docker.tar.gz
     - name: Create Release
       uses: softprops/action-gh-release@v0.1.14
       with:
