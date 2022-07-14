@@ -29,17 +29,17 @@ jobs:
     - name: Install native-image component
       run: gu install native-image
     - name: Set version
-      run: ./mvnw versions:set -DnewVersion="$RELEASE_VERSION"
+      run: ./mvnw versions:set -DnewVersion="$TAG_VERSION"
     - name: Build native executable
       run: ./mvnw package -Dnative
     - uses: actions/upload-artifact@v3
       with:
-        name: aghab-$RELEASE_VERSION-runner
+        name: aghab-$TAG_VERSION-runner
         path: target/*-runner
     - name: Docker Build and Save
       run: |
-        docker build -t shelang/aghab:$RELEASE_VERSION -f src/main/docker/Dockerfile.native .
-        docker save shelang/aghab:$RELEASE_VERSION > shelang-aghab-$RELEASE_VERSION.docker.tar.gz
+        docker build -t shelang/aghab:$TAG_VERSION -f src/main/docker/Dockerfile.native .
+        docker save shelang/aghab:$TAG_VERSION > shelang-aghab-$TAG_VERSION.docker.tar.gz
     - name: Create Release
       uses: softprops/action-gh-release@v0.1.14
       with:
