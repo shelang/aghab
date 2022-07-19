@@ -34,7 +34,7 @@ public class AnalyticResource {
   @GET
   @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}")
-  public AnalyticDTO get(
+  public AnalyticDTO getAnalyticByLinkId(
       @PathParam("linkId") String linkId,
       @QueryParam("from") String from,
       @QueryParam("to") String to,
@@ -56,7 +56,7 @@ public class AnalyticResource {
   @GET
   @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}/top/devices")
-  public AnalyticListDTO topDevices(
+  public AnalyticListDTO topDevicesByLinkId(
       @PathParam("linkId") String linkId,
       @QueryParam("from") String from,
       @QueryParam("to") String to) {
@@ -77,7 +77,7 @@ public class AnalyticResource {
   @GET
   @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}/top/oses")
-  public AnalyticListDTO top5Oses(
+  public AnalyticListDTO top5OsesByLinkId(
       @PathParam("linkId") String linkId,
       @QueryParam("from") String from,
       @QueryParam("to") String to) {
@@ -98,7 +98,7 @@ public class AnalyticResource {
   @GET
   @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}/top/agent-names")
-  public AnalyticListDTO top5AgentNames(
+  public AnalyticListDTO top5AgentNamesByLinkId(
       @PathParam("linkId") String linkId,
       @QueryParam("from") String from,
       @QueryParam("to") String to) {
@@ -119,7 +119,7 @@ public class AnalyticResource {
   @GET
   @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}/top/device-brands")
-  public AnalyticListDTO top5DeviceBrands(
+  public AnalyticListDTO top5DeviceBrandsByLinkId(
       @PathParam("linkId") String linkId,
       @QueryParam("from") String from,
       @QueryParam("to") String to) {
@@ -140,7 +140,7 @@ public class AnalyticResource {
   @GET
   @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}/top/device-names")
-  public AnalyticListDTO top5DeviceNames(
+  public AnalyticListDTO top5DeviceNamesByLinkId(
       @PathParam("linkId") String linkId,
       @QueryParam("from") String from,
       @QueryParam("to") String to) {

@@ -35,7 +35,7 @@ public class LinksResource {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinksUserDTO getList(
+  public LinksUserDTO search(
       @QueryParam("q") String q,
       @QueryParam("page") Integer page,
       @QueryParam("size") Integer size) {
@@ -47,7 +47,7 @@ public class LinksResource {
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinkDTO get(@PathParam Long id) {
+  public LinkDTO getById(@PathParam Long id) {
     return linksService.getById(id);
   }
 
@@ -56,7 +56,7 @@ public class LinksResource {
   @Path("/hash/{hash}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinkDTO get(@PathParam String hash) {
+  public LinkDTO getByHash(@PathParam String hash) {
     return linksService.getByHash(hash);
   }
 

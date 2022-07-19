@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/api/v1/login")
 @RequestScoped
-public class UserLoginResource {
+public class AuthResource {
 
   @Inject
   AuthService authService;
