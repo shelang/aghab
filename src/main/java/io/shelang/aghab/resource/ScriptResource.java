@@ -33,13 +33,13 @@ public class ScriptResource {
   @GET
   @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
-  public ScriptDTO get(@PathParam("id") Long id) {
+  public ScriptDTO getById(@PathParam("id") Long id) {
     return scriptService.getById(id);
   }
 
   @GET
   @Path("/")
-  public ScriptsDTO get(
+  public ScriptsDTO search(
       @QueryParam("name") String name,
       @QueryParam("page") Integer page,
       @QueryParam("size") Integer size) {
@@ -55,7 +55,7 @@ public class ScriptResource {
   @PUT
   @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
-  public ScriptDTO get(@PathParam("id") Long id, @Valid ScriptDTO dto) {
+  public ScriptDTO update(@PathParam("id") Long id, @Valid ScriptDTO dto) {
     return scriptService.update(dto);
   }
 }

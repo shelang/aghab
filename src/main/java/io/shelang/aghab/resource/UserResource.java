@@ -40,18 +40,14 @@ public class UserResource {
 
   @GET
   @SuppressWarnings("PathAnnotation")
-  @Path("/{linkId}")
-  public UserDTO get(
-      @PathParam("linkId") Long linkId,
-      @QueryParam("from") String from,
-      @QueryParam("to") String to,
-      @QueryParam("bucket") String bucket) {
-    return userService.getById(linkId);
+  @Path("/{userId}")
+  public UserDTO getById(@PathParam("userId") Long userId) {
+    return userService.getById(userId);
   }
 
   @GET
   @Path("/")
-  public UsersDTO get(
+  public UsersDTO search(
       @QueryParam("username") String username,
       @QueryParam("from") Integer page,
       @QueryParam("to") Integer size) {
