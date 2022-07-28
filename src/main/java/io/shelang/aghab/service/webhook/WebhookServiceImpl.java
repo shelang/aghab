@@ -10,6 +10,7 @@ import io.shelang.aghab.service.dto.WebhookDTO;
 import io.shelang.aghab.service.mapper.WebhookMapper;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.util.NumberUtil;
+import io.shelang.aghab.util.StringUtil;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
@@ -65,7 +66,12 @@ public class WebhookServiceImpl implements WebhookService {
   @Transactional
   public WebhookDTO update(Long id, WebhookDTO dto) {
     Webhook webhook = getValidatedWebhook(id);
-    webhook.setUrl(dto.getUrl());
+    if (StringUtil.isNullOrEmpty(dto.getUrl())) {
+      webhook.setUrl(dto.getUrl());
+    }
+    if (StringUtil.isNullOrEmpty(dto.getName())) {
+      webhook.setName(dto.getName());
+    }
     webhookRepository.persistAndFlush(webhook);
     saveWebhookUser(webhook);
     return webhookMapper.toDTO(webhook);
