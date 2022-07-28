@@ -64,5 +64,5 @@ CREATE TABLE IF NOT EXISTS users
     password varchar(72) NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS username_idx ON users (username);
-INSERT INTO users(id, username, password)
-    values (1, 'boss', '$2a$10$DBYku7jU2h0ab3/pgYpdFeTIQUz7DOp7razap3Uni67wwEZUOmNMy');
+INSERT INTO users(username, password)
+    values ('boss', '$2a$10$DBYku7jU2h0ab3/pgYpdFeTIQUz7DOp7razap3Uni67wwEZUOmNMy');
