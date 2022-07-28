@@ -54,25 +54,32 @@ public class RedirectResource {
               log.info(byHash.toString());
               rc.response().setStatusCode(byHash.getStatusCode());
               if (RedirectType.IFRAME.equals(byHash.getType())) {
-                return Uni.createFrom()
-                    .completionStage(
-                        () -> iframeTemplate.data("url", byHash.getUrl()).renderAsync());
+                return iFrameRedirect(byHash);
               } else if (RedirectType.SCRIPT.equals(byHash.getType())) {
-                return Uni.createFrom()
-                    .completionStage(
-                        () ->
-                            scriptTemplate
-                                .data("url", byHash.getUrl())
-                                .data("title", byHash.getTitle())
-                                .data("timeoutInMillis", byHash.getTimeout())
-                                .data("timeoutInSeconds", byHash.getTimeout() / 1000)
-                                .data("redirectInMillis", byHash.getTimeout() * 0.8)
-                                .data("script", new RawString(byHash.getContent()))
-                                .renderAsync());
+                return scriptRedirect(byHash);
               } else { // Simple redirect
                 rc.response().putHeader(HttpHeaders.LOCATION, byHash.getUrl());
                 return Uni.createFrom().item("");
               }
             });
+  }
+
+  private Uni<String> scriptRedirect(RedirectDTO byHash) {
+    return Uni.createFrom()
+        .completionStage(
+            () ->
+                scriptTemplate
+                    .data("url", byHash.getUrl())
+                    .data("title", byHash.getTitle())
+                    .data("timeoutInMillis", byHash.getTimeout())
+                    .data("timeoutInSeconds", byHash.getTimeout() / 1000)
+                    .data("redirectInMillis", byHash.getTimeout() * 0.8)
+                    .data("script", new RawString(byHash.getContent()))
+                    .renderAsync());
+  }
+
+  private Uni<String> iFrameRedirect(RedirectDTO byHash) {
+    return Uni.createFrom()
+        .completionStage(() -> iframeTemplate.data("url", byHash.getUrl()).renderAsync());
   }
 }
