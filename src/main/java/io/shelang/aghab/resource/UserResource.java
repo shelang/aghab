@@ -49,8 +49,8 @@ public class UserResource {
   @Path("/")
   public UsersDTO search(
       @QueryParam("username") String username,
-      @QueryParam("from") Integer page,
-      @QueryParam("to") Integer size) {
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size) {
     return userService.get(username, page, size);
   }
 
