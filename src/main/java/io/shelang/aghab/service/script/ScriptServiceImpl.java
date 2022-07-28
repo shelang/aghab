@@ -9,9 +9,11 @@ import io.shelang.aghab.service.dto.ScriptDTO;
 import io.shelang.aghab.service.mapper.ScriptMapper;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.util.NumberUtil;
+import io.shelang.aghab.util.StringUtil;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -76,6 +78,12 @@ public class ScriptServiceImpl implements ScriptService {
   @Transactional
   public ScriptDTO update(ScriptDTO dto) {
     Script script = getValidatedScript(dto.getId());
+    if (StringUtil.nonNullOrEmpty(dto.getName())) {
+      script.setName(dto.getName());
+    }
+    if (Objects.nonNull(dto.getTimeout()) && dto.getTimeout() > 0) {
+      script.setTimeout(dto.getTimeout());
+    }
     script.setTitle(dto.getTitle());
     script.setContent(dto.getContent());
     scriptRepository.persistAndFlush(script);
