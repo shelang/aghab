@@ -26,13 +26,20 @@ public class RateLimiterImpl implements RateLimiter {
     this.keyCommands = ds.key();
   }
 
-  public void
-  handleLoginAttempt(String username) {
-    var key = "login:attempt:" + username;
+  private String getKey(String username) {
+    return "login:attempt:" + username;
+  }
+
+  public void handleLoginAttempt(String username) {
+    String key = getKey(username);
     long incr = countCommands.incr(key);
     if (incr > loginAttemptMaxCount) {
       throw new MaxLoginRetry();
     }
     keyCommands.expire(key, loginAttemptBlockDuration.toSeconds());
+  }
+
+  public void removeAttemptLog(String username) {
+    keyCommands.del(getKey(username));
   }
 }
