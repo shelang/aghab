@@ -44,7 +44,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/top/devices")
   public AnalyticListDTO topDevices(
       @QueryParam("from") String from,
@@ -65,7 +64,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/top/oses")
   public AnalyticListDTO top5Oses(
       @QueryParam("from") String from,
@@ -86,7 +84,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/top/agent-names")
   public AnalyticListDTO top5AgentNames(
       @QueryParam("from") String from,
@@ -107,7 +104,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/top/device-brands")
   public AnalyticListDTO top5DeviceBrands(
       @QueryParam("from") String from,
@@ -128,7 +124,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/top/device-names")
   public AnalyticListDTO top5DeviceNames(
       @QueryParam("from") String from,
@@ -149,7 +144,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/last/ips")
   public AnalyticListDTO last10IPs(
       @QueryParam("from") String from,

@@ -22,6 +22,7 @@ import lombok.extern.java.Log;
 @RequestScoped
 @Log
 @RouteBase(path = "/r")
+@SuppressWarnings("unused")
 public class RedirectResource {
 
   @Inject
@@ -29,15 +30,14 @@ public class RedirectResource {
 
   @Inject
   @Location("iframe.html")
-  @SuppressWarnings("CdiInjectionPointsInspection")
   Template iframeTemplate;
 
   @Inject
   @Location("script.html")
-  @SuppressWarnings("CdiInjectionPointsInspection")
   Template scriptTemplate;
 
   @Route(path = "/:hash", methods = Route.HttpMethod.GET)
+  @SuppressWarnings("unused")
   public Uni<String> redirect(RoutingContext rc,
       @SuppressWarnings("unused") @Param("hash") String hash) {
     return redirectService
