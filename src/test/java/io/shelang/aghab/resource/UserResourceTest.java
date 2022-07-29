@@ -12,6 +12,7 @@ import io.shelang.aghab.service.dto.LoginDTO;
 import io.shelang.aghab.service.dto.UserCredentialDTO;
 import io.shelang.aghab.service.dto.UserDTO;
 import io.shelang.aghab.service.dto.UserMeDTO;
+import io.shelang.aghab.service.dto.UsersDTO;
 import io.shelang.aghab.service.user.TokenService;
 import java.util.Optional;
 import javax.inject.Inject;
@@ -216,4 +217,118 @@ class UserResourceTest {
     assertEquals(user1UpdateRequest.getUsername(), updatedUser1response.getUsername());
   }
 
+  @Test
+  void givenRegisteredUsers_whenBossUserSearchWithAndWithoutPagination_thenGetListOfUsers() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    for (int i = 0; i < 50; i++) {
+      UserCredentialDTO request = new UserCredentialDTO()
+          .setUsername("user-" + i)
+          .setPassword("very-Strong-p@sz" + i);
+
+      given()
+          .contentType(ContentType.JSON)
+          .and()
+          .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+          .body(request)
+      .when()
+          .post()
+      .then()
+          .assertThat()
+          .statusCode(HttpStatus.SC_OK);
+    }
+
+    UsersDTO searchResponseDefaultPage = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+    .when()
+        .get()
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(UsersDTO.class);
+
+    assertEquals(10, searchResponseDefaultPage.getUsers().size());
+    assertEquals("boss", searchResponseDefaultPage.getUsers().get(0).getUsername());
+    for (int i = 1; i < 10; i++) {
+      assertEquals("user-" + (i-1), searchResponseDefaultPage.getUsers().get(i).getUsername());
+    }
+
+    UsersDTO searchResponsePage1Size5 = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .param("page", "1")
+        .param("size", "5")
+    .when()
+        .get()
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(UsersDTO.class);
+
+    assertEquals(5, searchResponsePage1Size5.getUsers().size());
+    assertEquals("boss", searchResponsePage1Size5.getUsers().get(0).getUsername());
+    for (int i = 1; i < 5; i++) {
+      assertEquals("user-" + (i-1), searchResponsePage1Size5.getUsers().get(i).getUsername());
+    }
+
+    UsersDTO searchResponsePage2Size5 = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .param("page", "2")
+        .param("size", "5")
+    .when()
+        .get()
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(UsersDTO.class);
+
+    assertEquals(5, searchResponsePage2Size5.getUsers().size());
+    for (int i = 5; i < 10; i++) {
+      assertEquals("user-" + (i-1), searchResponsePage2Size5.getUsers().get(i-5).getUsername());
+    }
+
+    UsersDTO searchResponseQueryByUsernameSingle = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .param("username", "user-15")
+    .when()
+        .get()
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(UsersDTO.class);
+
+    assertEquals(1, searchResponseQueryByUsernameSingle.getUsers().size());
+    assertEquals("user-15", searchResponseQueryByUsernameSingle.getUsers().get(0).getUsername());
+  }
+
+  @Test
+  void givenBossUser_whenSearchANonExistUsername_thenGetEmptyList() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    UsersDTO searchResponseQueryByNonExistUsername = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .param("username", "user-")
+        .param("page", "1")
+        .when()
+        .get()
+        .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(UsersDTO.class);
+
+    assertEquals(0, searchResponseQueryByNonExistUsername.getUsers().size());
+  }
 }
