@@ -38,9 +38,9 @@ class AuthResourceTest {
         .contentType(ContentType.JSON)
         .and()
         .body(new LoginRequestDTO().setUsername(username).setPassword(password))
-        .when()
+    .when()
         .post()
-        .then()
+     .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
         .extract().body().as(LoginDTO.class);
@@ -55,9 +55,9 @@ class AuthResourceTest {
         .contentType(ContentType.JSON)
         .and()
         .body(new LoginRequestDTO().setUsername(username).setPassword("wrong-password"))
-        .when()
+    .when()
         .post()
-        .then()
+    .then()
         .assertThat()
         .statusCode(HttpStatus.SC_BAD_REQUEST);
   }
@@ -69,9 +69,9 @@ class AuthResourceTest {
           .contentType(ContentType.JSON)
           .and()
           .body(new LoginRequestDTO().setUsername(username).setPassword(password))
-          .when()
+      .when()
           .post()
-          .then()
+      .then()
           .assertThat()
           .statusCode(HttpStatus.SC_OK);
     }
@@ -80,9 +80,9 @@ class AuthResourceTest {
         .contentType(ContentType.JSON)
         .and()
         .body(new LoginRequestDTO().setUsername(username).setPassword(password))
-        .when()
+    .when()
         .post()
-        .then()
+    .then()
         .assertThat()
         .statusCode(HttpStatus.SC_FORBIDDEN);
   }
@@ -94,9 +94,9 @@ class AuthResourceTest {
         .contentType(ContentType.JSON)
         .and()
         .body(new LoginRequestDTO().setUsername(unregisteredUser).setPassword("any-password"))
-        .when()
+    .when()
         .post()
-        .then()
+    .then()
         .assertThat()
         .statusCode(HttpStatus.SC_NOT_FOUND);
   }
@@ -107,9 +107,9 @@ class AuthResourceTest {
         .contentType(ContentType.JSON)
         .and()
         .body(new LoginRequestDTO().setUsername(username).setPassword(password))
-        .when()
+    .when()
         .post()
-        .then()
+    .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
         .extract().body().as(LoginDTO.class);
@@ -117,9 +117,9 @@ class AuthResourceTest {
     LoginDTO refreshResponse = given()
         .contentType(ContentType.JSON)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + loginResponse.getRefresh())
-        .when()
+    .when()
         .post("/refresh")
-        .then()
+    .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
         .extract().body().as(LoginDTO.class);
