@@ -218,12 +218,98 @@ class UserResourceTest {
   }
 
   @Test
+  void givenNonBossUser_whenUpdateSomeoneElseProfile_thenGetForbidden() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    UserCredentialDTO request = new UserCredentialDTO()
+        .setUsername("new-user-1")
+        .setPassword("very-Strong-p@sz");
+
+    UserDTO user1 = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .body(request)
+        .when()
+        .post()
+        .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(UserDTO.class);
+
+    LoginDTO user1Tokens = tokenService
+        .createTokens(new User().setId(user1.getId()).setUsername(user1.getUsername()));
+
+    UserCredentialDTO user1UpdateRequest = new UserCredentialDTO()
+        .setId(1L)
+        .setUsername("me")
+        .setPassword("hack-your-account :)");
+
+    given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + user1Tokens.getToken())
+        .body(user1UpdateRequest)
+    .when()
+        .put("/" + 1)
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_FORBIDDEN);
+  }
+
+  @Test
+  void givenBossUser_whenUpdateSomeoneElseProfile_thenGetUserDTO() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    UserCredentialDTO request = new UserCredentialDTO()
+        .setUsername("new-user-1")
+        .setPassword("very-Strong-p@sz");
+
+    UserDTO user1 = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .body(request)
+    .when()
+        .post()
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(UserDTO.class);
+
+    UserCredentialDTO user1UpdateRequest = new UserCredentialDTO()
+        .setId(user1.getId())
+        .setUsername("user-1")
+        .setPassword("reset-your-password");
+
+    UserDTO updatedUser = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .body(user1UpdateRequest)
+        .when()
+        .put("/" + user1.getId())
+        .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(UserDTO.class);
+
+    assertEquals(user1.getId(), updatedUser.getId());
+    assertNotEquals(user1.getUsername(), updatedUser.getUsername());
+    assertEquals("user-1", updatedUser.getUsername());
+  }
+
+  @Test
   void givenRegisteredUsers_whenBossUserSearchWithAndWithoutPagination_thenGetListOfUsers() {
     Optional<User> bossUser = userRepository.findByUsername(bossUsername);
     assert bossUser.isPresent();
     LoginDTO tokens = tokenService.createTokens(bossUser.get());
 
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 20; i++) {
       UserCredentialDTO request = new UserCredentialDTO()
           .setUsername("user-" + i)
           .setPassword("very-Strong-p@sz" + i);
@@ -330,5 +416,43 @@ class UserResourceTest {
         .extract().body().as(UsersDTO.class);
 
     assertEquals(0, searchResponseQueryByNonExistUsername.getUsers().size());
+  }
+
+  @Test
+  void givenTableWithMoreThan50Users_whenSearchWithSizeBiggerThan50_thenInResponseJustReturn50Users() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    for (int i = 0; i < 51; i++) {
+      UserCredentialDTO request = new UserCredentialDTO()
+          .setUsername("user-" + i)
+          .setPassword("very-Strong-p@sz" + i);
+
+      given()
+          .contentType(ContentType.JSON)
+          .and()
+          .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+          .body(request)
+          .when()
+          .post()
+          .then()
+          .assertThat()
+          .statusCode(HttpStatus.SC_OK);
+    }
+
+    UsersDTO searchResponsePage1Size60 = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .param("size", "60")
+    .when()
+        .get()
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(UsersDTO.class);
+
+    assertEquals(50, searchResponsePage1Size60.getUsers().size());
   }
 }
