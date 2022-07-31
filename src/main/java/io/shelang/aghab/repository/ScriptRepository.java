@@ -3,6 +3,7 @@ package io.shelang.aghab.repository;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Sort;
 import io.shelang.aghab.domain.Script;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ public class ScriptRepository implements PanacheRepository<Script> {
             "SELECT s FROM io.shelang.aghab.domain.Script s "
                 + "LEFT JOIN io.shelang.aghab.domain.ScriptUser su on su.scriptId = s.id "
                 + "WHERE su.userId = :userId ",
-            params);
+            Sort.by("id"), params);
     if (Objects.nonNull(name)) {
       params.put("name", name);
       query =
@@ -30,7 +31,7 @@ public class ScriptRepository implements PanacheRepository<Script> {
               "SELECT s FROM Script s "
                   + "LEFT JOIN ScriptUser su on su.scriptId = s.id "
                   + "WHERE s.name like CONCAT('%', :name, '%') and su.userId = :userId ",
-              params);
+              Sort.by("id"), params);
     }
     return query.page(page).list();
   }
