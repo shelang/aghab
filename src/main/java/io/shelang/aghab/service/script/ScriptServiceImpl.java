@@ -104,7 +104,6 @@ public class ScriptServiceImpl implements ScriptService {
     return scriptUserRepository.findByIdOptional(makeScriptUser(id).getId());
   }
 
-  @Transactional
   private void saveScriptUser(Script script) {
     ScriptUser scriptUser = makeScriptUser(script.getId());
     Optional<ScriptUser> exist = scriptUserRepository.findByIdOptional(scriptUser.getId());
