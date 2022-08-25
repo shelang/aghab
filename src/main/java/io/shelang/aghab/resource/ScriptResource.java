@@ -56,6 +56,7 @@ public class ScriptResource {
   @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   public ScriptDTO update(@PathParam("id") Long id, @Valid ScriptDTO dto) {
+    dto.setId(id);
     return scriptService.update(dto);
   }
 }
