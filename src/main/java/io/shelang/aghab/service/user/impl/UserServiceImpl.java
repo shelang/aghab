@@ -1,6 +1,5 @@
 package io.shelang.aghab.service.user.impl;
 
-import io.quarkus.panache.common.Page;
 import io.shelang.aghab.domain.User;
 import io.shelang.aghab.repository.UserRepository;
 import io.shelang.aghab.role.Roles;
@@ -12,7 +11,7 @@ import io.shelang.aghab.service.mapper.UserMapper;
 import io.shelang.aghab.service.mapper.UserMeMapper;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.user.UserService;
-import io.shelang.aghab.util.NumberUtil;
+import io.shelang.aghab.util.PageUtil;
 import io.shelang.aghab.util.StringUtil;
 import java.time.Instant;
 import java.util.List;
@@ -47,14 +46,8 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UsersDTO get(String username, Integer page, Integer size) {
-    page = NumberUtil.normalizeValue(page, 1) - 1;
-    size = NumberUtil.normalizeValue(size, 10);
-
-    if (size > 50) {
-      size = 50;
-    }
-
-    List<UserDTO> users = userMapper.toDTO(userRepository.search(username, Page.of(page, size)));
+    List<UserDTO> users = userMapper.toDTO(
+        userRepository.search(username, PageUtil.of(page, size)));
     return new UsersDTO().setUsers(users);
   }
 
