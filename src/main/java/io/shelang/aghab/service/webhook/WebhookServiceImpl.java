@@ -40,7 +40,7 @@ public class WebhookServiceImpl implements WebhookService {
   }
 
   @Override
-  public List<WebhookDTO> get(String name, Integer page, Integer size) {
+  public List<WebhookDTO> search(String name, Integer page, Integer size) {
     return webhookMapper.toDTO(
         webhookRepository.search(name, tokenService.getAccessTokenUserId(),
             PageUtil.of(page, size)));
@@ -57,12 +57,12 @@ public class WebhookServiceImpl implements WebhookService {
 
   @Override
   @Transactional
-  public WebhookDTO update(Long id, WebhookDTO dto) {
-    Webhook webhook = getValidatedWebhook(id);
-    if (StringUtil.isNullOrEmpty(dto.getUrl())) {
+  public WebhookDTO update(WebhookDTO dto) {
+    Webhook webhook = getValidatedWebhook(dto.getId());
+    if (StringUtil.nonNullOrEmpty(dto.getUrl())) {
       webhook.setUrl(dto.getUrl());
     }
-    if (StringUtil.isNullOrEmpty(dto.getName())) {
+    if (StringUtil.nonNullOrEmpty(dto.getName())) {
       webhook.setName(dto.getName());
     }
     webhookRepository.persistAndFlush(webhook);
@@ -106,7 +106,6 @@ public class WebhookServiceImpl implements WebhookService {
     return webhookUserRepository.findByIdOptional(makeWebhookUser(id).getId());
   }
 
-  @Transactional
   private void saveWebhookUser(Webhook webhook) {
     WebhookUser webhookUser = makeWebhookUser(webhook.getId());
     Optional<WebhookUser> exist = webhookUserRepository.findByIdOptional(webhookUser.getId());

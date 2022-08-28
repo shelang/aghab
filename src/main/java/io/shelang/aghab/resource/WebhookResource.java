@@ -43,7 +43,7 @@ public class WebhookResource {
       @QueryParam("name") String name,
       @QueryParam("page") Integer page,
       @QueryParam("size") Integer size) {
-    return new WebhooksDTO().setWebhooks(webhookService.get(name, page, size));
+    return new WebhooksDTO().setWebhooks(webhookService.search(name, page, size));
   }
 
   @POST
@@ -56,6 +56,7 @@ public class WebhookResource {
   @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   public WebhookDTO update(@PathParam("id") Long id, @Valid WebhookDTO dto) {
-    return webhookService.update(id, dto);
+    dto.setId(id);
+    return webhookService.update(dto);
   }
 }
