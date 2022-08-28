@@ -7,11 +7,11 @@ public interface WebhookService {
 
   WebhookDTO getById(Long id);
 
-  List<WebhookDTO> get(String name, Integer page, Integer size);
+  List<WebhookDTO> search(String name, Integer page, Integer size);
 
   WebhookDTO create(WebhookDTO dto);
 
-  WebhookDTO update(Long id, WebhookDTO dto);
+  WebhookDTO update(WebhookDTO dto);
 
   void call(Long webhookId, String hash);
 
