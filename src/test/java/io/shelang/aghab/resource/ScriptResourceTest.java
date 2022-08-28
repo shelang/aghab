@@ -260,4 +260,50 @@ class ScriptResourceTest {
     assertEquals(5_000, updatedScript.getTimeout());
   }
 
+  @Test
+  void givenBossCreatedWebhook_whenUserUpdateIt_thenThrowForbidden() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO bossTokens = tokenService.createTokens(bossUser.get());
+
+    Optional<User> simpleUserOptional = userRepository.findByUsername(simpleUsername);
+    assert simpleUserOptional.isPresent();
+    LoginDTO userTokens = tokenService.createTokens(simpleUserOptional.get());
+
+    ScriptDTO request = new ScriptDTO()
+        .setName("my-script")
+        .setContent("console.log('Hi this is a JS script!!')")
+        .setTimeout(10_000);
+
+    ScriptDTO response = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bossTokens.getToken())
+        .and()
+        .body(request)
+    .when()
+        .post()
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(ScriptDTO.class);
+
+    request
+        .setTitle("My JS Script")
+        .setName("my-script-1")
+        .setContent("console.log('Hi this is a updated JS script!!')")
+        .setTimeout(5_000);
+
+    given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userTokens.getToken())
+        .and()
+        .body(request)
+    .when()
+        .put("/" + response.getId())
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_FORBIDDEN);
+  }
 }
