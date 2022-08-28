@@ -8,7 +8,7 @@ public final class PageUtil {
     throw new IllegalAccessException();
   }
 
-  public static Page of(int page, int size) {
+  public static Page of(Integer page, Integer size) {
     page = NumberUtil.normalizeValue(page, 1) - 1;
     size = NumberUtil.normalizeValue(size, 10);
 
