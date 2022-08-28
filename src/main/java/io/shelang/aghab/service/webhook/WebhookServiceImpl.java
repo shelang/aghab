@@ -1,6 +1,5 @@
 package io.shelang.aghab.service.webhook;
 
-import io.quarkus.panache.common.Page;
 import io.shelang.aghab.domain.Webhook;
 import io.shelang.aghab.domain.WebhookUser;
 import io.shelang.aghab.repository.WebhookRepository;
@@ -9,7 +8,7 @@ import io.shelang.aghab.service.dto.WebhookAPICallDTO;
 import io.shelang.aghab.service.dto.WebhookDTO;
 import io.shelang.aghab.service.mapper.WebhookMapper;
 import io.shelang.aghab.service.user.TokenService;
-import io.shelang.aghab.util.NumberUtil;
+import io.shelang.aghab.util.PageUtil;
 import io.shelang.aghab.util.StringUtil;
 import java.net.URI;
 import java.time.Instant;
@@ -42,15 +41,9 @@ public class WebhookServiceImpl implements WebhookService {
 
   @Override
   public List<WebhookDTO> get(String name, Integer page, Integer size) {
-    page = NumberUtil.normalizeValue(page, 1) - 1;
-    size = NumberUtil.normalizeValue(size, 10);
-
-    if (size > 50) {
-      size = 50;
-    }
-
     return webhookMapper.toDTO(
-        webhookRepository.search(name, tokenService.getAccessTokenUserId(), Page.of(page, size)));
+        webhookRepository.search(name, tokenService.getAccessTokenUserId(),
+            PageUtil.of(page, size)));
   }
 
   @Override

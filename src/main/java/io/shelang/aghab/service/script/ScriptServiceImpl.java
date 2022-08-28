@@ -1,6 +1,5 @@
 package io.shelang.aghab.service.script;
 
-import io.quarkus.panache.common.Page;
 import io.shelang.aghab.domain.Script;
 import io.shelang.aghab.domain.ScriptUser;
 import io.shelang.aghab.repository.ScriptRepository;
@@ -8,7 +7,7 @@ import io.shelang.aghab.repository.ScriptUserRepository;
 import io.shelang.aghab.service.dto.ScriptDTO;
 import io.shelang.aghab.service.mapper.ScriptMapper;
 import io.shelang.aghab.service.user.TokenService;
-import io.shelang.aghab.util.NumberUtil;
+import io.shelang.aghab.util.PageUtil;
 import io.shelang.aghab.util.StringUtil;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
@@ -54,15 +53,9 @@ public class ScriptServiceImpl implements ScriptService {
 
   @Override
   public List<ScriptDTO> get(String name, Integer page, Integer size) {
-    page = NumberUtil.normalizeValue(page, 1) - 1;
-    size = NumberUtil.normalizeValue(size, 10);
-
-    if (size > 50) {
-      size = 50;
-    }
-
     return scriptMapper.toDTO(
-        scriptRepository.search(name, tokenService.getAccessTokenUserId(), Page.of(page, size)));
+        scriptRepository.search(name, tokenService.getAccessTokenUserId(),
+            PageUtil.of(page, size)));
   }
 
   @Override
