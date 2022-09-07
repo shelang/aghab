@@ -394,6 +394,7 @@ public class LinksServiceImpl implements LinksService {
     updateLinkMeta(link, request);
     updateExpireAt(link, request.getExpireAt());
     updateLinkRedirectionType(link, request);
+    updateWebHook(link, request.getWebhookId());
     updateLink(request, link);
     linksRepository.persistAndFlush(link);
     linksRepository.getEntityManager().clear();
