@@ -5,6 +5,7 @@ import io.shelang.aghab.domain.LinkAlternative;
 import io.shelang.aghab.domain.LinkExpiration;
 import io.shelang.aghab.domain.LinkMeta;
 import io.shelang.aghab.domain.LinkUser;
+import io.shelang.aghab.domain.LinkUser.LinkUserId;
 import io.shelang.aghab.domain.User;
 import io.shelang.aghab.enums.AlternativeLinkDeviceType;
 import io.shelang.aghab.enums.AlternativeLinkOSType;
@@ -386,14 +387,13 @@ public class LinksServiceImpl implements LinksService {
   @Override
   @Transactional
   public LinkDTO update(Long id, LinkCreateDTO request) {
-    LinkUser linkUser = validateLinkUser(request.getHash());
     var link =
-        linksRepository.findByIdOptional(linkUser.getLinkId()).orElseThrow(NotFoundException::new);
+        linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    validateLinkUser(link.getHash());
     updateAlternatives(link, request.getOsAlternatives(), request.getDeviceAlternatives());
     updateLinkMeta(link, request);
     updateExpireAt(link, request.getExpireAt());
     updateLinkRedirectionType(link, request);
-    updateWebHook(link, request.getWebhookId());
     updateLink(request, link);
     linksRepository.persistAndFlush(link);
     linksRepository.getEntityManager().clear();
@@ -405,9 +405,10 @@ public class LinksServiceImpl implements LinksService {
     return LINK_ALTERNATIVE_TYPES;
   }
 
-  private LinkUser validateLinkUser(String hash) {
-    return linkUserRepository
-        .findByIdOptional(new LinkUser.LinkUserId(tokenService.getAccessTokenUserId(), hash))
+  @SuppressWarnings("java:S2201")
+  private void validateLinkUser(String hash) {
+    linkUserRepository
+        .findByIdOptional(new LinkUserId(tokenService.getAccessTokenUserId(), hash))
         .orElseThrow(ForbiddenException::new);
   }
 }
