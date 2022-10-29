@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.enterprise.context.ApplicationScoped;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -70,7 +69,7 @@ public class AnalyticServiceImpl implements AnalyticService {
   }
 
   @Override
-  public AnalyticDTO getAndCount(@NotNull Long linkId, @NotNull AnalyticRequestDTO request) {
+  public AnalyticDTO getAndCount(Long linkId, AnalyticRequestDTO request) {
     var link = linksRepository.findByIdOptional(linkId).orElseThrow(NotFoundException::new);
     Instant f = toInstant(request.getFrom(), link.getLinkMeta().getCreateAt());
     Instant t = toInstant(request.getTo(), Instant.now());
@@ -78,10 +77,8 @@ public class AnalyticServiceImpl implements AnalyticService {
     AtomicReference<List<AnalyticBucket>> buckets = new AtomicReference<>(Collections.emptyList());
     Pair<Long, Long> countAndUniqCountPair = linkAnalyticRepository.countAndUniqCount(link.getId(),
         f, t);
-    AnalyticBucketType.from(request.getBucket()).ifPresent(type -> {
-      buckets.set(
-          linkAnalyticRepository.groupByTypeAndLinkIdAndCreateAtBetween(type, linkId, f, t));
-    });
+    AnalyticBucketType.from(request.getBucket()).ifPresent(type -> buckets.set(
+        linkAnalyticRepository.groupByTypeAndLinkIdAndCreateAtBetween(type, linkId, f, t)));
 
     return new AnalyticDTO().setLinkId(linkId).setCount(countAndUniqCountPair.getLeft())
         .setUniqCount(countAndUniqCountPair.getRight()).setFrom(f).setTo(t)
