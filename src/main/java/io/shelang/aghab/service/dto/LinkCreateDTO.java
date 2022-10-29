@@ -6,12 +6,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.ws.rs.HeaderParam;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @Accessors(chain = true)
@@ -35,10 +35,10 @@ public class LinkCreateDTO {
   @JsonAlias(value = "devices")
   private List<LinkAlternativeDTO> deviceAlternatives = new ArrayList<>();
 
-  @Min(150)
+  @Length(max = 150)
   private String title;
 
-  @Min(255)
+  @Length(max = 255)
   private String description;
 
   private String type;
