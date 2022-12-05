@@ -11,14 +11,17 @@ import io.restassured.http.ContentType;
 import io.shelang.aghab.domain.User;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.repository.UserRepository;
+import io.shelang.aghab.service.dto.LinkAlternativeDTO;
 import io.shelang.aghab.service.dto.LinkCreateDTO;
 import io.shelang.aghab.service.dto.LinkDTO;
 import io.shelang.aghab.service.dto.LoginDTO;
 import io.shelang.aghab.service.user.TokenService;
+import java.util.Arrays;
 import java.util.Optional;
 import javax.inject.Inject;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -33,7 +36,7 @@ class LinksResourceTest {
   TokenService tokenService;
 
   @Test
-  void givenAuthUser_whenCreateRedirectLinkWithoutRedirectionCode_thenSuccessfullyAdded() {
+  void givenAuthUser_whenCreateRedirectLinkWithoutRedirectionCode_thenUseDefaultRedirectCodeAndCreateLink() {
     Optional<User> bossUser = userRepository.findByUsername(bossUsername);
     assert bossUser.isPresent();
     LoginDTO tokens = tokenService.createTokens(bossUser.get());
@@ -66,7 +69,7 @@ class LinksResourceTest {
   }
 
   @Test
-  void givenAuthUser_whenCreateRedirectLinkWithoutUndefinedURL_thenGetBadRequest() {
+  void givenAuthUser_whenCreateRedirectLinkWithoutUndefinedURL_thenThrowBadRequest() {
     Optional<User> bossUser = userRepository.findByUsername(bossUsername);
     assert bossUser.isPresent();
     LoginDTO tokens = tokenService.createTokens(bossUser.get());
@@ -85,7 +88,7 @@ class LinksResourceTest {
   }
 
   @Test
-  void givenAuthUser_whenCreateRedirectLinkAndFindItById_thenSuccessfullyAdded() {
+  void givenAuthUser_whenCreateRedirectLinkAndFindItById_thenSuccessfullyGetLinkData() {
     Optional<User> bossUser = userRepository.findByUsername(bossUsername);
     assert bossUser.isPresent();
     LoginDTO tokens = tokenService.createTokens(bossUser.get());
@@ -115,6 +118,67 @@ class LinksResourceTest {
         .statusCode(HttpStatus.SC_OK)
         .extract().body().as(LinkDTO.class);
 
+    createResponse.setRedirectTo(null);
+    assertEquals(createResponse, getResponse);
+  }
+
+  @Test
+  void givenAuthUser_whenCreateRedirectLinkAndFindItByHash_thenSuccessfullyGetLinkData() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    LinkCreateDTO createRequest = new LinkCreateDTO()
+        .setUrl("https://example.com")
+        .setType(RedirectType.REDIRECT.name())
+        .setTitle("title")
+        .setDescription("desc");
+
+    LinkDTO createResponse = given()
+        .contentType(ContentType.JSON).and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken()).and()
+        .body(createRequest)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(LinkDTO.class);
+
+    LinkDTO getHashResponse = given()
+        .contentType(ContentType.JSON).and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .when()
+        .get("/hash/" + createResponse.getHash())
+        .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(LinkDTO.class);
+
+    createResponse.setRedirectTo(null);
+    assertEquals(createResponse, getHashResponse);
+  }
+
+  @Test
+  void givenAuthUser_whenCreateRedirectLinkAndFindItByIdAndHash_thenDataAreSame() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    LinkCreateDTO createRequest = new LinkCreateDTO()
+        .setUrl("https://example.com")
+        .setType(RedirectType.REDIRECT.name())
+        .setTitle("title")
+        .setDescription("desc");
+
+    LinkDTO createResponse = given()
+        .contentType(ContentType.JSON).and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken()).and()
+        .body(createRequest)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(LinkDTO.class);
+
     LinkDTO getHashResponse = given()
         .contentType(ContentType.JSON).and()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
@@ -125,9 +189,7 @@ class LinksResourceTest {
         .extract().body().as(LinkDTO.class);
 
     createResponse.setRedirectTo(null);
-    assertEquals(createResponse, getResponse);
     assertEquals(createResponse, getHashResponse);
-    assertEquals(getResponse, getHashResponse);
   }
 
   @Test
@@ -173,14 +235,78 @@ class LinksResourceTest {
   }
 
   @Test
-  void givenAuthUser_whenCreateRedirectLinkWithAlternative_thenSuccessfullyAdded() {
+  void givenAuthUser_whenCreateRedirectLinkWithOsAlternative_thenGetOkay() {
     Optional<User> bossUser = userRepository.findByUsername(bossUsername);
     assert bossUser.isPresent();
     LoginDTO tokens = tokenService.createTokens(bossUser.get());
 
     LinkCreateDTO createRequest = new LinkCreateDTO()
         .setUrl("https://example.com")
+        .setType(RedirectType.REDIRECT.name())
+        .setOsAlternatives(Arrays.asList(
+            new LinkAlternativeDTO().setKey("android").setUrl("https://google.com"),
+            new LinkAlternativeDTO().setKey("ios").setUrl("https://apple.com"))
+        );
+
+    LinkDTO response = given()
+        .contentType(ContentType.JSON).and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken()).and()
+        .body(createRequest)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(LinkDTO.class);
+
+    assertNotNull(response.getId());
+    assertNotNull(response.getHash());
+    assertEquals(createRequest.getUrl(), response.getUrl());
+    assertEquals(RedirectType.REDIRECT, response.getType());
+    assertEquals(301, response.getRedirectCode());
+    assertEquals("http://localhost:8080/r/" + response.getHash(), response.getRedirectTo());
+    assertEquals(2, response.getOs().size());
+    assertEquals(0, response.getDevices().size());
+    assertNull(response.getExpireAt());
+    assertNull(response.getTitle());
+    assertNull(response.getDescription());
+  }
+
+  @Test
+  void givenAuthUser_whenCreateLinkWithPreDefinedHash_thenLinkHasCreatedWithThatHash() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    String hash = "randomhashfortest";
+    LinkCreateDTO createRequest = new LinkCreateDTO()
+        .setHash(hash)
+        .setUrl("https://example.com")
         .setType(RedirectType.REDIRECT.name());
+
+    given()
+        .contentType(ContentType.JSON).and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken()).and()
+        .body(createRequest)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.SC_OK)
+        .body("hash", Matchers.equalTo(hash));
+  }
+
+  @Test
+  void givenAuthUser_whenCreateLinkWithDeviceAlternative_thenLink() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    LinkCreateDTO createRequest = new LinkCreateDTO()
+        .setUrl("https://example.com")
+        .setType(RedirectType.REDIRECT.name())
+        .setDeviceAlternatives(Arrays.asList(
+            new LinkAlternativeDTO().setKey("mobile").setUrl("https://google.com"),
+            new LinkAlternativeDTO().setKey("desktop").setUrl("https://apple.com"))
+        );
 
     LinkDTO response = given()
         .contentType(ContentType.JSON).and()
@@ -199,11 +325,9 @@ class LinksResourceTest {
     assertEquals(301, response.getRedirectCode());
     assertEquals("http://localhost:8080/r/" + response.getHash(), response.getRedirectTo());
     assertEquals(0, response.getOs().size());
-    assertEquals(0, response.getDevices().size());
+    assertEquals(2, response.getDevices().size());
     assertNull(response.getExpireAt());
     assertNull(response.getTitle());
     assertNull(response.getDescription());
   }
-
-
 }
