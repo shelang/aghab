@@ -102,6 +102,30 @@ class AuthResourceTest {
   }
 
   @Test
+  void givenUser_WhenAttemptLoginMoreThanRateLimitWithoutAnySuccess_ThenGetTooManyAttempt() {
+    for (int i = 0; i < 6; i++) {
+      given()
+          .contentType(ContentType.JSON)
+          .and()
+          .body(new LoginRequestDTO().setUsername(username).setPassword("any-password"))
+      .when()
+          .post()
+      .then()
+          .assertThat()
+          .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+    given()
+        .contentType(ContentType.JSON)
+        .and()
+        .body(new LoginRequestDTO().setUsername(username).setPassword("any-password"))
+    .when()
+        .post()
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_TOO_MANY_REQUESTS);
+  }
+
+  @Test
   void givenLoginUser_WhenRefreshToken_ThenGetNewTokens() {
     LoginDTO loginResponse = given()
         .contentType(ContentType.JSON)
