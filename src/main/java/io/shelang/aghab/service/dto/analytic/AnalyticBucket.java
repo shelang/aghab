@@ -1,4 +1,4 @@
-package io.shelang.aghab.service.dto;
+package io.shelang.aghab.service.dto.analytic;
 
 import java.time.Instant;
 import lombok.Data;

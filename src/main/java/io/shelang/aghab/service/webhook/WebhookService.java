@@ -1,6 +1,6 @@
 package io.shelang.aghab.service.webhook;
 
-import io.shelang.aghab.service.dto.WebhookDTO;
+import io.shelang.aghab.service.dto.webhook.WebhookDTO;
 import java.util.List;
 
 public interface WebhookService {

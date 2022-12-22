@@ -2,10 +2,10 @@ package io.shelang.aghab.resource;
 
 import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.analytic.AnalyticService;
-import io.shelang.aghab.service.dto.AnalyticDTO;
-import io.shelang.aghab.service.dto.AnalyticListDTO;
-import io.shelang.aghab.service.dto.AnalyticRequestDTO;
-import io.shelang.aghab.service.dto.AnalyticTimeRangeRequestDTO;
+import io.shelang.aghab.service.dto.analytic.AnalyticDTO;
+import io.shelang.aghab.service.dto.analytic.AnalyticListDTO;
+import io.shelang.aghab.service.dto.analytic.AnalyticRequestDTO;
+import io.shelang.aghab.service.dto.analytic.AnalyticTimeRangeRequestDTO;
 import io.shelang.aghab.service.uaa.UserAgentAnalyzer;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;

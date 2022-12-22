@@ -3,7 +3,7 @@ package io.shelang.aghab.service.user.impl;
 import io.shelang.aghab.domain.User;
 import io.shelang.aghab.enums.JwtTokenType;
 import io.shelang.aghab.role.Roles;
-import io.shelang.aghab.service.dto.LoginDTO;
+import io.shelang.aghab.service.dto.auth.LoginDTO;
 import io.shelang.aghab.service.user.TokenService;
 import io.smallrye.jwt.build.Jwt;
 import java.time.Duration;

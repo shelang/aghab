@@ -1,8 +1,8 @@
 package io.shelang.aghab.resource;
 
 import io.shelang.aghab.role.Roles;
-import io.shelang.aghab.service.dto.LoginDTO;
-import io.shelang.aghab.service.dto.LoginRequestDTO;
+import io.shelang.aghab.service.dto.auth.LoginDTO;
+import io.shelang.aghab.service.dto.auth.LoginRequestDTO;
 import io.shelang.aghab.service.user.AuthService;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;

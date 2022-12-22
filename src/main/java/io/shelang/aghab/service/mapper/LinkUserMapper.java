@@ -1,7 +1,7 @@
 package io.shelang.aghab.service.mapper;
 
 import io.shelang.aghab.domain.LinkUser;
-import io.shelang.aghab.service.dto.LinkUserDTO;
+import io.shelang.aghab.service.dto.link.LinkUserDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

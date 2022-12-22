@@ -1,8 +1,8 @@
 package io.shelang.aghab.resource;
 
 import io.shelang.aghab.role.Roles;
-import io.shelang.aghab.service.dto.WebhookDTO;
-import io.shelang.aghab.service.dto.WebhooksDTO;
+import io.shelang.aghab.service.dto.webhook.WebhookDTO;
+import io.shelang.aghab.service.dto.webhook.WebhooksDTO;
 import io.shelang.aghab.service.webhook.WebhookService;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;

@@ -1,9 +1,9 @@
 package io.shelang.aghab.service.user;
 
-import io.shelang.aghab.service.dto.UserCredentialDTO;
-import io.shelang.aghab.service.dto.UserDTO;
-import io.shelang.aghab.service.dto.UserMeDTO;
-import io.shelang.aghab.service.dto.UsersDTO;
+import io.shelang.aghab.service.dto.auth.UserCredentialDTO;
+import io.shelang.aghab.service.dto.auth.UserDTO;
+import io.shelang.aghab.service.dto.auth.UserMeDTO;
+import io.shelang.aghab.service.dto.auth.UsersDTO;
 
 public interface UserService {
 

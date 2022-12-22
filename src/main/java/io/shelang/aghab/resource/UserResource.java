@@ -1,10 +1,10 @@
 package io.shelang.aghab.resource;
 
 import io.shelang.aghab.role.Roles;
-import io.shelang.aghab.service.dto.UserCredentialDTO;
-import io.shelang.aghab.service.dto.UserDTO;
-import io.shelang.aghab.service.dto.UserMeDTO;
-import io.shelang.aghab.service.dto.UsersDTO;
+import io.shelang.aghab.service.dto.auth.UserCredentialDTO;
+import io.shelang.aghab.service.dto.auth.UserDTO;
+import io.shelang.aghab.service.dto.auth.UserMeDTO;
+import io.shelang.aghab.service.dto.auth.UsersDTO;
 import io.shelang.aghab.service.user.UserService;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;

@@ -1,4 +1,4 @@
-package io.shelang.aghab.service.dto;
+package io.shelang.aghab.service.dto.auth;
 
 import javax.validation.constraints.NotBlank;
 import lombok.Data;

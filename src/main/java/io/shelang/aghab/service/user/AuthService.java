@@ -1,6 +1,6 @@
 package io.shelang.aghab.service.user;
 
-import io.shelang.aghab.service.dto.LoginDTO;
+import io.shelang.aghab.service.dto.auth.LoginDTO;
 
 public interface AuthService {
 

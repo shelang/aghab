@@ -1,7 +1,7 @@
 package io.shelang.aghab.service.mapper;
 
 import io.shelang.aghab.domain.User;
-import io.shelang.aghab.service.dto.UserDTO;
+import io.shelang.aghab.service.dto.auth.UserDTO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "cdi")

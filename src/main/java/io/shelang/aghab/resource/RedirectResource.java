@@ -7,7 +7,7 @@ import io.quarkus.vertx.web.Param;
 import io.quarkus.vertx.web.Route;
 import io.quarkus.vertx.web.RouteBase;
 import io.shelang.aghab.enums.RedirectType;
-import io.shelang.aghab.service.dto.RedirectDTO;
+import io.shelang.aghab.service.dto.link.RedirectDTO;
 import io.shelang.aghab.service.redirect.RedirectService;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpHeaders;
