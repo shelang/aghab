@@ -1,4 +1,4 @@
-package io.shelang.aghab.service.dto;
+package io.shelang.aghab.service.dto.script;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

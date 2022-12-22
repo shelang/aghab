@@ -1,4 +1,4 @@
-package io.shelang.aghab.service.dto;
+package io.shelang.aghab.service.dto.webhook;
 
 import java.time.Instant;
 import lombok.Data;

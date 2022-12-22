@@ -1,4 +1,4 @@
-package io.shelang.aghab.service.dto;
+package io.shelang.aghab.service.dto.analytic;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,9 +7,9 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class UserDTO {
+public class AnalyticRequestDTO {
 
-  private Long id;
-  private String username;
-
+  String from;
+  String to;
+  String bucket;
 }

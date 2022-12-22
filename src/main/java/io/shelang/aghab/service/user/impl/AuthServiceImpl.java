@@ -2,7 +2,7 @@ package io.shelang.aghab.service.user.impl;
 
 import io.shelang.aghab.repository.UserRepository;
 import io.shelang.aghab.role.Roles;
-import io.shelang.aghab.service.dto.LoginDTO;
+import io.shelang.aghab.service.dto.auth.LoginDTO;
 import io.shelang.aghab.service.ratelimiter.RateLimiter;
 import io.shelang.aghab.service.user.AuthService;
 import io.shelang.aghab.service.user.TokenService;

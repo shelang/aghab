@@ -2,10 +2,10 @@ package io.shelang.aghab.resource;
 
 import io.quarkus.security.Authenticated;
 import io.shelang.aghab.role.Roles;
-import io.shelang.aghab.service.dto.LinkAlternativeTypesDTO;
-import io.shelang.aghab.service.dto.LinkCreateDTO;
-import io.shelang.aghab.service.dto.LinkDTO;
-import io.shelang.aghab.service.dto.LinksUserDTO;
+import io.shelang.aghab.service.dto.link.LinkAlternativeTypesDTO;
+import io.shelang.aghab.service.dto.link.LinkCreateDTO;
+import io.shelang.aghab.service.dto.link.LinkDTO;
+import io.shelang.aghab.service.dto.link.LinksUserDTO;
 import io.shelang.aghab.service.link.LinksService;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;

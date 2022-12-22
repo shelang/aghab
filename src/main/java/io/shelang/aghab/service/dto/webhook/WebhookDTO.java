@@ -1,4 +1,4 @@
-package io.shelang.aghab.service.dto;
+package io.shelang.aghab.service.dto.webhook;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +7,10 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class UserCredentialDTO {
+public class WebhookDTO {
 
   private Long id;
-  private String username;
-  private String password;
+  private String name;
+  private String url;
 
 }

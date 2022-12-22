@@ -5,7 +5,7 @@ import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.event.EventType;
 import io.shelang.aghab.event.dto.AnalyticLinkEvent;
 import io.shelang.aghab.event.dto.WebhookCallEvent;
-import io.shelang.aghab.service.dto.RedirectDTO;
+import io.shelang.aghab.service.dto.link.RedirectDTO;
 import io.shelang.aghab.service.link.LinksService;
 import io.shelang.aghab.service.redirect.RedirectService;
 import io.shelang.aghab.service.script.ScriptServiceImpl;

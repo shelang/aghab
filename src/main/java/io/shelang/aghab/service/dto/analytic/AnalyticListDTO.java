@@ -1,5 +1,6 @@
-package io.shelang.aghab.service.dto;
+package io.shelang.aghab.service.dto.analytic;
 
+import java.math.BigInteger;
 import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +9,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class ScriptsDTO {
+public class AnalyticListDTO {
 
-  private List<ScriptDTO> scripts;
-
+  List<AnalyticKeyValueDTO<String, BigInteger>> data;
 }

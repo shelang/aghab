@@ -1,4 +1,4 @@
-package io.shelang.aghab.service.dto;
+package io.shelang.aghab.service.dto.link;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import io.shelang.aghab.enums.LinkStatus;

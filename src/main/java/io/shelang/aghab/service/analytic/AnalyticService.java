@@ -1,9 +1,9 @@
 package io.shelang.aghab.service.analytic;
 
-import io.shelang.aghab.service.dto.AnalyticDTO;
-import io.shelang.aghab.service.dto.AnalyticListDTO;
-import io.shelang.aghab.service.dto.AnalyticRequestDTO;
-import io.shelang.aghab.service.dto.AnalyticTimeRangeRequestDTO;
+import io.shelang.aghab.service.dto.analytic.AnalyticDTO;
+import io.shelang.aghab.service.dto.analytic.AnalyticListDTO;
+import io.shelang.aghab.service.dto.analytic.AnalyticRequestDTO;
+import io.shelang.aghab.service.dto.analytic.AnalyticTimeRangeRequestDTO;
 
 public interface AnalyticService {
 

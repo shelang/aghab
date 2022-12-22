@@ -1,7 +1,7 @@
 package io.shelang.aghab.service.mapper;
 
 import io.shelang.aghab.domain.LinkMeta;
-import io.shelang.aghab.service.dto.LinkMetaDTO;
+import io.shelang.aghab.service.dto.link.LinkMetaDTO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "cdi")

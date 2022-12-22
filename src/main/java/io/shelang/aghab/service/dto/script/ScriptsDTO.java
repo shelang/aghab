@@ -1,5 +1,6 @@
-package io.shelang.aghab.service.dto;
+package io.shelang.aghab.service.dto.script;
 
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -7,8 +8,8 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class LoginDTO {
+public class ScriptsDTO {
 
-  private String token;
-  private String refresh;
+  private List<ScriptDTO> scripts;
+
 }

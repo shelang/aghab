@@ -1,8 +1,8 @@
 package io.shelang.aghab.resource;
 
 import io.shelang.aghab.role.Roles;
-import io.shelang.aghab.service.dto.ScriptDTO;
-import io.shelang.aghab.service.dto.ScriptsDTO;
+import io.shelang.aghab.service.dto.script.ScriptDTO;
+import io.shelang.aghab.service.dto.script.ScriptsDTO;
 import io.shelang.aghab.service.script.ScriptService;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
