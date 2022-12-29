@@ -13,6 +13,8 @@ import io.shelang.aghab.service.dto.auth.LoginDTO;
 import io.shelang.aghab.service.dto.webhook.WebhookDTO;
 import io.shelang.aghab.service.dto.webhook.WebhooksDTO;
 import io.shelang.aghab.service.user.TokenService;
+import io.shelang.aghab.util.PageUtil;
+import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -39,8 +41,11 @@ class WebhookResourceTest {
   @Transactional
   void init() {
     webhookRepository.deleteAll();
-    User user = new User().setUsername(simpleUsername).setPassword("");
-    userRepository.persistAndFlush(user);
+    List<User> simpleUser = userRepository.search(simpleUsername, PageUtil.of(1, 1));
+    if (simpleUser.isEmpty()) {
+      User user = new User().setUsername(simpleUsername).setPassword("");
+      userRepository.persistAndFlush(user);
+    }
   }
 
   @AfterEach
