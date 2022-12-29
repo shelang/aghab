@@ -7,12 +7,18 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.shelang.aghab.domain.User;
+import io.shelang.aghab.domain.Workspace;
+import io.shelang.aghab.domain.WorkspaceUser;
+import io.shelang.aghab.domain.WorkspaceUser.WorkspaceUserId;
 import io.shelang.aghab.repository.UserRepository;
+import io.shelang.aghab.repository.WorkspaceRepository;
+import io.shelang.aghab.repository.WorkspaceUserRepository;
 import io.shelang.aghab.service.dto.auth.LoginDTO;
 import io.shelang.aghab.service.dto.auth.UserCredentialDTO;
 import io.shelang.aghab.service.dto.auth.UserDTO;
 import io.shelang.aghab.service.dto.auth.UserMeDTO;
 import io.shelang.aghab.service.dto.auth.UsersDTO;
+import io.shelang.aghab.service.dto.workspace.WorkspacesDTO;
 import io.shelang.aghab.service.user.TokenService;
 import java.util.Optional;
 import javax.inject.Inject;
@@ -32,12 +38,44 @@ class UserResourceTest {
   UserRepository userRepository;
   @Inject
   TokenService tokenService;
+  @Inject
+  WorkspaceRepository workspaceRepository;
+  @Inject
+  WorkspaceUserRepository workspaceUserRepository;
 
   @BeforeEach
-  @AfterEach
   @Transactional
   void init() {
+    removeUserData();
+    seedWorkspace();
+  }
+
+  @AfterEach
+  @Transactional
+  void destroy() {
+    removeUserData();
+  }
+
+  private void removeUserData() {
+    workspaceUserRepository.deleteAll();
+    workspaceRepository.deleteAll();
     userRepository.delete("username != 'boss'");
+  }
+
+  private void seedWorkspace() {
+    Workspace techWorkspace = new Workspace().setName("Tech Workspace").setCreatorUserId(1L);
+    Workspace b2BGroup = new Workspace().setName("B2B Group").setCreatorUserId(1L);
+    Workspace marketing = new Workspace().setName("Marketing").setCreatorUserId(1L);
+
+    workspaceRepository.persist(techWorkspace);
+    workspaceRepository.persistAndFlush(b2BGroup);
+    workspaceRepository.persistAndFlush(marketing);
+    workspaceUserRepository.persistAndFlush(new WorkspaceUser()
+        .setId(new WorkspaceUserId(1L, techWorkspace.getId())));
+    workspaceUserRepository.persistAndFlush(new WorkspaceUser()
+        .setId(new WorkspaceUserId(1L, b2BGroup.getId())));
+    workspaceUserRepository.persistAndFlush(new WorkspaceUser()
+        .setId(new WorkspaceUserId(1L, marketing.getId())));
   }
 
   @Test
@@ -455,4 +493,40 @@ class UserResourceTest {
 
     assertEquals(50, searchResponsePage1Size60.getUsers().size());
   }
+
+  @Test
+  void givenUserWithWorkspaces_whenListWorkspaces_thenGetPageByPage() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    WorkspacesDTO workspaces = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+    .when()
+        .get("/workspaces")
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(WorkspacesDTO.class);
+
+    assertEquals(3, workspaces.getWorkspaces().size());
+
+    WorkspacesDTO workspacesPage2Size2 = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .param("page", "2")
+        .param("size", "2")
+    .when()
+        .get("/workspaces")
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(WorkspacesDTO.class);
+
+    assertEquals(1, workspacesPage2Size2.getWorkspaces().size());
+  }
+
 }
