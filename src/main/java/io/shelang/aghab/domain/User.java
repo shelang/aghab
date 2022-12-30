@@ -43,6 +43,9 @@ public class User {
   @Column(name = "token_issue_at")
   private Instant tokenIssueAt;
 
+  @Column(name = "need_change_password")
+  private boolean needChangePassword;
+
   @Builder.Default
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
@@ -58,4 +61,12 @@ public class User {
       joinColumns = {@JoinColumn(name = "user_id")},
       inverseJoinColumns = {@JoinColumn(name = "webhook_id")})
   Set<Webhook> webhooks = new HashSet<>();
+
+  @Builder.Default
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "workspace_user",
+      joinColumns = {@JoinColumn(name = "user_id")},
+      inverseJoinColumns = {@JoinColumn(name = "workspace_id")})
+  Set<Workspace> workspaces = new HashSet<>();
 }
