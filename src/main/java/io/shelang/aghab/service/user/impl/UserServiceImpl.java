@@ -45,6 +45,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public UsersDTO getByIds(List<Long> ids) {
+    List<User> members = userRepository.findAllById(ids);
+    return new UsersDTO().setUsers(userMapper.toDTO(members));
+  }
+
+  @Override
   public UsersDTO get(String username, Integer page, Integer size) {
     List<UserDTO> users = userMapper.toDTO(
         userRepository.search(username, PageUtil.of(page, size)));
@@ -78,6 +84,8 @@ public class UserServiceImpl implements UserService {
     }
     if (StringUtil.nonNullOrEmpty(userCredentialDTO.getPassword())) {
       user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+      user.setNeedChangePassword(
+          jwt.getSubject().equalsIgnoreCase(userCredentialDTO.getId().toString()));
     }
 
     return userMapper.toDTO(user);

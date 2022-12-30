@@ -34,4 +34,8 @@ public class UserRepository implements PanacheRepository<User> {
 
     return query.page(page).list();
   }
+
+  public List<User> findAllById(List<Long> ids) {
+    return find("id in ?1", ids).list();
+  }
 }

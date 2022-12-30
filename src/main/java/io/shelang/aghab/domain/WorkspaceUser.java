@@ -10,42 +10,43 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "link_user")
-public class LinkUser {
+@Accessors(chain = true)
+@Table(name = "workspace_user")
+public class WorkspaceUser {
 
   @EmbeddedId
-  private LinkUserId id;
+  private WorkspaceUserId id;
 
-  @Column(name = "link_id")
-  private Long linkId;
+  @Column(name = "workspace_id", insertable = false, updatable = false)
+  private Long workspaceId;
+
+  @Column(name = "user_id", insertable = false, updatable = false)
+  private Long userId;
 
   @Column(name = "create_at")
+  @CreationTimestamp
   private Instant createAt;
-
-  public LinkUser(Long userId, String linkHash) {
-    this.id = new LinkUserId(userId, linkHash);
-  }
 
   @Embeddable
   @Data
   @AllArgsConstructor
   @NoArgsConstructor
-  @EqualsAndHashCode
-  public static class LinkUserId implements Serializable {
+  public static class WorkspaceUserId implements Serializable {
 
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "link_hash")
-    private String linkHash;
+    @Column(name = "workspace_id")
+    private Long workspaceId;
+
   }
 }
