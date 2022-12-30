@@ -31,7 +31,7 @@ jobs:
     - name: Set version
       run: ./mvnw versions:set -DnewVersion="$TAG_VERSION"
     - name: Build native executable
-      run: ./mvnw package -Dnative
+      run: ./mvnw package -Dnative -Dquarkus.native.container-build=true
     - uses: actions/upload-artifact@v3
       with:
         name: aghab-$TAG_VERSION-runner
