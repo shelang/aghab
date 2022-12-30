@@ -50,6 +50,7 @@ public class WebhookServiceImpl implements WebhookService {
   @Transactional
   public WebhookDTO create(WebhookDTO dto) {
     Webhook webhook = webhookMapper.toEntity(dto);
+    webhook.setId(null);
     webhookRepository.persistAndFlush(webhook);
     saveWebhookUser(webhook);
     return webhookMapper.toDTO(webhook);

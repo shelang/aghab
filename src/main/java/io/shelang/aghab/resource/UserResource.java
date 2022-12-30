@@ -5,7 +5,9 @@ import io.shelang.aghab.service.dto.auth.UserCredentialDTO;
 import io.shelang.aghab.service.dto.auth.UserDTO;
 import io.shelang.aghab.service.dto.auth.UserMeDTO;
 import io.shelang.aghab.service.dto.auth.UsersDTO;
+import io.shelang.aghab.service.dto.workspace.WorkspacesDTO;
 import io.shelang.aghab.service.user.UserService;
+import io.shelang.aghab.service.workspace.WorkspaceService;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Consumes;
@@ -16,20 +18,19 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import lombok.RequiredArgsConstructor;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 @Path("/api/v1/users")
 @RequestScoped
+@RequiredArgsConstructor
 @RolesAllowed({Roles.BOSS})
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
 
   final UserService userService;
-
-  public UserResource(UserService userService) {
-    this.userService = userService;
-  }
+  final WorkspaceService workspaceService;
 
   @GET
   @Path("/me")
@@ -74,4 +75,15 @@ public class UserResource {
   public UserMeDTO generateAPIToken() {
     return userService.generateAPIToken();
   }
+
+  @GET
+  @Path("/workspaces")
+  @RolesAllowed({Roles.BOSS, Roles.USER})
+  public WorkspacesDTO getUserWorkspaces(
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size) {
+    return workspaceService.getUserWorkspaces(page, size);
+  }
+  // add to many workspaces
+  // delete from many workspaces
 }
