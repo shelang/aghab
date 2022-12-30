@@ -2,8 +2,10 @@ package io.shelang.aghab.resource;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -66,6 +68,30 @@ class LinksResourceTest {
     assertNull(response.getExpireAt());
     assertNull(response.getTitle());
     assertNull(response.getDescription());
+  }
+
+  @Test
+  void givenAuthUser_whenCreateRedirectWithoutHttpProtocol_thenAddHttpProtocol() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    LinkCreateDTO createRequest = new LinkCreateDTO()
+        .setUrl("example.com")
+        .setType(RedirectType.REDIRECT.name());
+
+    LinkDTO response = given()
+        .contentType(ContentType.JSON).and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken()).and()
+        .body(createRequest)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(LinkDTO.class);
+
+    assertNotEquals(createRequest.getUrl(), response.getUrl());
+    assertTrue(response.getUrl().startsWith("http://"));
   }
 
   @Test
