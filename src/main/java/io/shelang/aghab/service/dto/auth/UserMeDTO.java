@@ -12,5 +12,5 @@ public class UserMeDTO {
   private Long id;
   private String username;
   private String token;
-
+  private boolean needChangePassword;
 }
