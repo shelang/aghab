@@ -18,8 +18,11 @@ import io.shelang.aghab.service.dto.auth.UserCredentialDTO;
 import io.shelang.aghab.service.dto.auth.UserDTO;
 import io.shelang.aghab.service.dto.auth.UserMeDTO;
 import io.shelang.aghab.service.dto.auth.UsersDTO;
+import io.shelang.aghab.service.dto.workspace.UserWorkspaceRequest;
 import io.shelang.aghab.service.dto.workspace.WorkspacesDTO;
 import io.shelang.aghab.service.user.TokenService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -34,6 +37,8 @@ import org.junit.jupiter.api.Test;
 class UserResourceTest {
 
   private final String bossUsername = "boss";
+  private final List<Long> workspaceIdsToAdd = new ArrayList<>();
+  private final List<Long> workspaceIdsToDelete = new ArrayList<>();
   @Inject
   UserRepository userRepository;
   @Inject
@@ -66,10 +71,21 @@ class UserResourceTest {
     Workspace techWorkspace = new Workspace().setName("Tech Workspace").setCreatorUserId(1L);
     Workspace b2BGroup = new Workspace().setName("B2B Group").setCreatorUserId(1L);
     Workspace marketing = new Workspace().setName("Marketing").setCreatorUserId(1L);
+    Workspace cryptoWorkspace = new Workspace().setName("Crypto").setCreatorUserId(1L);
+    Workspace TestWorkspace = new Workspace().setName("Test").setCreatorUserId(1L);
 
     workspaceRepository.persist(techWorkspace);
     workspaceRepository.persistAndFlush(b2BGroup);
     workspaceRepository.persistAndFlush(marketing);
+    workspaceRepository.persistAndFlush(cryptoWorkspace);
+    workspaceRepository.persistAndFlush(TestWorkspace);
+
+    workspaceIdsToAdd.add(cryptoWorkspace.getId());
+    workspaceIdsToAdd.add(TestWorkspace.getId());
+
+    workspaceIdsToDelete.add(marketing.getId());
+    workspaceIdsToDelete.add(techWorkspace.getId());
+
     workspaceUserRepository.persistAndFlush(new WorkspaceUser()
         .setId(new WorkspaceUserId(1L, techWorkspace.getId())));
     workspaceUserRepository.persistAndFlush(new WorkspaceUser()
@@ -527,6 +543,78 @@ class UserResourceTest {
         .extract().body().as(WorkspacesDTO.class);
 
     assertEquals(1, workspacesPage2Size2.getWorkspaces().size());
+  }
+
+  @Test
+  void givenUserWithWorkspaces_whenAddUserToWorkspaces_thenGetListOfWorkspaces() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    UserWorkspaceRequest request = new UserWorkspaceRequest()
+        .setUserId(bossUser.get().getId())
+        .setWorkspaceIds(workspaceIdsToAdd);
+
+    given()
+        .contentType(ContentType.JSON).and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken()).and()
+        .body(request)
+    .when()
+        .post("/workspaces")
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_NO_CONTENT);
+
+    WorkspacesDTO workspaces = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .param("page", "1")
+        .param("size", "50")
+    .when()
+        .get("/workspaces")
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(WorkspacesDTO.class);
+
+    assertEquals(5, workspaces.getWorkspaces().size());
+  }
+
+  @Test
+  void givenUserWithWorkspaces_whenDeleteUserFromWorkspaces_thenGetListOfWorkspaces() {
+    Optional<User> bossUser = userRepository.findByUsername(bossUsername);
+    assert bossUser.isPresent();
+    LoginDTO tokens = tokenService.createTokens(bossUser.get());
+
+    UserWorkspaceRequest request = new UserWorkspaceRequest()
+        .setUserId(bossUser.get().getId())
+        .setWorkspaceIds(workspaceIdsToDelete);
+
+    given()
+        .contentType(ContentType.JSON).and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken()).and()
+        .body(request)
+    .when()
+        .delete("/workspaces")
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_NO_CONTENT);
+
+    WorkspacesDTO workspaces = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
+        .param("page", "1")
+        .param("size", "50")
+    .when()
+        .get("/workspaces")
+    .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .extract().body().as(WorkspacesDTO.class);
+
+    assertEquals(1, workspaces.getWorkspaces().size());
   }
 
 }

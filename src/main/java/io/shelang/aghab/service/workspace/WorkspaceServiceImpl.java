@@ -8,6 +8,7 @@ import io.shelang.aghab.repository.WorkspaceUserRepository;
 import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.dto.auth.UsersDTO;
 import io.shelang.aghab.service.dto.workspace.MembersRequest;
+import io.shelang.aghab.service.dto.workspace.UserWorkspaceRequest;
 import io.shelang.aghab.service.dto.workspace.WorkspaceDTO;
 import io.shelang.aghab.service.dto.workspace.WorkspacesDTO;
 import io.shelang.aghab.service.mapper.WorkspaceMapper;
@@ -126,6 +127,28 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         .map(workspaceMapper::toDTO)
         .collect(Collectors.toList());
     return new WorkspacesDTO().setWorkspaces(workspaces);
+  }
+
+  @Override
+  @Transactional
+  public void addUserWorkspaces(UserWorkspaceRequest request) {
+    for (Long workspaceId : request.getWorkspaceIds()) {
+      WorkspaceUser workspaceUser = WorkspaceUser
+          .builder()
+          .id(new WorkspaceUser.WorkspaceUserId(request.getUserId(), workspaceId))
+          .createAt(Instant.now())
+          .build();
+      workspaceUserRepository.persistAndFlush(workspaceUser);
+    }
+  }
+
+  @Override
+  @Transactional
+  public void deleteUserWorkspaces(UserWorkspaceRequest request) {
+    for (Long workspaceId : request.getWorkspaceIds()) {
+      workspaceUserRepository.deleteById(
+          new WorkspaceUser.WorkspaceUserId(request.getUserId(), workspaceId));
+    }
   }
 
   private void hasOwnershipOnIt(Long id) {

@@ -5,12 +5,14 @@ import io.shelang.aghab.service.dto.auth.UserCredentialDTO;
 import io.shelang.aghab.service.dto.auth.UserDTO;
 import io.shelang.aghab.service.dto.auth.UserMeDTO;
 import io.shelang.aghab.service.dto.auth.UsersDTO;
+import io.shelang.aghab.service.dto.workspace.UserWorkspaceRequest;
 import io.shelang.aghab.service.dto.workspace.WorkspacesDTO;
 import io.shelang.aghab.service.user.UserService;
 import io.shelang.aghab.service.workspace.WorkspaceService;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -18,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
@@ -84,6 +87,20 @@ public class UserResource {
       @QueryParam("size") Integer size) {
     return workspaceService.getUserWorkspaces(page, size);
   }
-  // add to many workspaces
-  // delete from many workspaces
+
+  @POST
+  @Path("/workspaces")
+  @RolesAllowed({Roles.BOSS})
+  public Response addUserWorkspaces(UserWorkspaceRequest request) {
+    workspaceService.addUserWorkspaces(request);
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/workspaces")
+  @RolesAllowed({Roles.BOSS})
+  public Response deleteUserWorkspaces(UserWorkspaceRequest request) {
+    workspaceService.deleteUserWorkspaces(request);
+    return Response.noContent().build();
+  }
 }
