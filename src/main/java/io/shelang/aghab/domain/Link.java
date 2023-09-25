@@ -1,24 +1,11 @@
 package io.shelang.aghab.domain;
 
-import io.shelang.aghab.domain.enums.PostgreSQLEnumType;
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.enums.RedirectType;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 @Data
 @NoArgsConstructor
@@ -36,7 +22,6 @@ import org.hibernate.annotations.TypeDef;
 @Builder
 @Entity
 @Table(name = "links")
-@TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 public class Link {
 
   @Id
@@ -80,8 +65,8 @@ public class Link {
   private Set<LinkAlternative> alternatives;
 
   @Enumerated(EnumType.STRING)
-  @Type(type = "pgsql_enum")
   @Column(columnDefinition = "redirect_type")
+  @Type(PostgreSQLEnumType.class)
   private RedirectType type;
 
   @Column(name = "script_id")

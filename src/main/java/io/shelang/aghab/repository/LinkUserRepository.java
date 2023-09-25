@@ -6,14 +6,14 @@ import io.quarkus.panache.common.Sort;
 import io.shelang.aghab.domain.LinkUser;
 import java.util.List;
 import java.util.Objects;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class LinkUserRepository implements PanacheRepositoryBase<LinkUser, LinkUser.LinkUserId> {
 
   public List<LinkUser> page(Long userId, String hash, Integer page, Integer size) {
     PanacheQuery<LinkUser> query;
-    if (Objects.nonNull(hash) && hash.length() > 0) {
+    if (Objects.nonNull(hash) && !hash.isEmpty()) {
       query =
           find(
               "user_id = ?1 and link_hash = ?2 ",

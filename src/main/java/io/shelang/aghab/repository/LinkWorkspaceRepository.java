@@ -6,7 +6,7 @@ import io.quarkus.panache.common.Sort;
 import io.shelang.aghab.domain.LinkWorkspace;
 import java.util.List;
 import java.util.Objects;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class LinkWorkspaceRepository implements

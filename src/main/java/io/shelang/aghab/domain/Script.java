@@ -2,15 +2,8 @@ package io.shelang.aghab.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,6 +34,6 @@ public class Script {
   private String content;
 
   @Builder.Default
-  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "scripts")
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "scripts", cascade = CascadeType.ALL)
   Set<User> users = new HashSet<>();
 }

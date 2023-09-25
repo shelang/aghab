@@ -1,7 +1,7 @@
 package io.shelang.aghab.service.dto.link;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;

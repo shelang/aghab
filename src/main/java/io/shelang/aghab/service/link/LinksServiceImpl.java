@@ -37,11 +37,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotFoundException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -259,7 +259,6 @@ public class LinksServiceImpl implements LinksService {
     return linkDTO;
   }
 
-  @Transactional
   private void persistLinkUser(Link link, User user) {
     var linkUser = new LinkUser(user.getId(), link.getHash());
     linkUser.setLinkId(link.getId());
@@ -267,7 +266,6 @@ public class LinksServiceImpl implements LinksService {
     linkUserRepository.persistAndFlush(linkUser);
   }
 
-  @Transactional
   private void persistAndRetry(Link link, byte retryCount) {
     if (retryCount >= MAX_RETRY_COUNT) {
       throw new MaxCreateLinkRetryException();

@@ -3,7 +3,7 @@ package io.shelang.aghab.service.shorty.impl;
 import io.shelang.aghab.exception.InvalidLengthOfHash;
 import io.shelang.aghab.service.shorty.Shorty;
 import java.time.Instant;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.hashids.Hashids;
 
 @ApplicationScoped
