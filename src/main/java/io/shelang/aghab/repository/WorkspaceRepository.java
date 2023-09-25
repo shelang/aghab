@@ -7,7 +7,7 @@ import io.quarkus.panache.common.Sort;
 import io.shelang.aghab.domain.Workspace;
 import java.util.List;
 import java.util.Objects;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class WorkspaceRepository implements PanacheRepository<Workspace> {
@@ -18,14 +18,14 @@ public class WorkspaceRepository implements PanacheRepository<Workspace> {
             "SELECT w FROM Workspace w "
                 + "LEFT JOIN WorkspaceUser wu on wu.workspaceId = w.id "
                 + "WHERE wu.userId = ?1",
-            Sort.by("id"), userId);
+            Sort.by("w.id"), userId);
     if (Objects.nonNull(q) && q.length() > 0) {
       query =
           find(
               "SELECT w FROM Workspace w "
                   + "LEFT JOIN WorkspaceUser wu on wu.workspaceId = w.id "
                   + "WHERE w.name like CONCAT('%', ?1, '%') and wu.userId = ?2",
-              Sort.by("id"), q, userId);
+              Sort.by("w.id"), q, userId);
     }
     return query.page(page).list();
   }

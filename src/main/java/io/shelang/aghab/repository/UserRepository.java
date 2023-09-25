@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class UserRepository implements PanacheRepository<User> {
@@ -22,14 +22,14 @@ public class UserRepository implements PanacheRepository<User> {
   public List<User> search(String username, Page page) {
     Map<String, Object> params = new HashMap<>();
 
-    PanacheQuery<User> query = find("SELECT u FROM io.shelang.aghab.domain.User u", Sort.by("id"),
+    PanacheQuery<User> query = find("SELECT u FROM io.shelang.aghab.domain.User u", Sort.by("u.id"),
         params);
     if (Objects.nonNull(username) && !username.isEmpty()) {
       params.put("username", username);
       query =
           find(
               "SELECT u FROM io.shelang.aghab.domain.User u WHERE u.username = :username ",
-              Sort.by("id"), params);
+              Sort.by("u.id"), params);
     }
 
     return query.page(page).list();
