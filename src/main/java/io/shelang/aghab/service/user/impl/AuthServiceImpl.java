@@ -6,11 +6,11 @@ import io.shelang.aghab.service.dto.auth.LoginDTO;
 import io.shelang.aghab.service.ratelimiter.RateLimiter;
 import io.shelang.aghab.service.user.AuthService;
 import io.shelang.aghab.service.user.TokenService;
-import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
 import org.mindrot.jbcrypt.BCrypt;
 
 @ApplicationScoped

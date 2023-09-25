@@ -9,7 +9,7 @@ import io.shelang.aghab.service.dto.auth.LoginDTO;
 import io.shelang.aghab.service.dto.auth.LoginRequestDTO;
 import io.shelang.aghab.service.ratelimiter.RateLimiter;
 import io.shelang.aghab.util.StringUtil;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;

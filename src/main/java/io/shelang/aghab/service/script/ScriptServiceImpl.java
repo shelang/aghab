@@ -1,5 +1,6 @@
 package io.shelang.aghab.service.script;
 
+import com.sun.tools.jconsole.JConsoleContext;
 import io.shelang.aghab.domain.Script;
 import io.shelang.aghab.domain.ScriptUser;
 import io.shelang.aghab.repository.ScriptRepository;
@@ -14,11 +15,11 @@ import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotFoundException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class ScriptServiceImpl implements ScriptService {

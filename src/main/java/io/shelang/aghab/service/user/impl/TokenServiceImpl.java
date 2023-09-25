@@ -8,9 +8,9 @@ import io.shelang.aghab.service.user.TokenService;
 import io.smallrye.jwt.build.Jwt;
 import java.time.Duration;
 import java.time.Instant;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.ForbiddenException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ForbiddenException;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @ApplicationScoped

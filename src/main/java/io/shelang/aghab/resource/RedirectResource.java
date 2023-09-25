@@ -12,10 +12,10 @@ import io.shelang.aghab.service.redirect.RedirectService;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
+import jakarta.annotation.security.PermitAll;
 import java.util.logging.Level;
-import javax.annotation.security.PermitAll;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import lombok.extern.java.Log;
 
 @PermitAll
