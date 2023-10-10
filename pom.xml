@@ -56,17 +56,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-flyway</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.flywaydb</groupId>
-          <artifactId>flyway-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-core</artifactId>
-      <version>9.0.4</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
