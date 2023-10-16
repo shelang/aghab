@@ -1,13 +1,12 @@
 package io.shelang.aghab.service.link;
 
-import io.shelang.aghab.service.dto.link.LinkAlternativeTypesDTO;
-import io.shelang.aghab.service.dto.link.LinkCreateDTO;
-import io.shelang.aghab.service.dto.link.LinkDTO;
-import io.shelang.aghab.service.dto.link.LinksUserDTO;
+import io.shelang.aghab.service.dto.link.*;
 
 public interface LinksService {
 
-  LinksUserDTO get(String q, Integer page, Integer size);
+  LinksDTO get(String q, Integer page, Integer size);
+
+  LinksDTO getByWorkspace(String q, Long workspaceId, Integer page, Integer size);
 
   LinkDTO getById(Long id);
 
