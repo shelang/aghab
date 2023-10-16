@@ -34,7 +34,7 @@ public class ScriptResource {
   @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   public ScriptDTO getById(@PathParam("id") Long id) {
-    return scriptService.getById(id);
+    return scriptService.getByIdAndValidation(id);
   }
 
   @GET
