@@ -1,11 +1,14 @@
 package io.shelang.aghab.service.user.impl;
 
+import io.shelang.aghab.domain.User;
 import io.shelang.aghab.repository.UserRepository;
 import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.dto.auth.LoginDTO;
+import io.shelang.aghab.service.dto.workspace.WorkspacesDTO;
 import io.shelang.aghab.service.ratelimiter.RateLimiter;
 import io.shelang.aghab.service.user.AuthService;
 import io.shelang.aghab.service.user.TokenService;
+import io.shelang.aghab.service.workspace.WorkspaceService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -22,6 +25,8 @@ public class AuthServiceImpl implements AuthService {
   TokenService tokenService;
   @Inject
   RateLimiter rateLimiter;
+  @Inject
+  WorkspaceService workspaceService;
 
   @Override
   public LoginDTO login(String username, String password) {
@@ -30,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     if (!BCrypt.checkpw(password, user.getPassword())) {
       throw new BadRequestException("Wrong password");
     }
-    return tokenService.createTokens(user);
+    return getLoginDTO(user);
   }
 
   @Override
@@ -40,6 +45,13 @@ public class AuthServiceImpl implements AuthService {
         userRepository
             .findByIdOptional(Long.valueOf(tokenService.getRefreshTokenUserId()))
             .orElseThrow(NotFoundException::new);
-    return tokenService.createTokens(user);
+    return getLoginDTO(user);
+  }
+
+  private LoginDTO getLoginDTO(User user) {
+    LoginDTO loginDTO = tokenService.createTokens(user);
+    WorkspacesDTO userWorkspaces = workspaceService.getUserWorkspaces(user.getId(), 1, 50);
+    loginDTO.setWorkspaces(userWorkspaces.getWorkspaces());
+    return loginDTO;
   }
 }
