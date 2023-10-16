@@ -36,6 +36,11 @@ public class WebhookServiceImpl implements WebhookService {
 
   @Override
   public WebhookDTO getById(Long id) {
+    return webhookMapper.toDTO(getWebhook(id));
+  }
+
+  @Override
+  public WebhookDTO getByIdAndValidate(Long id) {
     return webhookMapper.toDTO(getValidatedWebhook(id));
   }
 
@@ -92,6 +97,10 @@ public class WebhookServiceImpl implements WebhookService {
                 e.printStackTrace();
               }
             });
+  }
+
+  private Webhook getWebhook(Long id) {
+    return webhookRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
   private Webhook getValidatedWebhook(Long id) {

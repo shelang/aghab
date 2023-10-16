@@ -49,6 +49,11 @@ public class ScriptServiceImpl implements ScriptService {
 
   @Override
   public ScriptDTO getById(Long id) {
+    return scriptMapper.toDTO(getScript(id));
+  }
+
+  @Override
+  public ScriptDTO getByIdAndValidation(Long id) {
     return scriptMapper.toDTO(getValidatedScript(id));
   }
 
@@ -92,6 +97,10 @@ public class ScriptServiceImpl implements ScriptService {
       throw new ForbiddenException();
     }
     return script;
+  }
+
+  private Script getScript(Long id) {
+    return scriptRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
   private Optional<ScriptUser> getScriptUser(Long id) {

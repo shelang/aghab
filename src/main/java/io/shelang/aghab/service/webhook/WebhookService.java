@@ -7,6 +7,8 @@ public interface WebhookService {
 
   WebhookDTO getById(Long id);
 
+  WebhookDTO getByIdAndValidate(Long id);
+
   List<WebhookDTO> search(String name, Integer page, Integer size);
 
   WebhookDTO create(WebhookDTO dto);
