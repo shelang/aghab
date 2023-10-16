@@ -2,16 +2,18 @@ package io.shelang.aghab.service.dto.link;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-@Data
-@Accessors(chain = true)
-@NoArgsConstructor
-@JsonInclude(Include.NON_NULL)
-public class LinksUserDTO {
+import java.util.List;
 
-  private List<LinkUserDTO> links;
+@Data
+@NoArgsConstructor
+@Accessors(chain = true)
+@JsonInclude(Include.NON_NULL)
+public class LinksDTO {
+
+  List<LinkDTO> links;
+
 }
