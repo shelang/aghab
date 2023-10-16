@@ -7,6 +7,8 @@ public interface ScriptService {
 
   ScriptDTO getById(Long id);
 
+  ScriptDTO getByIdAndValidation(Long id);
+
   List<ScriptDTO> get(String name, Integer page, Integer size);
 
   ScriptDTO create(ScriptDTO dto);
