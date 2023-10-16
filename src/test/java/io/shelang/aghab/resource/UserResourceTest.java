@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

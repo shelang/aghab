@@ -21,7 +21,7 @@ import io.shelang.aghab.service.user.TokenService;
 import java.util.Arrays;
 import java.util.Optional;
 import jakarta.inject.Inject;
-import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
