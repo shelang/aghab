@@ -13,6 +13,6 @@ public class LinksRepository implements PanacheRepository<Link> {
   }
 
   public void removeWebhookLink(Long id) {
-    update("webhook_id = NULL WHERE id = ?1", id);
+    update("webhookId = NULL WHERE id = ?1", id);
   }
 }
