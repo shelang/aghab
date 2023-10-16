@@ -1,42 +1,25 @@
 package io.shelang.aghab.service.link;
 
-import io.shelang.aghab.domain.Link;
-import io.shelang.aghab.domain.LinkAlternative;
-import io.shelang.aghab.domain.LinkExpiration;
-import io.shelang.aghab.domain.LinkMeta;
-import io.shelang.aghab.domain.LinkUser;
+import io.shelang.aghab.domain.*;
 import io.shelang.aghab.domain.LinkUser.LinkUserId;
-import io.shelang.aghab.domain.User;
 import io.shelang.aghab.enums.AlternativeLinkDeviceType;
 import io.shelang.aghab.enums.AlternativeLinkOSType;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.exception.MaxCreateLinkRetryException;
-import io.shelang.aghab.repository.LinkAlternativeRepository;
-import io.shelang.aghab.repository.LinkExpirationRepository;
-import io.shelang.aghab.repository.LinkUserRepository;
-import io.shelang.aghab.repository.LinksRepository;
-import io.shelang.aghab.repository.UserRepository;
-import io.shelang.aghab.service.dto.link.LinkAlternativeDTO;
-import io.shelang.aghab.service.dto.link.LinkAlternativeTypesDTO;
-import io.shelang.aghab.service.dto.link.LinkCreateDTO;
-import io.shelang.aghab.service.dto.link.LinkDTO;
-import io.shelang.aghab.service.dto.link.LinksUserDTO;
+import io.shelang.aghab.repository.*;
+import io.shelang.aghab.service.dto.link.*;
 import io.shelang.aghab.service.dto.script.ScriptDTO;
 import io.shelang.aghab.service.dto.webhook.WebhookDTO;
-import io.shelang.aghab.service.mapper.LinkUserMapper;
 import io.shelang.aghab.service.mapper.LinksMapper;
 import io.shelang.aghab.service.script.ScriptService;
 import io.shelang.aghab.service.shorty.Shorty;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.webhook.WebhookService;
-import io.shelang.aghab.util.NumberUtil;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import io.shelang.aghab.util.PageUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -82,8 +65,6 @@ public class LinksServiceImpl implements LinksService {
   @Inject
   LinksMapper linksMapper;
   @Inject
-  LinkUserMapper linkUserMapper;
-  @Inject
   UserRepository userRepository;
   @Inject
   LinkUserRepository linkUserRepository;
@@ -93,6 +74,8 @@ public class LinksServiceImpl implements LinksService {
   ScriptService scriptService;
   @Inject
   WebhookService webhookService;
+  @Inject
+  LinkWorkspaceRepository linkWorkspaceRepository;
 
   private Link findById(Long id) {
     return linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
@@ -110,9 +93,16 @@ public class LinksServiceImpl implements LinksService {
     return new LinksDTO().setLinks(linksMapper.toDTO(links));
   }
 
-    List<LinkUser> result =
-        linkUserRepository.page(tokenService.getAccessTokenUserId(), q, page, size);
-    return new LinksUserDTO().setLinks(linkUserMapper.toDTO(result));
+  @Override
+  public LinksDTO getByWorkspace(String q, Long workspaceId, Integer page, Integer size) {
+    List<Link> links = this.linkWorkspaceRepository.page(this.tokenService.getAccessTokenUserId(), q, PageUtil.of(page, size))
+            .stream()
+            .map(LinkWorkspace::getLinkId)
+            .map(this.linksRepository::findByIdOptional)
+            .flatMap(Optional::stream)
+            .collect(Collectors.toList());
+
+    return new LinksDTO().setLinks(linksMapper.toDTO(links));
   }
 
   @Override
@@ -245,6 +235,7 @@ public class LinksServiceImpl implements LinksService {
     var link = initCreation(dto);
     persistAndRetry(link, retry);
     persistLinkUser(link, user);
+    persistLinkWorkspace(dto.getWorkspaceId(), link);
     if (dto.getExpireAt() != null) {
       linkExpirationRepository.persistAndFlush(
           LinkExpiration.builder()
@@ -260,6 +251,15 @@ public class LinksServiceImpl implements LinksService {
     var rHost = host.isBlank() ? redirectBaseUrl : host;
     linkDTO.setRedirectTo(rHost + linkDTO.getHash());
     return linkDTO;
+  }
+
+  private void persistLinkWorkspace(Long workspaceId, Link link) {
+    if (!Objects.isNull(workspaceId)) {
+      LinkWorkspace linkWorkspace = new LinkWorkspace(workspaceId, link.getHash());
+      linkWorkspace.setLinkId(link.getId());
+      linkWorkspace.setCreateAt(Instant.now());
+      linkWorkspaceRepository.persistAndFlush(linkWorkspace);
+    }
   }
 
   private void persistLinkUser(Link link, User user) {

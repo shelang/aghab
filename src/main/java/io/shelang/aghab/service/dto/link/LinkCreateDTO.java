@@ -26,6 +26,7 @@ public class LinkCreateDTO {
   private Short redirectCode = 301;
   private LinkStatus status = LinkStatus.ACTIVE;
   private boolean forwardParameter;
+  private Long workspaceId;
 
   @Valid
   @JsonAlias(value = "os")
