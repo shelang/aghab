@@ -2,10 +2,7 @@ package io.shelang.aghab.resource;
 
 import io.quarkus.security.Authenticated;
 import io.shelang.aghab.role.Roles;
-import io.shelang.aghab.service.dto.link.LinkAlternativeTypesDTO;
-import io.shelang.aghab.service.dto.link.LinkCreateDTO;
-import io.shelang.aghab.service.dto.link.LinkDTO;
-import io.shelang.aghab.service.dto.link.LinksUserDTO;
+import io.shelang.aghab.service.dto.link.*;
 import io.shelang.aghab.service.link.LinksService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
@@ -40,6 +37,14 @@ public class LinksResource {
       @QueryParam("page") Integer page,
       @QueryParam("size") Integer size) {
     return linksService.get(q, page, size);
+  }
+
+  @GET
+  @Path("/workspaces/{workspaceId}")
+  @Produces({"application/json"})
+  @Consumes({"application/json"})
+  public LinksDTO getByWorkspace(@QueryParam("q") String q, @QueryParam("page") Integer page, @QueryParam("size") Integer size, @PathParam Long workspaceId) {
+    return this.linksService.getByWorkspace(q, workspaceId, page, size);
   }
 
   @GET

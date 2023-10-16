@@ -117,15 +117,25 @@ public class WorkspaceServiceImpl implements WorkspaceService {
   @Override
   public WorkspacesDTO getUserWorkspaces(Integer page, Integer size) {
     List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findByUserId(
-        tokenService.getAccessTokenUserId(), PageUtil.of(page, size));
+            tokenService.getAccessTokenUserId(), PageUtil.of(page, size));
+    return getWorkspacesByUserRelation(workspaceUsers);
+  }
+
+  @Override
+  public WorkspacesDTO getUserWorkspaces(Long userId, Integer page, Integer size) {
+    List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findByUserId(userId, PageUtil.of(page, size));
+    return getWorkspacesByUserRelation(workspaceUsers);
+  }
+
+  private WorkspacesDTO getWorkspacesByUserRelation(List<WorkspaceUser> workspaceUsers) {
     List<Long> ids = workspaceUsers.stream()
-        .map(WorkspaceUser::getWorkspaceId)
-        .collect(Collectors.toList());
+            .map(WorkspaceUser::getWorkspaceId)
+            .collect(Collectors.toList());
     List<WorkspaceDTO> workspaces = ids.stream()
-        .map(workspaceRepository::findByIdOptional)
-        .flatMap(Optional::stream)
-        .map(workspaceMapper::toDTO)
-        .collect(Collectors.toList());
+            .map(workspaceRepository::findByIdOptional)
+            .flatMap(Optional::stream)
+            .map(workspaceMapper::toDTO)
+            .collect(Collectors.toList());
     return new WorkspacesDTO().setWorkspaces(workspaces);
   }
 
