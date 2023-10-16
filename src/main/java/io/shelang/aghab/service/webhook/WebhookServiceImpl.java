@@ -20,9 +20,11 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 @ApplicationScoped
+@Slf4j
 public class WebhookServiceImpl implements WebhookService {
 
   @Inject
@@ -94,7 +96,7 @@ public class WebhookServiceImpl implements WebhookService {
                   // empty block
                 }
               } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
               }
             });
   }
