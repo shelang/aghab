@@ -1,6 +1,5 @@
 package io.shelang.aghab.service.script;
 
-import com.sun.tools.jconsole.JConsoleContext;
 import io.shelang.aghab.domain.Script;
 import io.shelang.aghab.domain.ScriptUser;
 import io.shelang.aghab.repository.ScriptRepository;
