@@ -32,7 +32,7 @@ public class LinksResource {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinksUserDTO search(
+  public LinksDTO search(
       @QueryParam("q") String q,
       @QueryParam("page") Integer page,
       @QueryParam("size") Integer size) {

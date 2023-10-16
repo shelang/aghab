@@ -99,13 +99,16 @@ public class LinksServiceImpl implements LinksService {
   }
 
   @Override
-  public LinksUserDTO get(String q, Integer page, Integer size) {
-    page = NumberUtil.normalizeValue(page, 1) - 1;
-    size = NumberUtil.normalizeValue(size, 10);
+  public LinksDTO get(String q, Integer page, Integer size) {
+    List<Link> links = this.linkUserRepository.page(this.tokenService.getAccessTokenUserId(), q, PageUtil.of(page, size))
+            .stream()
+            .map(LinkUser::getLinkId)
+            .map(this.linksRepository::findByIdOptional)
+            .flatMap(Optional::stream)
+            .collect(Collectors.toList());
 
-    if (size > 50) {
-      size = 50;
-    }
+    return new LinksDTO().setLinks(linksMapper.toDTO(links));
+  }
 
     List<LinkUser> result =
         linkUserRepository.page(tokenService.getAccessTokenUserId(), q, page, size);
