@@ -25,6 +25,12 @@ public class LinkUser {
   @EmbeddedId
   private LinkUserId id;
 
+  @Column(name = "user_id", updatable = false, insertable = false)
+  private Long userId;
+
+  @Column(name = "link_hash", updatable = false, insertable = false)
+  private String linkHash;
+
   @Column(name = "link_id")
   private Long linkId;
 

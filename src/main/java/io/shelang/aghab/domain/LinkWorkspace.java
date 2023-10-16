@@ -27,8 +27,18 @@ public class LinkWorkspace {
   @Column(name = "link_id")
   private Long linkId;
 
+  @Column(name = "workspace_id", updatable = false, insertable = false)
+  private Long workspaceId;
+
+  @Column(name = "link_hash", updatable = false, insertable = false)
+  private String linkHash;
+
   @Column(name = "create_at")
   private Instant createAt;
+
+  public LinkWorkspace(Long workspaceId, String linkHash) {
+    this.id = new LinkWorkspaceId(workspaceId, linkHash);
+  }
 
   @Embeddable
   @Data
@@ -37,8 +47,8 @@ public class LinkWorkspace {
   @EqualsAndHashCode
   public static class LinkWorkspaceId implements Serializable {
 
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "workspace_id")
+    private Long workspaceId;
 
     @Column(name = "link_hash")
     private String linkHash;
