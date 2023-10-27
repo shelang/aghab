@@ -25,7 +25,7 @@ jobs:
       with:
         version: 'mandrel-latest'
         java-version: '17'
-        arch: 'amd64'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install native-image component
       run: gu install native-image
     - name: Set version
