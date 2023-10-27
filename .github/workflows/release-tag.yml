@@ -21,10 +21,10 @@ jobs:
     - name: Set tag env
       run: echo "TAG_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
     - name: Setup GraalVM
-      uses: DeLaGuardo/setup-graalvm@5.0
+      uses: graalvm/setup-graalvm@v1
       with:
-        graalvm: '22.1.0'
-        java: 'java11'
+        version: 'mandrel-latest'
+        java-version: '17'
         arch: 'amd64'
     - name: Install native-image component
       run: gu install native-image
