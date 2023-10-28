@@ -23,7 +23,6 @@ jobs:
     - name: Setup GraalVM
       uses: graalvm/setup-graalvm@v1
       with:
-        version: 'mandrel-latest'
         java-version: '17'
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install native-image component
