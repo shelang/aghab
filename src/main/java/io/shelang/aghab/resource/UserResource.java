@@ -88,6 +88,16 @@ public class UserResource {
     return workspaceService.getUserWorkspaces(page, size);
   }
 
+  @GET
+  @Path("/{id}/workspaces")
+  @RolesAllowed({Roles.BOSS})
+  public WorkspacesDTO getWorkspacesOfUserById(
+      @PathParam("id") Long id,
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size) {
+    return workspaceService.getUserWorkspaces(id, page, size);
+  }
+
   @POST
   @Path("/workspaces")
   @RolesAllowed({Roles.BOSS})
