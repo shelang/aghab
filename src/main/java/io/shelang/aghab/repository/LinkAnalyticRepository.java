@@ -64,8 +64,8 @@ public class LinkAnalyticRepository implements PanacheRepository<LinkAnalytics> 
     nativeQuery.setParameter("to", to);
 
     Object[] rs = (Object[]) nativeQuery.getSingleResult();
-    long count = ((BigInteger) rs[0]).longValue();
-    long uniqCount = ((BigInteger) rs[1]).longValue();
+    long count = Long.parseLong(rs[0].toString());
+    long uniqCount = Long.parseLong(rs[1].toString());
 
     return new ImmutablePair<>(count, uniqCount);
   }
