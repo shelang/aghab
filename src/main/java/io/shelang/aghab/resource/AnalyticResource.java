@@ -9,14 +9,8 @@ import io.shelang.aghab.service.dto.analytic.AnalyticTimeRangeRequestDTO;
 import io.shelang.aghab.service.uaa.UserAgentAnalyzer;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 @Path("/api/v1/analytics")
 @RequestScoped
@@ -32,7 +26,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}")
   public AnalyticDTO getAnalyticByLinkId(
       @PathParam("linkId") String linkId,
@@ -73,7 +66,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}/top/oses")
   public AnalyticListDTO top5OsesByLinkId(
       @PathParam("linkId") String linkId,
@@ -93,7 +85,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}/top/agent-names")
   public AnalyticListDTO top5AgentNamesByLinkId(
       @PathParam("linkId") String linkId,
@@ -113,7 +104,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}/top/device-brands")
   public AnalyticListDTO top5DeviceBrandsByLinkId(
       @PathParam("linkId") String linkId,
@@ -133,7 +123,6 @@ public class AnalyticResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/{linkId}/top/device-names")
   public AnalyticListDTO top5DeviceNamesByLinkId(
       @PathParam("linkId") String linkId,
