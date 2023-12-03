@@ -15,6 +15,6 @@ public interface WebhookService {
 
   WebhookDTO update(WebhookDTO dto);
 
-  void call(Long webhookId, String hash);
+  void call(Long webhookId, Long linkId, String hash);
 
 }
