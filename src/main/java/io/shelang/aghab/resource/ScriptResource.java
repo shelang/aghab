@@ -7,15 +7,8 @@ import io.shelang.aghab.service.script.ScriptService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
-import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
 @Path("/api/v1/script")
 @RequestScoped
@@ -31,7 +24,6 @@ public class ScriptResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   public ScriptDTO getById(@PathParam("id") Long id) {
     return scriptService.getByIdAndValidation(id);
@@ -53,7 +45,6 @@ public class ScriptResource {
   }
 
   @PUT
-  @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   public ScriptDTO update(@PathParam("id") Long id, @Valid ScriptDTO dto) {
     dto.setId(id);

@@ -7,15 +7,8 @@ import io.shelang.aghab.service.webhook.WebhookService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
-import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
 @Path("/api/v1/webhook")
 @RequestScoped
@@ -31,7 +24,6 @@ public class WebhookResource {
   }
 
   @GET
-  @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   public WebhookDTO getById(@PathParam("id") Long id) {
     return webhookService.getByIdAndValidate(id);
@@ -53,7 +45,6 @@ public class WebhookResource {
   }
 
   @PUT
-  @SuppressWarnings("PathAnnotation")
   @Path("/{id}")
   public WebhookDTO update(@PathParam("id") Long id, @Valid WebhookDTO dto) {
     dto.setId(id);
