@@ -1,5 +1,6 @@
 package io.shelang.aghab.service.webhook;
 
+import io.quarkus.rest.client.reactive.QuarkusRestClientBuilder;
 import io.shelang.aghab.domain.Webhook;
 import io.shelang.aghab.domain.WebhookUser;
 import io.shelang.aghab.repository.WebhookRepository;
@@ -79,18 +80,18 @@ public class WebhookServiceImpl implements WebhookService {
   }
 
   @Override
-  public void call(Long webhookId, String hash) {
+  public void call(Long webhookId, Long linkId, String hash) {
     webhookRepository
         .findByIdOptional(webhookId)
         .ifPresent(
             webhook -> {
               try {
-                SimplePostAPI api =
-                    RestClientBuilder.newBuilder()
+                SimplePostAPI api = RestClientBuilder
+                        .newBuilder()
                         .baseUri(new URI(webhook.getUrl()))
                         .build(SimplePostAPI.class);
                 WebhookAPICallDTO dto =
-                    new WebhookAPICallDTO().setHash(hash).setDate(Instant.now());
+                    new WebhookAPICallDTO().setLinkId(linkId).setHash(hash).setDate(Instant.now());
                 //noinspection EmptyTryBlock
                 try (Response ignored = api.executePost(dto)) {
                   // empty block
