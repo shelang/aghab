@@ -43,7 +43,7 @@ public class WebhookCallConsumer {
 
     redisClient.expire(key, LOCK_EXPIRE);
 
-    webhookService.call(event.getWebhookId(), event.getHash());
+    webhookService.call(event.getWebhookId(), event.getLinkId(), event.getHash());
 
     webhookLinkRepository.persistAndFlush(
         new WebhookLink(new WebhookLink.WebhookLinkId(event.getLinkId(), event.getWebhookId()),

@@ -10,6 +10,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class WebhookAPICallDTO {
 
+  private Long LinkId;
   private String hash;
   private Instant date;
+
 }
