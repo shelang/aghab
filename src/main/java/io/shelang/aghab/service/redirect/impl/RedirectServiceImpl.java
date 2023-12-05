@@ -131,12 +131,9 @@ public class RedirectServiceImpl implements RedirectService {
 
   private Function<RedirectDTO, Uni<?>> sendAnalyticEvent(String hash, MultiMap headers) {
     return byHash -> {
-      if (byHash.getStatusCode() >= 300 && byHash.getStatusCode() < 400) {
-        AnalyticLinkEvent event =
-            AnalyticLinkEvent.builder().id(byHash.getId()).headers(headers).hash(hash).build();
-        bus.send(EventType.ANALYTIC_LINK, event);
-      }
-
+      AnalyticLinkEvent event =
+          AnalyticLinkEvent.builder().id(byHash.getId()).headers(headers).hash(hash).build();
+      bus.send(EventType.ANALYTIC_LINK, event);
       return Uni.createFrom().item(byHash);
     };
   }
