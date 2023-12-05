@@ -34,9 +34,13 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class RedirectServiceImpl implements RedirectService {
 
-  private static final String DEFAULT_REDIRECT_SCRIPT_TITLE =
-      ".لطفا صبور باشید، شما در حال انتقال به صفحه مورد نظر هستید";
+  private static final String DEFAULT_REDIRECT_SCRIPT_TITLE = """
+      Please be patient, you are being redirected to the desired page...
+      ...لطفا صبور باشید، شما در حال انتقال به صفحه مورد نظر هستید
+      """;
   private static final Integer DEFAULT_SCRIPT_TIMEOUT = 10_000;
+  private static final String QUESTION_MARK = "&";
+  private static final String AMPERSAND_MARK = "&";
 
   final io.vertx.mutiny.pgclient.PgPool client;
   final LinksService linksService;
@@ -116,10 +120,10 @@ public class RedirectServiceImpl implements RedirectService {
 
   private String setForwardParameters(String query, RedirectDTO byHash, String redirectTo) {
     if (Objects.nonNull(query) && byHash.isForwardParameter()) {
-      if (redirectTo.contains("?")) {
-        redirectTo = redirectTo + "&" + query;
+      if (redirectTo.contains(QUESTION_MARK)) {
+        redirectTo = redirectTo + AMPERSAND_MARK + query;
       } else {
-        redirectTo = redirectTo + "?" + query;
+        redirectTo = redirectTo + QUESTION_MARK + query;
       }
     }
     return redirectTo;
@@ -137,45 +141,57 @@ public class RedirectServiceImpl implements RedirectService {
     };
   }
 
+  private Uni<RedirectDTO> scriptRedirection(RedirectDTO byHash) {
+    return queryScriptById()
+            .execute(Tuple.of(byHash.getScriptId()))
+            .onItem()
+            .transform(ScriptServiceImpl::from)
+            .onItem()
+            .transform(setScriptOnRedirection(byHash));
+  }
+
   private Function<RedirectDTO, Uni<? extends RedirectDTO>> addMetaData() {
     return byHash -> {
       switch (byHash.getType()) {
         case SCRIPT:
-          return this.client
-              .preparedQuery("SELECT id, name, timeout, content, title FROM scripts WHERE id = $1")
-              .execute(Tuple.of(byHash.getScriptId()))
-              .onItem()
-              .transform(ScriptServiceImpl::from)
-              .onItem()
-              .transform(
-                  script -> {
-                    if (Objects.isNull(script)) {
-                      return byHash;
-                    }
-                    String title =
-                        Objects.nonNull(script.getTitle())
-                            ? script.getTitle()
-                            : DEFAULT_REDIRECT_SCRIPT_TITLE;
-                    return byHash
-                        .setStatusCode((short) 200)
-                        .setTitle(title)
-                        .setTimeout(
-                            Objects.nonNull(script.getTimeout())
-                                ? script.getTimeout()
-                                : DEFAULT_SCRIPT_TIMEOUT)
-                        .setContent(script.getContent());
-                  });
+          return scriptRedirection(byHash);
         case IFRAME:
         case REDIRECT:
-        default:
           return Uni.createFrom().item(byHash);
       }
+      return null;
+    };
+  }
+
+  private PreparedQuery<RowSet<Row>> queryScriptById() {
+    return this.client
+            .preparedQuery("SELECT id, name, timeout, content, title FROM scripts WHERE id = $1");
+  }
+
+  private static Function<ScriptDTO, RedirectDTO> setScriptOnRedirection(RedirectDTO byHash) {
+    return script -> {
+      if (Objects.isNull(script)) {
+        return byHash;
+      }
+      String title =
+              Objects.nonNull(script.getTitle())
+                      ? script.getTitle()
+                      : DEFAULT_REDIRECT_SCRIPT_TITLE;
+      return byHash
+              .setStatusCode((short) 200)
+              .setTitle(title)
+              .setTimeout(
+                      Objects.nonNull(script.getTimeout())
+                              ? script.getTimeout()
+                              : DEFAULT_SCRIPT_TIMEOUT)
+              .setContent(script.getContent());
     };
   }
 
   private Function<RedirectDTO, Uni<?>> sendWebhookEvent(String hash) {
     return byHash -> {
-      if (Objects.nonNull(byHash.getWebhookId())) {
+      if (Objects.nonNull(byHash.getWebhookId()) &&
+              !WebhookStatus.SENT.equals(byHash.getWebhookStatus())) {
         WebhookCallEvent event =
             WebhookCallEvent.builder()
                 .webhookId(byHash.getWebhookId())
