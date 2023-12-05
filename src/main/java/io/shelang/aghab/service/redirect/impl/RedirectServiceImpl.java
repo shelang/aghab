@@ -2,10 +2,12 @@ package io.shelang.aghab.service.redirect.impl;
 
 import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.enums.RedirectType;
+import io.shelang.aghab.enums.WebhookStatus;
 import io.shelang.aghab.event.EventType;
 import io.shelang.aghab.event.dto.AnalyticLinkEvent;
 import io.shelang.aghab.event.dto.WebhookCallEvent;
 import io.shelang.aghab.service.dto.link.RedirectDTO;
+import io.shelang.aghab.service.dto.script.ScriptDTO;
 import io.shelang.aghab.service.link.LinksService;
 import io.shelang.aghab.service.redirect.RedirectService;
 import io.shelang.aghab.service.script.ScriptServiceImpl;
@@ -16,6 +18,7 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.mutiny.pgclient.PgPool;
+import io.vertx.mutiny.sqlclient.PreparedQuery;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import io.vertx.mutiny.sqlclient.Tuple;
@@ -188,33 +191,18 @@ public class RedirectServiceImpl implements RedirectService {
   private Uni<RedirectDTO> redirectByUserAgent(String hash, String query, MultiMap headers) {
     var ua = headers.get(HttpHeaders.USER_AGENT);
     var linkTypes = UserAgentAnalyzer.detectType(ua);
-    return client
-        .preparedQuery(
-            "SELECT l.id, "
-                + "     l.url, "
-                + "     l.redirect_code, "
-                + "     l.forward_parameter, "
-                + "     la.key, "
-                + "     la.url alt_url, "
-                + "     l.type, "
-                + "     l.script_id, "
-                + "     l.webhook_id "
-                + "FROM links l "
-                + "LEFT JOIN link_alternatives la on l.id = la.link_id "
-                + "WHERE l.hash = $1 and l.status = "
-                + LinkStatus.ACTIVE.ordinal())
-        .execute(Tuple.of(hash))
-        .onItem()
-        .transform(RedirectServiceImpl::fromByUA)
-        .onItem()
-        .transform(addAlternativeLink(linkTypes))
-        .onItem()
-        .transform(makeRedirectLink(query))
-        .onItem()
-        .transformToUni(addMetaData())
-        .onItem()
-        .call(sendAnalyticEvent(hash, headers))
-        .onItem()
-        .call(sendWebhookEvent(hash));
+      return queryLinkByHash(hash)
+              .onItem()
+              .transform(RedirectServiceImpl::fromByUA)
+              .onItem()
+              .transform(addAlternativeLink(linkTypes))
+              .onItem()
+              .transform(makeRedirectLink(query))
+              .onItem()
+              .transformToUni(addMetaData())
+              .onItem()
+              .call(sendAnalyticEvent(hash, headers))
+              .onItem()
+              .call(sendWebhookEvent(hash));
   }
 }

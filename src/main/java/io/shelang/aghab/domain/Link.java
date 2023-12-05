@@ -5,6 +5,7 @@ import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.enums.RedirectType;
 import java.util.Set;
 
+import io.shelang.aghab.enums.WebhookStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -74,4 +75,8 @@ public class Link {
 
   @Column(name = "webhook_id")
   private Long webhookId;
+
+  @Enumerated(EnumType.ORDINAL)
+  @Column(name = "webhook_status", columnDefinition = "int2")
+  private WebhookStatus webhookStatus;
 }

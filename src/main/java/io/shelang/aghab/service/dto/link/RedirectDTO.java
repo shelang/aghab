@@ -1,6 +1,7 @@
 package io.shelang.aghab.service.dto.link;
 
 import io.shelang.aghab.enums.RedirectType;
+import io.shelang.aghab.enums.WebhookStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -21,5 +22,6 @@ public class RedirectDTO {
   private Long scriptId;
   private Integer timeout;
   private Long webhookId;
+  private WebhookStatus webhookStatus;
   private boolean forwardParameter;
 }

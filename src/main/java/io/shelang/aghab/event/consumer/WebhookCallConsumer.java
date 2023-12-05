@@ -27,8 +27,6 @@ public class WebhookCallConsumer {
   @Inject
   WebhookService webhookService;
   @Inject
-  WebhookRepository webhookRepository;
-  @Inject
   WebhookLinkRepository webhookLinkRepository;
 
   @ConsumeEvent(value = EventType.WEBHOOK_CALL, blocking = true)
