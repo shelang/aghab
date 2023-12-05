@@ -129,6 +129,10 @@ public class LinksServiceImpl implements LinksService {
 
   private Link buildLink(LinkCreateDTO dto, String hash, LinkMeta linkMeta) {
     Short redirectCode = Objects.nonNull(dto.getRedirectCode()) ? dto.getRedirectCode() : 301;
+    WebhookStatus webhookStatus = WebhookStatus.UNKNOWN;
+    if (Objects.nonNull(dto.getWebhookId())) {
+      webhookStatus = WebhookStatus.NOT_SEND;
+    }
     return Link.builder()
         .hash(hash)
         .status(dto.getStatus())
@@ -138,6 +142,7 @@ public class LinksServiceImpl implements LinksService {
         .forwardParameter(dto.isForwardParameter())
         .scriptId(dto.getScriptId())
         .webhookId(dto.getWebhookId())
+        .webhookStatus(webhookStatus)
         .type(RedirectType.from(dto.getType()))
         .build();
   }
