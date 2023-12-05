@@ -188,6 +188,26 @@ public class RedirectServiceImpl implements RedirectService {
     };
   }
 
+  private Uni<RowSet<Row>> queryLinkByHash(String hash) {
+    return client
+            .preparedQuery(
+                    "SELECT l.id, "
+                            + "     l.url, "
+                            + "     l.redirect_code, "
+                            + "     l.forward_parameter, "
+                            + "     la.key, "
+                            + "     la.url alt_url, "
+                            + "     l.type, "
+                            + "     l.script_id, "
+                            + "     l.webhook_id, "
+                            + "     l.webhook_status "
+                            + "FROM links l "
+                            + "LEFT JOIN link_alternatives la on l.id = la.link_id "
+                            + "WHERE l.hash = $1 and l.status = "
+                            + LinkStatus.ACTIVE.ordinal())
+            .execute(Tuple.of(hash));
+  }
+
   private Uni<RedirectDTO> redirectByUserAgent(String hash, String query, MultiMap headers) {
     var ua = headers.get(HttpHeaders.USER_AGENT);
     var linkTypes = UserAgentAnalyzer.detectType(ua);
