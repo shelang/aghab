@@ -36,6 +36,7 @@ public class RedirectServiceImpl implements RedirectService {
 
   private static final String DEFAULT_REDIRECT_SCRIPT_TITLE = """
       Please be patient, you are being redirected to the desired page...
+      \n
       ...لطفا صبور باشید، شما در حال انتقال به صفحه مورد نظر هستید
       """;
   private static final Integer DEFAULT_SCRIPT_TIMEOUT = 10_000;
