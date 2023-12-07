@@ -3,6 +3,7 @@ package io.shelang.aghab.resource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.security.Authenticated;
+import io.shelang.aghab.exception.ValidationException;
 import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.dto.link.*;
 import io.shelang.aghab.service.link.LinksService;
@@ -78,8 +79,7 @@ public class LinksResource {
     if (validate.isEmpty()) {
       return linksService.create(link);
     } else {
-      validate.forEach(v -> log.error("[Validation] Error: field '{}' {}", v.getPropertyPath().toString(), v.getMessage()));
-      throw new BadRequestException(validate.stream().findFirst().get().getMessage());
+      throw new ValidationException(validate);
     }
   }
 
@@ -94,8 +94,7 @@ public class LinksResource {
     if (validate.isEmpty()) {
       return linksService.update(id, link);
     } else {
-      validate.forEach(v -> log.error("[Validation] Error: field '{}' {}", v.getPropertyPath().toString(), v.getMessage()));
-      throw new BadRequestException(validate.stream().findFirst().get().getMessage());
+      throw new ValidationException(validate);
     }
   }
 
