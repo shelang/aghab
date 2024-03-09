@@ -64,6 +64,25 @@ public class RedirectResource {
             });
   }
 
+  @Route(path = "/:hash/preview", methods = Route.HttpMethod.GET)
+  @SuppressWarnings("unused")
+  public Uni<RedirectDTO> preview(RoutingContext rc,
+                                  @SuppressWarnings("unused") @Param("hash") String hash) {
+    return redirectService
+            .redirectBy(rc)
+            .onFailure()
+            .recoverWithItem(
+                    throwable -> {
+                      log.log(Level.SEVERE, throwable.getMessage(), throwable);
+                      return new RedirectDTO().setStatusCode((short) 404).setUrl("");
+                    })
+            .onItem()
+            .transformToUni(r -> {
+              r.setId(0);
+              return Uni.createFrom().item(r);
+            });
+  }
+
   private Uni<String> scriptRedirect(RedirectDTO byHash) {
     return Uni.createFrom()
         .completionStage(
