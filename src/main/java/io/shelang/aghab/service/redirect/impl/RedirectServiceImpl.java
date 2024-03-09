@@ -150,14 +150,15 @@ public class RedirectServiceImpl implements RedirectService {
 
   private Function<RedirectDTO, Uni<? extends RedirectDTO>> addMetaData() {
     return byHash -> {
-      switch (byHash.getType()) {
-        case SCRIPT:
-          return scriptRedirection(byHash);
-        case IFRAME:
-        case REDIRECT:
-          return Uni.createFrom().item(byHash);
+      if (Objects.isNull(byHash) || Objects.isNull(byHash.getType())) {
+        return Uni.createFrom().failure(new RuntimeException("Invalid Redirect Request"));
       }
-      return null;
+
+      return switch (byHash.getType()) {
+          case SCRIPT -> scriptRedirection(byHash);
+          case IFRAME, REDIRECT -> Uni.createFrom().item(byHash);
+      };
+
     };
   }
 
