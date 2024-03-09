@@ -1,5 +1,6 @@
 package io.shelang.aghab.service.dto.link;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.enums.WebhookStatus;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RedirectDTO {
 
   private long id;
