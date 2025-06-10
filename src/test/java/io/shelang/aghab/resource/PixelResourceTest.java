@@ -59,6 +59,8 @@ class PixelResourceTest {
             .then()
             .statusCode(HttpStatus.SC_OK)
             .header(HttpHeaders.CONTENT_TYPE, "image/png")
+            .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+            .header(HttpHeaders.EXPIRES, "0")
             .extract().asByteArray();
 
     assertArrayEquals(TRANSPARENT_PNG, body);
