@@ -39,7 +39,6 @@ public class PixelResource {
                   .setStatusCode(status)
                   .putHeader(HttpHeaders.CONTENT_TYPE, "image/png")
                   .putHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
-                  .putHeader("Pragma", "no-cache")
                   .putHeader(HttpHeaders.EXPIRES, "0");
               return TRANSPARENT_PNG;
             });
