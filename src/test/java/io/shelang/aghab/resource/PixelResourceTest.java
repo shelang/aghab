@@ -45,7 +45,7 @@ class PixelResourceTest {
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokens.getToken())
         .body(createRequest)
         .when()
-        .post("/links")
+        .post("/api/v1/links")
         .then()
         .statusCode(HttpStatus.SC_OK)
         .extract().body().as(LinkDTO.class);
