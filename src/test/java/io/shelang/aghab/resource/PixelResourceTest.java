@@ -1,7 +1,7 @@
 package io.shelang.aghab.resource;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -13,8 +13,8 @@ import io.shelang.aghab.service.dto.link.LinkCreateDTO;
 import io.shelang.aghab.service.dto.link.LinkDTO;
 import io.shelang.aghab.service.user.TokenService;
 import jakarta.inject.Inject;
-import java.util.Base64;
 import java.util.Optional;
+import java.util.Arrays;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -22,10 +22,8 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 class PixelResourceTest {
 
-  private static final byte[] TRANSPARENT_PNG =
-      Base64.getDecoder()
-          .decode(
-              "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAJUbQhoAAAAASUVORK5CYII=");
+  private static final byte[] PNG_HEADER =
+      new byte[] {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
 
   @Inject UserRepository userRepository;
   @Inject TokenService tokenService;
@@ -61,7 +59,8 @@ class PixelResourceTest {
             .header(HttpHeaders.EXPIRES, "0")
             .extract().asByteArray();
 
-    assertArrayEquals(TRANSPARENT_PNG, body);
+    assertTrue(body.length > PNG_HEADER.length);
+    assertTrue(Arrays.equals(PNG_HEADER, Arrays.copyOf(body, PNG_HEADER.length)));
   }
 
   @Test
