@@ -3,7 +3,6 @@ package io.shelang.aghab.resource;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.shelang.aghab.domain.User;
@@ -21,7 +20,6 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-@TestHTTPEndpoint(PixelResource.class)
 class PixelResourceTest {
 
   private static final byte[] TRANSPARENT_PNG =
@@ -55,7 +53,7 @@ class PixelResourceTest {
     byte[] body =
         given()
             .when()
-            .get("/" + response.getHash())
+            .get("/i/" + response.getHash())
             .then()
             .statusCode(HttpStatus.SC_OK)
             .header(HttpHeaders.CONTENT_TYPE, "image/png")
@@ -70,7 +68,7 @@ class PixelResourceTest {
   void givenUnknownHash_whenRequestPixel_then404() {
     given()
         .when()
-        .get("/unknown-hash")
+        .get("/i/unknown-hash")
         .then()
         .statusCode(HttpStatus.SC_NOT_FOUND);
   }
