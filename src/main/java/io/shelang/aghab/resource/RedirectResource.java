@@ -9,6 +9,7 @@ import io.quarkus.vertx.web.RouteBase;
 import io.shelang.aghab.enums.RedirectType;
 import io.shelang.aghab.service.dto.link.RedirectDTO;
 import io.shelang.aghab.service.redirect.RedirectService;
+import io.shelang.aghab.util.ScriptSanitizer;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
@@ -67,15 +68,14 @@ public class RedirectResource {
   private Uni<String> scriptRedirect(RedirectDTO byHash) {
     return Uni.createFrom()
         .completionStage(
-            () ->
-                scriptTemplate
-                    .data("url", byHash.getUrl())
-                    .data("title", byHash.getTitle())
-                    .data("timeoutInMillis", byHash.getTimeout())
-                    .data("timeoutInSeconds", byHash.getTimeout() / 1000)
-                    .data("redirectInMillis", byHash.getTimeout() * 0.8)
-                    .data("script", new RawString(byHash.getContent()))
-                    .renderAsync());
+            () -> scriptTemplate
+                .data("url", byHash.getUrl())
+                .data("title", byHash.getTitle())
+                .data("timeoutInMillis", byHash.getTimeout())
+                .data("timeoutInSeconds", byHash.getTimeout() / 1000)
+                .data("redirectInMillis", byHash.getTimeout() * 0.8)
+                .data("script", new RawString(ScriptSanitizer.sanitizeScript(byHash.getContent())))
+                .renderAsync());
   }
 
   private Uni<String> iFrameRedirect(RedirectDTO byHash) {
