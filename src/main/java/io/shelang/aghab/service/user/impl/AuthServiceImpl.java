@@ -39,12 +39,11 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  @RolesAllowed({Roles.REFRESH_TOKEN})
+  @RolesAllowed({ Roles.REFRESH_TOKEN })
   public LoginDTO refresh(String authorization) {
-    var user =
-        userRepository
-            .findByIdOptional(Long.valueOf(tokenService.getRefreshTokenUserId()))
-            .orElseThrow(NotFoundException::new);
+    var user = userRepository
+        .findByIdOptional(Long.valueOf(tokenService.getRefreshTokenUserId()))
+        .orElseThrow(NotFoundException::new);
     return getLoginDTO(user);
   }
 

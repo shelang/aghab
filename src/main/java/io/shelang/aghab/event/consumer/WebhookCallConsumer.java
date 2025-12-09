@@ -7,7 +7,6 @@ import io.shelang.aghab.event.EventType;
 import io.shelang.aghab.event.dto.WebhookCallEvent;
 import io.shelang.aghab.repository.LinksRepository;
 import io.shelang.aghab.repository.WebhookLinkRepository;
-import io.shelang.aghab.repository.WebhookRepository;
 import io.shelang.aghab.service.webhook.WebhookService;
 import java.time.Instant;
 import jakarta.enterprise.context.ApplicationScoped;
