@@ -13,6 +13,8 @@ import io.shelang.aghab.service.dto.analytic.AnalyticKeyValueDTO;
 import io.shelang.aghab.service.dto.analytic.AnalyticListDTO;
 import io.shelang.aghab.service.dto.analytic.AnalyticRequestDTO;
 import io.shelang.aghab.service.dto.analytic.AnalyticTimeRangeRequestDTO;
+import io.shelang.aghab.service.dto.analytic.CountAnalytics;
+
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Collections;
@@ -22,7 +24,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 
 @Slf4j
 @ApplicationScoped
@@ -75,13 +76,14 @@ public class AnalyticServiceImpl implements AnalyticService {
     Instant t = toInstant(request.getTo(), Instant.now());
 
     AtomicReference<List<AnalyticBucket>> buckets = new AtomicReference<>(Collections.emptyList());
-    Pair<Long, Long> countAndUniqCountPair = linkAnalyticRepository.countAndUniqCount(link.getId(),
+    CountAnalytics countAnalytics = linkAnalyticRepository.countAndUniqCount(
+        link.getId(),
         f, t);
     AnalyticBucketType.from(request.getBucket()).ifPresent(type -> buckets.set(
         linkAnalyticRepository.groupByTypeAndLinkIdAndCreateAtBetween(type, linkId, f, t)));
 
-    return new AnalyticDTO().setLinkId(linkId).setCount(countAndUniqCountPair.getLeft())
-        .setUniqCount(countAndUniqCountPair.getRight()).setFrom(f).setTo(t)
+    return new AnalyticDTO().setLinkId(linkId).setCount(countAnalytics.count())
+        .setUniqCount(countAnalytics.uniqCount()).setFrom(f).setTo(t)
         .setBuckets(buckets.get());
   }
 

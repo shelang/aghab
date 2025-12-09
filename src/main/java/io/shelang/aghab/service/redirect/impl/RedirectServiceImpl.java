@@ -18,7 +18,7 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.mutiny.pgclient.PgPool;
+import io.vertx.mutiny.sqlclient.Pool;
 import io.vertx.mutiny.sqlclient.PreparedQuery;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
@@ -44,13 +44,13 @@ public class RedirectServiceImpl implements RedirectService {
   private static final String QUESTION_MARK = "&";
   private static final String AMPERSAND_MARK = "&";
 
-  final io.vertx.mutiny.pgclient.PgPool client;
+  final Pool client;
   final LinksService linksService;
   final EventBus bus;
 
   @Inject
   @SuppressWarnings("CdiInjectionPointsInspection")
-  public RedirectServiceImpl(@Default PgPool client, LinksService linksService, EventBus bus) {
+  public RedirectServiceImpl(@Default Pool client, LinksService linksService, EventBus bus) {
     this.client = client;
     this.linksService = linksService;
     this.bus = bus;

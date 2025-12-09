@@ -13,8 +13,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import io.shelang.aghab.service.dto.analytic.CountAnalytics;
 
 @ApplicationScoped
 public class LinkAnalyticRepository implements PanacheRepository<LinkAnalytics> {
@@ -54,7 +53,7 @@ public class LinkAnalyticRepository implements PanacheRepository<LinkAnalytics> 
     return mapped;
   }
 
-  public Pair<Long, Long> countAndUniqCount(Long linkId, Instant from, Instant to) {
+  public CountAnalytics countAndUniqCount(Long linkId, Instant from, Instant to) {
     Query nativeQuery = getEntityManager().createNativeQuery(
         "SELECT count(ip) \"count\", count(DISTINCT ip) \"uniqCount\" " + "FROM link_analytics la "
             + "WHERE la.link_id = :linkId AND la.create_at BETWEEN :from AND :to");
@@ -67,7 +66,7 @@ public class LinkAnalyticRepository implements PanacheRepository<LinkAnalytics> 
     long count = Long.parseLong(rs[0].toString());
     long uniqCount = Long.parseLong(rs[1].toString());
 
-    return new ImmutablePair<>(count, uniqCount);
+    return new CountAnalytics(count, uniqCount);
   }
 
   public List<AnalyticKeyValueDTO<String, BigInteger>> top5Devices(Long linkId, Instant from,
@@ -105,7 +104,6 @@ public class LinkAnalyticRepository implements PanacheRepository<LinkAnalytics> 
 
     return listOfAnalyticKeyValueDTO(linkId, from, to, nativeQuery);
   }
-
 
   public List<AnalyticKeyValueDTO<String, BigInteger>> top5DeviceBrands(Long linkId, Instant from,
       Instant to) {
