@@ -1,8 +1,10 @@
 package io.shelang.aghab.domain;
 
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import io.shelang.aghab.enums.LinkStatus;
 import io.shelang.aghab.enums.RedirectType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.util.Set;
 
 import io.shelang.aghab.enums.WebhookStatus;
@@ -14,7 +16,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.Type;
 
 @Data
 @NoArgsConstructor
@@ -67,7 +68,7 @@ public class Link {
 
   @Enumerated(EnumType.STRING)
   @Column(columnDefinition = "redirect_type")
-  @Type(PostgreSQLEnumType.class)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   private RedirectType type;
 
   @Column(name = "script_id")
