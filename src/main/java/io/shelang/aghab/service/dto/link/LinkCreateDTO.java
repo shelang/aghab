@@ -6,8 +6,12 @@ import io.shelang.aghab.enums.LinkStatus;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.shelang.aghab.validation.NullOrNotBlank;
 import io.shelang.aghab.validation.ValidURI;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.Data;
@@ -27,13 +31,15 @@ public class LinkCreateDTO {
   @NotBlank
   private String type;
 
-  private Short redirectCode = 301; // 301 .. 308
+  @Min(301)
+  @Max(308)
+  private Short redirectCode;
 
   private Instant expireAt;
 
   private Integer hashLength;
 
-  @io.shelang.aghab.validation.NullOrNotBlank
+  @NullOrNotBlank
   private String hash;
 
   @Length(max = 150)
