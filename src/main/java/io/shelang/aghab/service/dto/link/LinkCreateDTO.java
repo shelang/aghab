@@ -33,6 +33,7 @@ public class LinkCreateDTO {
 
   private Integer hashLength;
 
+  @io.shelang.aghab.validation.NullOrNotBlank
   private String hash;
 
   @Length(max = 150)
