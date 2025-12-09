@@ -119,4 +119,51 @@ public final class UrlValidator {
                     "URL is not allowed: internal addresses, localhost, and metadata endpoints are blocked");
         }
     }
+
+    /**
+     * Checks if a URL is safe for redirection.
+     * Allows custom schemes (e.g. myapp://) but blocks dangerous schemes like
+     * javascript:
+     *
+     * @param urlString The URL to check
+     * @return true if the URL is considered safe for redirection
+     */
+
+    public static boolean isSafeRedirectUrl(String urlString) {
+        if (urlString == null || urlString.isBlank()) {
+            return false;
+        }
+
+        try {
+            URI uri = new URI(urlString);
+            String scheme = uri.getScheme();
+
+            // Scheme is required
+            if (scheme == null) {
+                return false;
+            }
+
+            String schemeLower = scheme.toLowerCase();
+
+            // Block dangerous schemes
+            if (schemeLower.equals("javascript") ||
+                    schemeLower.equals("vbscript") ||
+                    schemeLower.equals("data") ||
+                    schemeLower.equals("file") ||
+                    schemeLower.equals("jar")) {
+                return false;
+            }
+
+            // Ensure scheme contains only allowed characters (alpha-numeric, +, -, .)
+            // This prevents weird obfuscation attacks
+            if (!Pattern.matches("^[a-z0-9+.-]+$", schemeLower)) {
+                return false;
+            }
+
+            return true;
+
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
 }

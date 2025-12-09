@@ -190,10 +190,6 @@ public class LinksServiceImpl implements LinksService {
   private Link initCreation(LinkCreateDTO dto) {
     String hash = generateHash(dto);
 
-    if (!dto.getUrl().contains("://")) {
-      dto.setUrl("http://" + dto.getUrl());
-    }
-
     var linkMeta = buildLinkMeta(dto);
 
     if (Objects.nonNull(dto.getScriptId())) {
