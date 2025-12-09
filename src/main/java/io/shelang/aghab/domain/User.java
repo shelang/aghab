@@ -29,44 +29,42 @@ import lombok.experimental.Accessors;
 @Table(name = "users")
 public class User {
 
-  @Id
-  @GeneratedValue(generator = "users_id_gen", strategy = GenerationType.SEQUENCE)
-  @SequenceGenerator(name = "users_id_gen", allocationSize = 1, sequenceName = "users_id_seq")
-  private Long id;
+    @Id
+    @GeneratedValue(generator = "users_id_gen", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "users_id_gen", allocationSize = 1, sequenceName = "users_id_seq")
+    private Long id;
 
-  private String username;
+    private String username;
 
-  private String password;
+    private String password;
 
-  private String token;
+    private String token;
 
-  @Column(name = "token_issue_at")
-  private Instant tokenIssueAt;
+    @Column(name = "token_issue_at")
+    private Instant tokenIssueAt;
 
-  @Column(name = "need_change_password")
-  private boolean needChangePassword;
+    @Column(name = "need_change_password")
+    private boolean needChangePassword;
 
-  @Builder.Default
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "script_user",
-      joinColumns = {@JoinColumn(name = "user_id")},
-      inverseJoinColumns = {@JoinColumn(name = "script_id")})
-  Set<Script> scripts = new HashSet<>();
+    @Builder.Default
+    @Column(name = "role")
+    private String role = "USER";
 
-  @Builder.Default
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "webhook_user",
-      joinColumns = {@JoinColumn(name = "user_id")},
-      inverseJoinColumns = {@JoinColumn(name = "webhook_id")})
-  Set<Webhook> webhooks = new HashSet<>();
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "script_user", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "script_id") })
+    Set<Script> scripts = new HashSet<>();
 
-  @Builder.Default
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "workspace_user",
-      joinColumns = {@JoinColumn(name = "user_id")},
-      inverseJoinColumns = {@JoinColumn(name = "workspace_id")})
-  Set<Workspace> workspaces = new HashSet<>();
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "webhook_user", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "webhook_id") })
+    Set<Webhook> webhooks = new HashSet<>();
+
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "workspace_user", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "workspace_id") })
+    Set<Workspace> workspaces = new HashSet<>();
 }
