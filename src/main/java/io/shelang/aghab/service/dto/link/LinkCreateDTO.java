@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.shelang.aghab.validation.NullOrNotBlank;
 import io.shelang.aghab.validation.ValidURI;
+import jakarta.enterprise.inject.Default;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -33,7 +34,8 @@ public class LinkCreateDTO {
 
   @Min(301)
   @Max(308)
-  private Short redirectCode;
+  @Default()
+  private Short redirectCode = 301;
 
   private Instant expireAt;
 
