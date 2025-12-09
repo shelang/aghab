@@ -2,7 +2,7 @@ package io.shelang.aghab.service.ratelimiter;
 
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.KeyCommands;
-import io.quarkus.redis.datasource.string.StringCommands;
+import io.quarkus.redis.datasource.value.ValueCommands;
 import io.shelang.aghab.exception.MaxLoginRetry;
 import java.time.Duration;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,7 +12,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class RateLimiterImpl implements RateLimiter {
 
-  private final StringCommands<String, Long> countCommands;
+  private final ValueCommands<String, Long> countCommands;
   private final KeyCommands<String> keyCommands;
   @ConfigProperty(name = "app.login.attempt.block.duration", defaultValue = "2h")
   Duration loginAttemptBlockDuration;
@@ -22,7 +22,7 @@ public class RateLimiterImpl implements RateLimiter {
   @Inject
   @SuppressWarnings("CdiInjectionPointsInspection")
   public RateLimiterImpl(RedisDataSource ds) {
-    this.countCommands = ds.string(Long.class);
+    this.countCommands = ds.value(Long.class);
     this.keyCommands = ds.key();
   }
 
