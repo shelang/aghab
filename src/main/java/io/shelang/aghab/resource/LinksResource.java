@@ -1,38 +1,26 @@
 package io.shelang.aghab.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.security.Authenticated;
-import io.shelang.aghab.exception.ValidationException;
 import io.shelang.aghab.role.Roles;
 import io.shelang.aghab.service.dto.link.*;
 import io.shelang.aghab.service.link.LinksService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Set;
-
 @Path("/api/v1/links")
 @RequestScoped
-@RolesAllowed({Roles.BOSS, Roles.USER, Roles.API})
+@RolesAllowed({ Roles.BOSS, Roles.USER, Roles.API })
 @Slf4j
 public class LinksResource {
 
   @Inject
   LinksService linksService;
-
-  @Inject
-  Validator validator;
-
-  @Inject
-  ObjectMapper objectMapper;
 
   @GET
   @Path("/")
@@ -49,7 +37,8 @@ public class LinksResource {
   @Path("/workspaces/{workspaceId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinksDTO getByWorkspace(@QueryParam("q") String q, @QueryParam("page") Integer page, @QueryParam("size") Integer size, @PathParam("workspaceId") Long workspaceId) {
+  public LinksDTO getByWorkspace(@QueryParam("q") String q, @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size, @PathParam("workspaceId") Long workspaceId) {
     return this.linksService.getByWorkspace(q, workspaceId, page, size);
   }
 
@@ -72,30 +61,16 @@ public class LinksResource {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  // FIXME: The validation and input body does not work!
-  public LinkDTO create(String body) throws JsonProcessingException {
-    LinkCreateDTO link = objectMapper.readValue(body, LinkCreateDTO.class);
-    Set<ConstraintViolation<LinkCreateDTO>> validate = validator.validate(link);
-    if (validate.isEmpty()) {
-      return linksService.create(link);
-    } else {
-      throw new ValidationException(validate);
-    }
+  public LinkDTO create(@Valid LinkCreateDTO link) {
+    return linksService.create(link);
   }
 
   @PUT
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  // FIXME: The validation and input body does not work!
-  public LinkDTO update(@PathParam("id") Long id, String body) throws JsonProcessingException {
-    LinkCreateDTO link = objectMapper.readValue(body, LinkCreateDTO.class);
-    Set<ConstraintViolation<LinkCreateDTO>> validate = validator.validate(link);
-    if (validate.isEmpty()) {
-      return linksService.update(id, link);
-    } else {
-      throw new ValidationException(validate);
-    }
+  public LinkDTO update(@PathParam("id") Long id, @Valid LinkCreateDTO link) {
+    return linksService.update(id, link);
   }
 
   @DELETE

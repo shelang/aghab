@@ -1,20 +1,20 @@
 package io.shelang.aghab.service.dto.link;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+
 import io.shelang.aghab.enums.LinkStatus;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.ws.rs.HeaderParam;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+
 import org.hibernate.validator.constraints.Length;
 
 @Data
-@Accessors(chain = true)
 @NoArgsConstructor
 public class LinkCreateDTO {
 
@@ -48,9 +48,9 @@ public class LinkCreateDTO {
 
   private Long webhookId;
 
-  @HeaderParam("Host")
+  // @HeaderParam("Host")
   private String host;
 
-  @HeaderParam("Origin")
+  // @HeaderParam("Origin")
   private String origin;
 }
