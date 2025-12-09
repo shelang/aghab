@@ -18,6 +18,8 @@ import java.util.logging.Level;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import lombok.extern.java.Log;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @PermitAll
 @RequestScoped
@@ -36,6 +38,9 @@ public class RedirectResource {
   @Inject
   @Location("script.html")
   Template scriptTemplate;
+
+  @Inject
+  ObjectMapper objectMapper;
 
   @Route(path = "/:hash", methods = Route.HttpMethod.GET)
   @SuppressWarnings("unused")
@@ -66,6 +71,14 @@ public class RedirectResource {
   }
 
   private Uni<String> scriptRedirect(RedirectDTO byHash) {
+    String script;
+    try {
+      script = objectMapper.writeValueAsString(ScriptSanitizer.sanitizeScript(byHash.getContent()));
+    } catch (JsonProcessingException e) {
+      log.log(Level.SEVERE, e.getMessage(), e);
+      script = "\"\"";
+    }
+    String finalScript = script;
     return Uni.createFrom()
         .completionStage(
             () -> scriptTemplate
@@ -74,7 +87,7 @@ public class RedirectResource {
                 .data("timeoutInMillis", byHash.getTimeout())
                 .data("timeoutInSeconds", byHash.getTimeout() / 1000)
                 .data("redirectInMillis", byHash.getTimeout() * 0.8)
-                .data("script", new RawString(ScriptSanitizer.sanitizeScript(byHash.getContent())))
+                .data("script", new RawString(finalScript))
                 .renderAsync());
   }
 
