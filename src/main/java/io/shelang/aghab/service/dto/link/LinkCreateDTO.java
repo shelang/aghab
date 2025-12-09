@@ -6,10 +6,10 @@ import io.shelang.aghab.enums.LinkStatus;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import io.shelang.aghab.validation.ValidURI;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
-import jakarta.ws.rs.HeaderParam;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.Length;
 public class LinkCreateDTO {
 
   @NotBlank
+  @ValidURI
   @Length(min = 5)
   private String url;
 
