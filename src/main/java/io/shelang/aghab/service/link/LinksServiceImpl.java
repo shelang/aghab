@@ -232,7 +232,7 @@ public class LinksServiceImpl implements LinksService {
         .orElseThrow(NotFoundException::new);
     byte retry = 0;
     var link = initCreation(dto);
-    if (dto.getHash() != null) {
+    if (dto.getHash() != null && !dto.getHash().isBlank()) {
       persistCustomLink(link);
     } else {
       persistAndRetry(link, retry);

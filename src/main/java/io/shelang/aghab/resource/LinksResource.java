@@ -96,7 +96,7 @@ public class LinksResource {
   public Response delete(@PathParam("id") Long id) {
     LinkDTO link = linksService.getById(id);
     linksService.delete(id);
-    auditService.log(tokenService.getAccessTokenUserId(), null, "LINK_DELETED", "Link ID: " + id,
+    auditService.log(tokenService.getAccessTokenUserId(), link.getWorkspaceId(), "LINK_DELETED", "Link ID: " + id,
         request.remoteAddress().host());
     return Response.noContent().build();
   }
