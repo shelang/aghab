@@ -1,6 +1,5 @@
 package io.shelang.aghab.service.webhook;
 
-import io.quarkus.rest.client.reactive.QuarkusRestClientBuilder;
 import io.shelang.aghab.domain.Webhook;
 import io.shelang.aghab.domain.WebhookUser;
 import io.shelang.aghab.repository.WebhookRepository;
@@ -11,6 +10,7 @@ import io.shelang.aghab.service.mapper.WebhookMapper;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.util.PageUtil;
 import io.shelang.aghab.util.StringUtil;
+import io.shelang.aghab.util.UrlValidator;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
@@ -57,6 +57,7 @@ public class WebhookServiceImpl implements WebhookService {
   @Override
   @Transactional
   public WebhookDTO create(WebhookDTO dto) {
+    UrlValidator.validateOrThrow(dto.getUrl());
     Webhook webhook = webhookMapper.toEntity(dto);
     webhook.setId(null);
     webhookRepository.persistAndFlush(webhook);
@@ -69,6 +70,7 @@ public class WebhookServiceImpl implements WebhookService {
   public WebhookDTO update(WebhookDTO dto) {
     Webhook webhook = getValidatedWebhook(dto.getId());
     if (StringUtil.nonNullOrEmpty(dto.getUrl())) {
+      UrlValidator.validateOrThrow(dto.getUrl());
       webhook.setUrl(dto.getUrl());
     }
     if (StringUtil.nonNullOrEmpty(dto.getName())) {
@@ -87,12 +89,11 @@ public class WebhookServiceImpl implements WebhookService {
             webhook -> {
               try {
                 SimplePostAPI api = RestClientBuilder
-                        .newBuilder()
-                        .baseUri(new URI(webhook.getUrl()))
-                        .build(SimplePostAPI.class);
-                WebhookAPICallDTO dto =
-                    new WebhookAPICallDTO().setLinkId(linkId).setHash(hash).setDate(Instant.now());
-                //noinspection EmptyTryBlock
+                    .newBuilder()
+                    .baseUri(new URI(webhook.getUrl()))
+                    .build(SimplePostAPI.class);
+                WebhookAPICallDTO dto = new WebhookAPICallDTO().setLinkId(linkId).setHash(hash).setDate(Instant.now());
+                // noinspection EmptyTryBlock
                 try (Response ignored = api.executePost(dto)) {
                   // empty block
                 }
