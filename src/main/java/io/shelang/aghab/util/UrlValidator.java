@@ -17,6 +17,25 @@ public final class UrlValidator {
         throw new IllegalAccessError("Utility class");
     }
 
+    /**
+     * Checks if the InetAddress is safe (not private/loopback/link-local).
+     * 
+     * @param address The address to check
+     * @return true if safe
+     */
+    public static boolean isSafe(InetAddress address) {
+        String ip = address.getHostAddress();
+
+        // Check resolved IP against private ranges
+        if (PRIVATE_IP_PATTERN.matcher(ip).matches()) {
+            return false;
+        }
+
+        // Check if it's a loopback or link local address
+        return !(address.isLoopbackAddress() || address.isLinkLocalAddress()
+                || address.isSiteLocalAddress() || address.isAnyLocalAddress());
+    }
+
     // Blocked hostnames
     private static final Set<String> BLOCKED_HOSTNAMES = Set.of(
             "localhost",
@@ -82,16 +101,7 @@ public final class UrlValidator {
             // Try to resolve and check the actual IP address
             try {
                 InetAddress address = InetAddress.getByName(host);
-                String ip = address.getHostAddress();
-
-                // Check resolved IP against private ranges
-                if (PRIVATE_IP_PATTERN.matcher(ip).matches()) {
-                    return false;
-                }
-
-                // Check if it's a loopback or link local address
-                if (address.isLoopbackAddress() || address.isLinkLocalAddress()
-                        || address.isSiteLocalAddress() || address.isAnyLocalAddress()) {
+                if (!isSafe(address)) {
                     return false;
                 }
 
