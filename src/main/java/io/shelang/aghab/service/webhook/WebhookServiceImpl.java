@@ -87,18 +87,35 @@ public class WebhookServiceImpl implements WebhookService {
         .findByIdOptional(webhookId)
         .ifPresent(
             webhook -> {
-              try {
-                SimplePostAPI api = RestClientBuilder
-                    .newBuilder()
-                    .baseUri(new URI(webhook.getUrl()))
-                    .build(SimplePostAPI.class);
-                WebhookAPICallDTO dto = new WebhookAPICallDTO().setLinkId(linkId).setHash(hash).setDate(Instant.now());
-                // noinspection EmptyTryBlock
-                try (Response ignored = api.executePost(dto)) {
-                  // empty block
+              // TODO: make configuration for retries and timeout in database
+              int maxRetries = 3;
+              for (int attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                  SimplePostAPI api = RestClientBuilder
+                      .newBuilder()
+                      .baseUri(new URI(webhook.getUrl()))
+                      .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+                      .readTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+                      .build(SimplePostAPI.class);
+                  WebhookAPICallDTO dto = new WebhookAPICallDTO().setLinkId(linkId).setHash(hash)
+                      .setDate(Instant.now());
+                  try (Response response = api.executePost(dto)) {
+                    if (response.getStatus() >= 200 && response.getStatus() < 300) {
+                      break; // Success
+                    }
+                  }
+                } catch (Exception e) {
+                  log.error("[Webhook Error] Attempt {}/{} failed for webhook {}: {}", attempt, maxRetries, webhookId,
+                      e.getMessage());
+                  if (attempt < maxRetries) {
+                    try {
+                      Thread.sleep(1000L * attempt); // Simple backoff
+                    } catch (InterruptedException ie) {
+                      Thread.currentThread().interrupt();
+                      break;
+                    }
+                  }
                 }
-              } catch (Exception e) {
-                log.error("[Webhook Error] {}", e.getMessage());
               }
             });
   }
