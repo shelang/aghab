@@ -24,6 +24,7 @@ import io.shelang.aghab.util.PageUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -230,11 +231,12 @@ public class LinksServiceImpl implements LinksService {
         .findByIdOptional(tokenService.getAccessTokenUserId())
         .orElseThrow(NotFoundException::new);
     byte retry = 0;
-    if (dto.getHash() != null) {
-      retry = MAX_RETRY_COUNT - 1;
-    }
     var link = initCreation(dto);
-    persistAndRetry(link, retry);
+    if (dto.getHash() != null) {
+      persistCustomLink(link);
+    } else {
+      persistAndRetry(link, retry);
+    }
     persistLinkUser(link, user);
     persistLinkWorkspace(dto.getWorkspaceId(), link);
     if (dto.getExpireAt() != null) {
@@ -279,6 +281,19 @@ public class LinksServiceImpl implements LinksService {
     linkUser.setLinkId(link.getId());
     linkUser.setCreateAt(link.getLinkMeta().getCreateAt());
     linkUserRepository.persistAndFlush(linkUser);
+  }
+
+  private void persistCustomLink(Link link) {
+    var existLink = linksRepository.findByHash(link.getHash()).orElse(null);
+    if (Objects.nonNull(existLink)) {
+      throw new BadRequestException("Hash already exists");
+    }
+    try {
+      linksRepository.persistAndFlush(link);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+      throw new BadRequestException("Hash already exists");
+    }
   }
 
   private void persistAndRetry(Link link, byte retryCount) {
