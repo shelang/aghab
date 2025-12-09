@@ -117,6 +117,6 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void delete(Long id) {
-    // TODO: soft delete
+    // TODO: soft delete by adding status field and update queries if needed
   }
 }
