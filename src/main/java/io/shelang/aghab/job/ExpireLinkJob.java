@@ -35,7 +35,7 @@ public class ExpireLinkJob {
     var hasData = true;
     while (hasData) {
       List<LinkExpiration> expired =
-          linkExpirationRepository.find("expireAt < now()").page(0, 20).list();
+          linkExpirationRepository.find("expireAt < ?1", java.time.Instant.now()).page(0, 20).list();
       if (!expired.isEmpty()) {
         log.info("{} expired links fetched", expired.size());
       }
