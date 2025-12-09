@@ -25,23 +25,21 @@ public class TokenServiceImpl implements TokenService {
 
   @Override
   public LoginDTO createTokens(User user) {
-    String token =
-        Jwt.issuer(ISSUER)
-            .groups(user.getUsername().equalsIgnoreCase(Roles.BOSS) ? Roles.BOSS : Roles.USER)
-            .claim(CLAIM_TOKEN_TYPE, JwtTokenType.ACCESS.ordinal())
-            .upn(user.getUsername())
-            .subject(user.getId().toString())
-            .expiresIn(Duration.ofDays(7))
-            .sign();
+    String token = Jwt.issuer(ISSUER)
+        .groups(user.getRole())
+        .claim(CLAIM_TOKEN_TYPE, JwtTokenType.ACCESS.ordinal())
+        .upn(user.getUsername())
+        .subject(user.getId().toString())
+        .expiresIn(Duration.ofMinutes(15))
+        .sign();
 
-    String refresh =
-        Jwt.issuer(ISSUER)
-            .claim(CLAIM_TOKEN_TYPE, JwtTokenType.REFRESH.ordinal())
-            .claim(REFRESH_CLAIM_USER_ID, user.getId())
-            .upn(user.getUsername())
-            .groups(Roles.REFRESH_TOKEN)
-            .expiresIn(Duration.ofDays(8))
-            .sign();
+    String refresh = Jwt.issuer(ISSUER)
+        .claim(CLAIM_TOKEN_TYPE, JwtTokenType.REFRESH.ordinal())
+        .claim(REFRESH_CLAIM_USER_ID, user.getId())
+        .upn(user.getUsername())
+        .groups(Roles.REFRESH_TOKEN)
+        .expiresIn(Duration.ofDays(30))
+        .sign();
 
     return new LoginDTO().setToken(token).setRefresh(refresh);
   }

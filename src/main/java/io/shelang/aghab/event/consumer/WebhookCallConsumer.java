@@ -1,6 +1,5 @@
 package io.shelang.aghab.event.consumer;
 
-import io.quarkus.redis.client.RedisClient;
 import io.quarkus.vertx.ConsumeEvent;
 import io.shelang.aghab.domain.WebhookLink;
 import io.shelang.aghab.event.EventType;
@@ -16,11 +15,10 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class WebhookCallConsumer {
 
-  private static final String LOCK_EXPIRE = "100";
+  private static final long LOCK_EXPIRE = 100;
 
-  @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject
-  RedisClient redisClient;
+  io.quarkus.redis.datasource.RedisDataSource redisDataSource;
   @Inject
   LinksRepository linksRepository;
   @Inject
@@ -32,13 +30,13 @@ public class WebhookCallConsumer {
   @Transactional
   public void consumer(WebhookCallEvent event) {
     String key = event.getLinkId().toString();
-    String setNXResponse = redisClient.setnx(key, String.valueOf(Instant.now())).toString();
+    boolean setNXResponse = redisDataSource.value(String.class).setnx(key, String.valueOf(Instant.now()));
 
-    if (!setNXResponse.equals("1")) {
+    if (!setNXResponse) {
       return;
     }
 
-    redisClient.expire(key, LOCK_EXPIRE);
+    redisDataSource.key().expire(key, LOCK_EXPIRE);
 
     webhookService.call(event.getWebhookId(), event.getLinkId(), event.getHash());
 
