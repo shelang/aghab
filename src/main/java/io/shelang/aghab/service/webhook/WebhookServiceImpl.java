@@ -22,7 +22,13 @@ import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import io.shelang.aghab.service.dto.webhook.WebhookAPICallDTO;
+import java.net.URI;
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
+import org.eclipse.microprofile.faulttolerance.Retry;
 
 @ApplicationScoped
 @Slf4j
@@ -82,40 +88,31 @@ public class WebhookServiceImpl implements WebhookService {
   }
 
   @Override
+  @Retry(maxRetries = 3, delay = 200)
+  @CircuitBreaker(requestVolumeThreshold = 4, failureRatio = 0.5, delay = 1000)
   public void call(Long webhookId, Long linkId, String hash) {
     webhookRepository
         .findByIdOptional(webhookId)
         .ifPresent(
             webhook -> {
-              // TODO: make configuration for retries and timeout in database
-              int maxRetries = 3;
-              for (int attempt = 1; attempt <= maxRetries; attempt++) {
-                try {
-                  SimplePostAPI api = RestClientBuilder
-                      .newBuilder()
-                      .baseUri(new URI(webhook.getUrl()))
-                      .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
-                      .readTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
-                      .build(SimplePostAPI.class);
-                  WebhookAPICallDTO dto = new WebhookAPICallDTO().setLinkId(linkId).setHash(hash)
-                      .setDate(Instant.now());
-                  try (Response response = api.executePost(dto)) {
-                    if (response.getStatus() >= 200 && response.getStatus() < 300) {
-                      break; // Success
-                    }
-                  }
-                } catch (Exception e) {
-                  log.error("[Webhook Error] Attempt {}/{} failed for webhook {}: {}", attempt, maxRetries, webhookId,
-                      e.getMessage());
-                  if (attempt < maxRetries) {
-                    try {
-                      Thread.sleep(1000L * attempt); // Simple backoff
-                    } catch (InterruptedException ie) {
-                      Thread.currentThread().interrupt();
-                      break;
-                    }
+              try {
+                SimplePostAPI api = RestClientBuilder.newBuilder()
+                    .baseUri(new URI(webhook.getUrl()))
+                    .connectTimeout(5, TimeUnit.SECONDS)
+                    .readTimeout(5, TimeUnit.SECONDS)
+                    .build(SimplePostAPI.class);
+                WebhookAPICallDTO dto = new WebhookAPICallDTO()
+                    .setLinkId(linkId)
+                    .setHash(hash)
+                    .setDate(Instant.now());
+                try (Response response = api.executePost(dto)) {
+                  if (response.getStatus() < 200 || response.getStatus() >= 300) {
+                    throw new RuntimeException("Call failed with status " + response.getStatus());
                   }
                 }
+              } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                throw new RuntimeException("Webhook call failed", e);
               }
             });
   }
