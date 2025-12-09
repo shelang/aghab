@@ -12,6 +12,7 @@ import io.shelang.aghab.service.link.LinksService;
 import io.shelang.aghab.service.redirect.RedirectService;
 import io.shelang.aghab.service.script.ScriptServiceImpl;
 import io.shelang.aghab.service.uaa.UserAgentAnalyzer;
+import io.shelang.aghab.util.RedirectSanitizer;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.MultiMap;
 import io.vertx.core.eventbus.EventBus;
@@ -114,6 +115,7 @@ public class RedirectServiceImpl implements RedirectService {
     return byHash -> {
       String redirectTo = byHash.getAltUrl() == null ? byHash.getUrl() : byHash.getAltUrl();
       redirectTo = setForwardParameters(query, byHash, redirectTo);
+      redirectTo = RedirectSanitizer.sanitizeRedirectUrl(redirectTo);
       byHash.setUrl(redirectTo);
       return byHash;
     };
@@ -132,8 +134,7 @@ public class RedirectServiceImpl implements RedirectService {
 
   private Function<RedirectDTO, Uni<?>> sendAnalyticEvent(String hash, MultiMap headers) {
     return byHash -> {
-      AnalyticLinkEvent event =
-          AnalyticLinkEvent.builder().id(byHash.getId()).headers(headers).hash(hash).build();
+      AnalyticLinkEvent event = AnalyticLinkEvent.builder().id(byHash.getId()).headers(headers).hash(hash).build();
       bus.send(EventType.ANALYTIC_LINK, event);
       return Uni.createFrom().item(byHash);
     };
@@ -141,11 +142,11 @@ public class RedirectServiceImpl implements RedirectService {
 
   private Uni<RedirectDTO> scriptRedirection(RedirectDTO byHash) {
     return queryScriptById()
-            .execute(Tuple.of(byHash.getScriptId()))
-            .onItem()
-            .transform(ScriptServiceImpl::from)
-            .onItem()
-            .transform(setScriptOnRedirection(byHash));
+        .execute(Tuple.of(byHash.getScriptId()))
+        .onItem()
+        .transform(ScriptServiceImpl::from)
+        .onItem()
+        .transform(setScriptOnRedirection(byHash));
   }
 
   private Function<RedirectDTO, Uni<? extends RedirectDTO>> addMetaData() {
@@ -163,7 +164,7 @@ public class RedirectServiceImpl implements RedirectService {
 
   private PreparedQuery<RowSet<Row>> queryScriptById() {
     return this.client
-            .preparedQuery("SELECT id, name, timeout, content, title FROM scripts WHERE id = $1");
+        .preparedQuery("SELECT id, name, timeout, content, title FROM scripts WHERE id = $1");
   }
 
   private static Function<ScriptDTO, RedirectDTO> setScriptOnRedirection(RedirectDTO byHash) {
@@ -171,31 +172,29 @@ public class RedirectServiceImpl implements RedirectService {
       if (Objects.isNull(script)) {
         return byHash;
       }
-      String title =
-              Objects.nonNull(script.getTitle())
-                      ? script.getTitle()
-                      : DEFAULT_REDIRECT_SCRIPT_TITLE;
+      String title = Objects.nonNull(script.getTitle())
+          ? script.getTitle()
+          : DEFAULT_REDIRECT_SCRIPT_TITLE;
       return byHash
-              .setStatusCode((short) 200)
-              .setTitle(title)
-              .setTimeout(
-                      Objects.nonNull(script.getTimeout())
-                              ? script.getTimeout()
-                              : DEFAULT_SCRIPT_TIMEOUT)
-              .setContent(script.getContent());
+          .setStatusCode((short) 200)
+          .setTitle(title)
+          .setTimeout(
+              Objects.nonNull(script.getTimeout())
+                  ? script.getTimeout()
+                  : DEFAULT_SCRIPT_TIMEOUT)
+          .setContent(script.getContent());
     };
   }
 
   private Function<RedirectDTO, Uni<?>> sendWebhookEvent(String hash) {
     return byHash -> {
       if (Objects.nonNull(byHash.getWebhookId()) &&
-              !WebhookStatus.SENT.equals(byHash.getWebhookStatus())) {
-        WebhookCallEvent event =
-            WebhookCallEvent.builder()
-                .webhookId(byHash.getWebhookId())
-                .linkId(byHash.getId())
-                .hash(hash)
-                .build();
+          !WebhookStatus.SENT.equals(byHash.getWebhookStatus())) {
+        WebhookCallEvent event = WebhookCallEvent.builder()
+            .webhookId(byHash.getWebhookId())
+            .linkId(byHash.getId())
+            .hash(hash)
+            .build();
         bus.send(EventType.WEBHOOK_CALL, event);
       }
       return Uni.createFrom().item(byHash);
@@ -204,39 +203,39 @@ public class RedirectServiceImpl implements RedirectService {
 
   private Uni<RowSet<Row>> queryLinkByHash(String hash) {
     return client
-            .preparedQuery(
-                    "SELECT l.id, "
-                            + "     l.url, "
-                            + "     l.redirect_code, "
-                            + "     l.forward_parameter, "
-                            + "     la.key, "
-                            + "     la.url alt_url, "
-                            + "     l.type, "
-                            + "     l.script_id, "
-                            + "     l.webhook_id, "
-                            + "     l.webhook_status "
-                            + "FROM links l "
-                            + "LEFT JOIN link_alternatives la on l.id = la.link_id "
-                            + "WHERE l.hash = $1 and l.status = "
-                            + LinkStatus.ACTIVE.ordinal())
-            .execute(Tuple.of(hash));
+        .preparedQuery(
+            "SELECT l.id, "
+                + "     l.url, "
+                + "     l.redirect_code, "
+                + "     l.forward_parameter, "
+                + "     la.key, "
+                + "     la.url alt_url, "
+                + "     l.type, "
+                + "     l.script_id, "
+                + "     l.webhook_id, "
+                + "     l.webhook_status "
+                + "FROM links l "
+                + "LEFT JOIN link_alternatives la on l.id = la.link_id "
+                + "WHERE l.hash = $1 and l.status = "
+                + LinkStatus.ACTIVE.ordinal())
+        .execute(Tuple.of(hash));
   }
 
   private Uni<RedirectDTO> redirectByUserAgent(String hash, String query, MultiMap headers) {
     var ua = headers.get(HttpHeaders.USER_AGENT);
     var linkTypes = UserAgentAnalyzer.detectType(ua);
-      return queryLinkByHash(hash)
-              .onItem()
-              .transform(RedirectServiceImpl::fromByUA)
-              .onItem()
-              .transform(addAlternativeLink(linkTypes))
-              .onItem()
-              .transform(makeRedirectLink(query))
-              .onItem()
-              .transformToUni(addMetaData())
-              .onItem()
-              .call(sendAnalyticEvent(hash, headers))
-              .onItem()
-              .call(sendWebhookEvent(hash));
+    return queryLinkByHash(hash)
+        .onItem()
+        .transform(RedirectServiceImpl::fromByUA)
+        .onItem()
+        .transform(addAlternativeLink(linkTypes))
+        .onItem()
+        .transform(makeRedirectLink(query))
+        .onItem()
+        .transformToUni(addMetaData())
+        .onItem()
+        .call(sendAnalyticEvent(hash, headers))
+        .onItem()
+        .call(sendWebhookEvent(hash));
   }
 }

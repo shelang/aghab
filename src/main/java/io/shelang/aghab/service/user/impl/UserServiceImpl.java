@@ -12,6 +12,7 @@ import io.shelang.aghab.service.mapper.UserMeMapper;
 import io.shelang.aghab.service.user.TokenService;
 import io.shelang.aghab.service.user.UserService;
 import io.shelang.aghab.util.PageUtil;
+import io.shelang.aghab.util.PasswordValidator;
 import io.shelang.aghab.util.StringUtil;
 import java.time.Instant;
 import java.util.List;
@@ -60,10 +61,10 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public UserDTO create(UserCredentialDTO createDTO) {
-    User user =
-        new User()
-            .setUsername(createDTO.getUsername())
-            .setPassword(BCrypt.hashpw(createDTO.getPassword(), BCrypt.gensalt()));
+    PasswordValidator.validateOrThrow(createDTO.getPassword());
+    User user = new User()
+        .setUsername(createDTO.getUsername())
+        .setPassword(BCrypt.hashpw(createDTO.getPassword(), BCrypt.gensalt()));
     userRepository.persistAndFlush(user);
     return userMapper.toDTO(user);
   }
@@ -76,16 +77,16 @@ public class UserServiceImpl implements UserService {
       throw new ForbiddenException();
     }
 
-    User user =
-        userRepository.findByIdOptional(userCredentialDTO.getId())
-            .orElseThrow(NotFoundException::new);
+    User user = userRepository.findByIdOptional(userCredentialDTO.getId())
+        .orElseThrow(NotFoundException::new);
     if (StringUtil.nonNullOrEmpty(userCredentialDTO.getUsername())) {
       user.setUsername(userCredentialDTO.getUsername());
     }
     if (StringUtil.nonNullOrEmpty(userCredentialDTO.getPassword())) {
-      user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+      PasswordValidator.validateOrThrow(userCredentialDTO.getPassword());
+      user.setPassword(BCrypt.hashpw(userCredentialDTO.getPassword(), BCrypt.gensalt()));
       user.setNeedChangePassword(
-          jwt.getSubject().equalsIgnoreCase(userCredentialDTO.getId().toString()));
+          !jwt.getSubject().equalsIgnoreCase(userCredentialDTO.getId().toString()));
     }
 
     return userMapper.toDTO(user);
@@ -102,10 +103,9 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public UserMeDTO generateAPIToken() {
-    User user =
-        userRepository
-            .findByIdOptional(tokenService.getAccessTokenUserId())
-            .orElseThrow(NotFoundException::new);
+    User user = userRepository
+        .findByIdOptional(tokenService.getAccessTokenUserId())
+        .orElseThrow(NotFoundException::new);
 
     user.setTokenIssueAt(Instant.now());
     user.setToken(tokenService.createAPIToken(user));
