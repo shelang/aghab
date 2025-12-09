@@ -63,7 +63,7 @@ class LinksResourceTest {
                 assertEquals(createRequest.getUrl(), response.getUrl());
                 assertEquals(RedirectType.REDIRECT, response.getType());
                 assertEquals(301, response.getRedirectCode());
-                assertEquals("http://localhost:8080/r/" + response.getHash(), response.getRedirectTo());
+                assertEquals("http://localhost:8081/r/" + response.getHash(), response.getRedirectTo());
                 assertEquals(0, response.getOs().size());
                 assertEquals(0, response.getDevices().size());
                 assertNull(response.getExpireAt());
@@ -289,7 +289,7 @@ class LinksResourceTest {
                 assertEquals(createRequest.getUrl(), response.getUrl());
                 assertEquals(RedirectType.REDIRECT, response.getType());
                 assertEquals(301, response.getRedirectCode());
-                assertEquals("http://localhost:8080/r/" + response.getHash(), response.getRedirectTo());
+                assertEquals("http://localhost:8081/r/" + response.getHash(), response.getRedirectTo());
                 assertEquals(2, response.getOs().size());
                 assertEquals(0, response.getDevices().size());
                 assertNull(response.getExpireAt());
@@ -347,7 +347,7 @@ class LinksResourceTest {
                 assertEquals(createRequest.getUrl(), response.getUrl());
                 assertEquals(RedirectType.REDIRECT, response.getType());
                 assertEquals(301, response.getRedirectCode());
-                assertEquals("http://localhost:8080/r/" + response.getHash(), response.getRedirectTo());
+                assertEquals("http://localhost:8081/r/" + response.getHash(), response.getRedirectTo());
                 assertEquals(0, response.getOs().size());
                 assertEquals(2, response.getDevices().size());
                 assertNull(response.getExpireAt());
