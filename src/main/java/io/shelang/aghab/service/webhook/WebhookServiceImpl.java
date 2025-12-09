@@ -96,8 +96,14 @@ public class WebhookServiceImpl implements WebhookService {
         .ifPresent(
             webhook -> {
               try {
+                URI uri = new URI(webhook.getUrl());
+                InetAddress addr = InetAddress.getByName(uri.getHost());
+                if (!UrlValidator.isSafe(addr)) {
+                  throw new RuntimeException("Blocked dangerous IP");
+                }
+
                 SimplePostAPI api = RestClientBuilder.newBuilder()
-                    .baseUri(new URI(webhook.getUrl()))
+                    .baseUri(uri)
                     .connectTimeout(5, TimeUnit.SECONDS)
                     .readTimeout(5, TimeUnit.SECONDS)
                     .build(SimplePostAPI.class);
