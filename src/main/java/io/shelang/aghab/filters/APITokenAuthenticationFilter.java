@@ -3,7 +3,6 @@ package io.shelang.aghab.filters;
 import io.shelang.aghab.repository.UserRepository;
 import io.shelang.aghab.role.Roles;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
-import java.io.IOException;
 import java.time.Instant;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -22,8 +21,7 @@ public class APITokenAuthenticationFilter implements ContainerRequestFilter {
   public void filter(ContainerRequestContext ctx) {
     final SecurityContext securityContext = ctx.getSecurityContext();
     if (securityContext != null) {
-      DefaultJWTCallerPrincipal userPrincipal =
-          (DefaultJWTCallerPrincipal) securityContext.getUserPrincipal();
+      DefaultJWTCallerPrincipal userPrincipal = (DefaultJWTCallerPrincipal) securityContext.getUserPrincipal();
       if (userPrincipal == null || !securityContext.isUserInRole(Roles.API)) {
         return;
       }
@@ -32,9 +30,8 @@ public class APITokenAuthenticationFilter implements ContainerRequestFilter {
           .findByUsername(userPrincipal.getName())
           .ifPresent(
               user -> {
-                boolean before =
-                    user.getTokenIssueAt()
-                        .isBefore(Instant.ofEpochSecond(userPrincipal.getIssuedAtTime()));
+                boolean before = user.getTokenIssueAt()
+                    .isBefore(Instant.ofEpochSecond(userPrincipal.getIssuedAtTime()));
                 if (!before) {
                   ctx.abortWith(Response.status(403).build());
                 }
