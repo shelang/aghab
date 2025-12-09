@@ -35,19 +35,17 @@ public class LinksServiceImpl implements LinksService {
 
   private static final byte MAX_RETRY_COUNT = 10;
 
-  private static final List<String> osesAlternativeTypes =
-      Arrays.stream(AlternativeLinkOSType.values())
-          .map(Enum::name)
-          .map(String::toLowerCase)
-          .collect(Collectors.toList());
-  private static final List<String> devicesAlternativeTypes =
-      Arrays.stream(AlternativeLinkDeviceType.values())
-          .map(Enum::name)
-          .map(String::toLowerCase)
-          .collect(Collectors.toList());
+  private static final List<String> osesAlternativeTypes = Arrays.stream(AlternativeLinkOSType.values())
+      .map(Enum::name)
+      .map(String::toLowerCase)
+      .collect(Collectors.toList());
+  private static final List<String> devicesAlternativeTypes = Arrays.stream(AlternativeLinkDeviceType.values())
+      .map(Enum::name)
+      .map(String::toLowerCase)
+      .collect(Collectors.toList());
 
-  private static final LinkAlternativeTypesDTO LINK_ALTERNATIVE_TYPES =
-      new LinkAlternativeTypesDTO().setOs(osesAlternativeTypes).setDevices(devicesAlternativeTypes);
+  private static final LinkAlternativeTypesDTO LINK_ALTERNATIVE_TYPES = new LinkAlternativeTypesDTO()
+      .setOs(osesAlternativeTypes).setDevices(devicesAlternativeTypes);
 
   @ConfigProperty(name = "app.create.hash.length.default", defaultValue = "6")
   int defaultHashLength;
@@ -84,24 +82,26 @@ public class LinksServiceImpl implements LinksService {
 
   @Override
   public LinksDTO get(String q, Integer page, Integer size) {
-    List<Link> links = this.linkUserRepository.page(this.tokenService.getAccessTokenUserId(), q, PageUtil.of(page, size))
-            .stream()
-            .map(LinkUser::getLinkId)
-            .map(this.linksRepository::findByIdOptional)
-            .flatMap(Optional::stream)
-            .collect(Collectors.toList());
+    List<Link> links = this.linkUserRepository
+        .page(this.tokenService.getAccessTokenUserId(), q, PageUtil.of(page, size))
+        .stream()
+        .map(LinkUser::getLinkId)
+        .map(this.linksRepository::findByIdOptional)
+        .flatMap(Optional::stream)
+        .collect(Collectors.toList());
 
     return new LinksDTO().setLinks(linksMapper.toDTO(links));
   }
 
   @Override
   public LinksDTO getByWorkspace(String q, Long workspaceId, Integer page, Integer size) {
-    List<Link> links = this.linkWorkspaceRepository.page(this.tokenService.getAccessTokenUserId(), q, PageUtil.of(page, size))
-            .stream()
-            .map(LinkWorkspace::getLinkId)
-            .map(this.linksRepository::findByIdOptional)
-            .flatMap(Optional::stream)
-            .collect(Collectors.toList());
+    List<Link> links = this.linkWorkspaceRepository
+        .page(this.tokenService.getAccessTokenUserId(), q, PageUtil.of(page, size))
+        .stream()
+        .map(LinkWorkspace::getLinkId)
+        .map(this.linksRepository::findByIdOptional)
+        .flatMap(Optional::stream)
+        .collect(Collectors.toList());
 
     return new LinksDTO().setLinks(linksMapper.toDTO(links));
   }
@@ -180,9 +180,8 @@ public class LinksServiceImpl implements LinksService {
     if (Objects.nonNull(dto.getHash()) && dto.getHash().length() > 0) {
       hash = dto.getHash();
     } else {
-      hash =
-          shortyService.generate(
-              Objects.nonNull(dto.getHashLength()) ? dto.getHashLength() : defaultHashLength);
+      hash = shortyService.generate(
+          Objects.nonNull(dto.getHashLength()) ? dto.getHashLength() : defaultHashLength);
     }
 
     return hash;
@@ -199,7 +198,8 @@ public class LinksServiceImpl implements LinksService {
 
     if (Objects.nonNull(dto.getScriptId())) {
       ScriptDTO byId = scriptService.getById(dto.getScriptId());
-      dto.setType(RedirectType.SCRIPT.name()).setRedirectCode((short) 200);
+      dto.setType(RedirectType.SCRIPT.name());
+      dto.setRedirectCode((short) 200);
       log.info("[CREATE LINK] script id {} exist.", byId.getId());
     } else {
       if (RedirectType.SCRIPT.equals(RedirectType.from(dto.getType()))) {
@@ -230,10 +230,9 @@ public class LinksServiceImpl implements LinksService {
   @Override
   @Transactional
   public LinkDTO create(LinkCreateDTO dto) {
-    var user =
-        userRepository
-            .findByIdOptional(tokenService.getAccessTokenUserId())
-            .orElseThrow(NotFoundException::new);
+    var user = userRepository
+        .findByIdOptional(tokenService.getAccessTokenUserId())
+        .orElseThrow(NotFoundException::new);
     byte retry = 0;
     if (dto.getHash() != null) {
       retry = MAX_RETRY_COUNT - 1;
@@ -299,8 +298,7 @@ public class LinksServiceImpl implements LinksService {
   public void delete(Long id) {
     var link = linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
     var linkUserId = new LinkUser.LinkUserId(tokenService.getAccessTokenUserId(), link.getHash());
-    var linkUser =
-        linkUserRepository.findByIdOptional(linkUserId).orElseThrow(ForbiddenException::new);
+    var linkUser = linkUserRepository.findByIdOptional(linkUserId).orElseThrow(ForbiddenException::new);
     linksRepository.deleteById(id);
     linkUserRepository.deleteById(linkUser.getId());
   }
@@ -322,25 +320,22 @@ public class LinksServiceImpl implements LinksService {
     }
 
     deleted.forEach(
-        la ->
-            linkAlternativeRepository.delete(
-                "link_id = ?1 AND key = ?2", la.getId().getLinkId(), la.getId().getKey()));
+        la -> linkAlternativeRepository.delete(
+            "link_id = ?1 AND key = ?2", la.getId().getLinkId(), la.getId().getKey()));
 
     alternatives.removeIf(
-        dto ->
-            link.getAlternatives().stream()
-                .anyMatch(a -> a.getKey().equalsIgnoreCase(dto.getKey())));
+        dto -> link.getAlternatives().stream()
+            .anyMatch(a -> a.getKey().equalsIgnoreCase(dto.getKey())));
 
     alternatives.forEach(
-        dto ->
-            link.getAlternatives()
-                .add(
-                    LinkAlternative.builder()
-                        .id(new LinkAlternative.LinkAlternativeId(link.getId(), dto.getKey()))
-                        .link(link)
-                        .key(dto.getKey())
-                        .url(dto.getUrl())
-                        .build()));
+        dto -> link.getAlternatives()
+            .add(
+                LinkAlternative.builder()
+                    .id(new LinkAlternative.LinkAlternativeId(link.getId(), dto.getKey()))
+                    .link(link)
+                    .key(dto.getKey())
+                    .url(dto.getUrl())
+                    .build()));
   }
 
   private void updateLinkMeta(Link link, LinkCreateDTO request) {
@@ -394,8 +389,7 @@ public class LinksServiceImpl implements LinksService {
   @Override
   @Transactional
   public LinkDTO update(Long id, LinkCreateDTO request) {
-    var link =
-        linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    var link = linksRepository.findByIdOptional(id).orElseThrow(NotFoundException::new);
     validateLinkUser(link.getHash());
     updateAlternatives(link, request.getOsAlternatives(), request.getDeviceAlternatives());
     updateLinkMeta(link, request);
