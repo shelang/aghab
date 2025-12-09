@@ -28,6 +28,11 @@ public class AuthServiceImpl implements AuthService {
   @Inject
   WorkspaceService workspaceService;
 
+  @Inject
+  io.shelang.aghab.service.audit.AuditService auditService;
+  @Inject
+  io.vertx.core.http.HttpServerRequest request;
+
   @Override
   public LoginDTO login(String username, String password) {
     rateLimiter.handleLoginAttempt(username);
@@ -35,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     if (!BCrypt.checkpw(password, user.getPassword())) {
       throw new BadRequestException("Wrong password");
     }
+    auditService.log(user.getId(), null, "LOGIN_SUCCESS", "User logged in", request.remoteAddress().host());
     return getLoginDTO(user);
   }
 

@@ -22,6 +22,13 @@ public class LinksResource {
   @Inject
   LinksService linksService;
 
+  @Inject
+  io.shelang.aghab.service.audit.AuditService auditService;
+  @Inject
+  io.shelang.aghab.service.user.TokenService tokenService;
+  @jakarta.ws.rs.core.Context
+  io.vertx.core.http.HttpServerRequest request;
+
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
@@ -61,8 +68,14 @@ public class LinksResource {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public LinkDTO create(@Valid LinkCreateDTO link) {
-    return linksService.create(link);
+  public LinkDTO create(@HeaderParam("Host") String host, @HeaderParam("Origin") String origin,
+      @Valid LinkCreateDTO link) {
+    link.setHost(host);
+    link.setOrigin(origin);
+    LinkDTO dto = linksService.create(link);
+    auditService.log(tokenService.getAccessTokenUserId(), link.getWorkspaceId(), "LINK_CREATED",
+        "Link ID: " + dto.getId(), request.remoteAddress().host());
+    return dto;
   }
 
   @PUT
@@ -70,7 +83,10 @@ public class LinksResource {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public LinkDTO update(@PathParam("id") Long id, @Valid LinkCreateDTO link) {
-    return linksService.update(id, link);
+    LinkDTO dto = linksService.update(id, link);
+    auditService.log(tokenService.getAccessTokenUserId(), link.getWorkspaceId(), "LINK_UPDATED",
+        "Link ID: " + id, request.remoteAddress().host());
+    return dto;
   }
 
   @DELETE
@@ -78,7 +94,10 @@ public class LinksResource {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public Response delete(@PathParam("id") Long id) {
+    LinkDTO link = linksService.getById(id);
     linksService.delete(id);
+    auditService.log(tokenService.getAccessTokenUserId(), null, "LINK_DELETED", "Link ID: " + id,
+        request.remoteAddress().host());
     return Response.noContent().build();
   }
 

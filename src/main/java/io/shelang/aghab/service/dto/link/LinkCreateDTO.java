@@ -9,6 +9,7 @@ import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
+import jakarta.ws.rs.HeaderParam;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,14 +20,25 @@ import org.hibernate.validator.constraints.Length;
 public class LinkCreateDTO {
 
   @NotBlank
+  @Length(min = 5)
   private String url;
-  private String hash;
-  private Integer hashLength;
+
+  @NotBlank
+  private String type;
+
+  private Short redirectCode = 301; // 301 .. 308
+
   private Instant expireAt;
-  private Short redirectCode = 301;
-  private LinkStatus status = LinkStatus.ACTIVE;
-  private boolean forwardParameter;
-  private Long workspaceId;
+
+  private Integer hashLength;
+
+  private String hash;
+
+  @Length(max = 150)
+  private String title;
+
+  @Length(max = 255)
+  private String description;
 
   @Valid
   @JsonAlias(value = "os")
@@ -36,21 +48,17 @@ public class LinkCreateDTO {
   @JsonAlias(value = "devices")
   private List<LinkAlternativeDTO> deviceAlternatives = new ArrayList<>();
 
-  @Length(max = 150)
-  private String title;
-
-  @Length(max = 255)
-  private String description;
-
-  private String type;
+  private boolean forwardParameter;
 
   private Long scriptId;
 
   private Long webhookId;
 
-  // @HeaderParam("Host")
+  private LinkStatus status = LinkStatus.ACTIVE;
+
+  private Long workspaceId;
+
   private String host;
 
-  // @HeaderParam("Origin")
   private String origin;
 }
