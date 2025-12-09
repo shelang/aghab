@@ -15,6 +15,6 @@ public class LinksRepository implements PanacheRepository<Link> {
   }
 
   public void removeWebhookLink(Long id) {
-    update("webhookStatus = ?2 WHERE id = ?1", id, WebhookStatus.SENT);
+    update("webhookStatus = ?1 WHERE id = ?2", WebhookStatus.SENT, id);
   }
 }
